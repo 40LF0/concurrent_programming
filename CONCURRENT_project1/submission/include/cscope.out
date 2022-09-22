@@ -1,0 +1,1496 @@
+cscope 15 $HOME/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/include -q 0000000150 0000007271
+	@Joiner.hpp
+
+1 #´agm¨
+Úû
+
+
+2 
+	~<veùÜ
+>
+
+3 
+	~<c¡dšt
+>
+
+4 
+	~<£t
+>
+
+5 
+	~"O³¿tÜs.hµ
+"
+
+6 
+	~"R–©iÚ.hµ
+"
+
+7 
+	~"P¬£r.hµ
+"
+
+9 þas 
+	cJoš”
+ {
+
+12 
+	m¡d
+::
+unique_±r
+<
+O³¿tÜ
+> 
+addSÿn
+(
+¡d
+::
+£t
+<>& 
+u£dR–©iÚs
+,
+S–eùInfo
+& 
+šfo
+,
+Qu”yInfo
+& 
+qu”y
+);
+
+14 
+	mpublic
+:
+
+16 
+¡d
+::
+veùÜ
+<
+R–©iÚ
+> 
+»ÏtiÚs
+;
+
+18 
+addR–©iÚ
+(cÚ¡ * 
+fžeName
+);
+
+20 
+	mR–©iÚ
+& 
+g‘R–©iÚ
+(
+id
+);
+
+22 
+	m¡d
+::
+¡ršg
+ 
+još
+(
+Qu”yInfo
+& 
+i
+);
+
+	@Operators.hpp
+
+1 #´agm¨
+Úû
+
+
+3 
+	~<ÿs£¹
+>
+
+4 
+	~<memÜy
+>
+
+5 
+	~<¡dexû±
+>
+
+6 
+	~<unÜd”ed_m­
+>
+
+7 
+	~<unÜd”ed_£t
+>
+
+8 
+	~<veùÜ
+>
+
+9 
+	~<£t
+>
+
+10 
+	~"R–©iÚ.hµ
+"
+
+11 
+	~"P¬£r.hµ
+"
+
+13 
+Çme¥aû
+ 
+	g¡d
+ {
+
+15 
+	g‹m¶©e
+<> 
+	ghash
+<
+	gS–eùInfo
+> {
+
+16 
+	g¡d
+::
+size_t
+ 
+Ý”©Ü
+()(
+S–eùInfo
+ cÚ¡& 
+s
+ècÚ¡ 
+nÛxû±
+ {  s.
+bšdšg
+ ^ (s.
+cÞId
+ << 5); }
+
+20 þas 
+	cO³¿tÜ
+ {
+
+23 
+	m´Ùeùed
+:
+
+25 
+¡d
+::
+unÜd”ed_m­
+<
+S–eùInfo
+,> 
+	m£Ëù2ResuÉCÞId
+;
+
+27 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+»suÉCÞumns
+;
+
+29 
+	m¡d
+::
+veùÜ
+<
+¡d
+::veùÜ<
+ušt64_t
+>> 
+tmpResuÉs
+;
+
+32 
+	mpublic
+:
+
+34 
+vœtu®
+ 
+boÞ
+ 
+»quœe
+(
+S–eùInfo
+ 
+šfo
+) = 0;
+
+36 
+	$»sÞve
+(
+S–eùInfo
+ 
+šfo
+è{ 
+	`as£¹
+(
+£Ëù2ResuÉCÞId
+.
+	`fšd
+(šfo)!=£Ëù2ResuÉCÞId.
+	`’d
+());  select2ResultColId[info]; }
+
+38 
+vœtu®
+ 
+	`run
+() = 0;
+
+40 
+vœtu®
+ 
+¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+	`g‘ResuÉs
+();
+
+42 
+ušt64_t
+ 
+»suÉSize
+=0;
+
+44 
+vœtu®
+ ~
+	$O³¿tÜ
+(è{
+	}
+};
+
+47 þas 
+	cSÿn
+ : 
+public
+ 
+O³¿tÜ
+ {
+
+48 
+´Ùeùed
+:
+
+50 
+R–©iÚ
+& 
+»ÏtiÚ
+;
+
+52 
+	m»ÏtiÚBšdšg
+;
+
+54 
+	mpublic
+:
+
+56 
+	$Sÿn
+(
+R–©iÚ
+& 
+r
+,
+»ÏtiÚBšdšg
+è: 
+	`»ÏtiÚ
+Ô), 
+	$»ÏtiÚBšdšg
+(
+»ÏtiÚBšdšg
+) {};
+
+58 
+boÞ
+ 
+	$»quœe
+(
+S–eùInfo
+ 
+šfo
+è
+ov”ride
+;
+
+60 
+	$run
+(è
+ov”ride
+;
+
+62 
+vœtu®
+ 
+¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+	$g‘ResuÉs
+(è
+ov”ride
+;
+
+63 
+	}
+};
+
+65 þas 
+	cFž‹rSÿn
+ : 
+public
+ 
+Sÿn
+ {
+
+67 
+¡d
+::
+veùÜ
+<
+Fž‹rInfo
+> 
+fž‹rs
+;
+
+69 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+šputD©a
+;
+
+71 
+boÞ
+ 
+­¶yFž‹r
+(
+ušt64_t
+ 
+id
+,
+Fž‹rInfo
+& 
+f
+);
+
+73 
+cÝy2ResuÉ
+(
+ušt64_t
+ 
+id
+);
+
+75 
+	mpublic
+:
+
+77 
+Fž‹rSÿn
+(
+R–©iÚ
+& 
+r
+,
+¡d
+::
+veùÜ
+<
+Fž‹rInfo
+> 
+fž‹rs
+è: 
+Sÿn
+Ô,fž‹rs[0].
+fž‹rCÞumn
+.
+bšdšg
+), 
+	$fž‹rs
+(
+fž‹rs
+) {};
+
+79 
+	$Fž‹rSÿn
+(
+R–©iÚ
+& 
+r
+,
+Fž‹rInfo
+& 
+fž‹rInfo
+è: 
+	`Fž‹rSÿn
+Ô,
+¡d
+::
+veùÜ
+<Fž‹rInfo>{
+	}
+filterInfo}) {};
+
+81 
+boÞ
+ 
+	$»quœe
+(
+S–eùInfo
+ 
+šfo
+è
+ov”ride
+;
+
+83 
+	$run
+(è
+ov”ride
+;
+
+85 
+vœtu®
+ 
+¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+	$g‘ResuÉs
+(è
+ov”ride
+ {  
+O³¿tÜ
+::
+	`g‘ResuÉs
+(); 
+	}
+}
+
+88 þas 
+	cJoš
+ : 
+public
+ 
+O³¿tÜ
+ {
+
+90 
+¡d
+::
+unique_±r
+<
+O³¿tÜ
+> 
+Ëá
+, 
+	mright
+;
+
+92 
+	mP»diÿ‹Info
+& 
+	mpInfo
+;
+
+94 
+cÝy2ResuÉ
+(
+ušt64_t
+ 
+ËáId
+,ušt64_ˆ
+rightId
+);
+
+96 
+ü—‹M­pšgFÜBšdšgs
+();
+
+98 
+usšg
+ 
+	mHT
+=
+¡d
+::
+unÜd”ed_muÉim­
+<
+ušt64_t
+,
+	mušt64_t
+>;
+
+101 
+HT
+ 
+	mhashTabË
+;
+
+103 
+	m¡d
+::
+unÜd”ed_£t
+<
+S–eùInfo
+> 
+»que¡edCÞumns
+;
+
+105 
+	m¡d
+::
+veùÜ
+<
+S–eùInfo
+> 
+»que¡edCÞumnsLeá
+,
+	m»que¡edCÞumnsRight
+;
+
+109 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+ËáIÅutD©a
+,
+	mrightIÅutD©a
+;
+
+111 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*>
+cÝyLeáD©a
+,
+	mcÝyRightD©a
+;
+
+113 
+	mpublic
+:
+
+115 
+Još
+(
+¡d
+::
+unique_±r
+<
+O³¿tÜ
+>&& 
+Ëá
+,¡d::unique_±r<O³¿tÜ>&& 
+right
+,
+P»diÿ‹Info
+& 
+pInfo
+è:†eá(¡d::
+move
+Öeá)),„ight(¡d::moveÔight)), 
+	$pInfo
+(
+pInfo
+) {};
+
+117 
+boÞ
+ 
+	$»quœe
+(
+S–eùInfo
+ 
+šfo
+è
+ov”ride
+;
+
+119 
+	$run
+(è
+ov”ride
+;
+
+120 
+	}
+};
+
+122 þas 
+	cS–fJoš
+ : 
+public
+ 
+O³¿tÜ
+ {
+
+124 
+¡d
+::
+unique_±r
+<
+O³¿tÜ
+> 
+šput
+;
+
+126 
+	mP»diÿ‹Info
+& 
+	mpInfo
+;
+
+128 
+cÝy2ResuÉ
+(
+ušt64_t
+ 
+id
+);
+
+130 
+	m¡d
+::
+£t
+<
+S–eùInfo
+> 
+»quœedIUs
+;
+
+133 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+šputD©a
+;
+
+135 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*>
+cÝyD©a
+;
+
+137 
+	mpublic
+:
+
+139 
+S–fJoš
+(
+¡d
+::
+unique_±r
+<
+O³¿tÜ
+>&& 
+šput
+,
+P»diÿ‹Info
+& 
+pInfo
+è: iÅut(¡d::
+move
+(šput)), 
+	$pInfo
+(
+pInfo
+) {};
+
+141 
+boÞ
+ 
+	$»quœe
+(
+S–eùInfo
+ 
+šfo
+è
+ov”ride
+;
+
+143 
+	$run
+(è
+ov”ride
+;
+
+144 
+	}
+};
+
+146 þas 
+	cChecksum
+ : 
+public
+ 
+O³¿tÜ
+ {
+
+148 
+¡d
+::
+unique_±r
+<
+O³¿tÜ
+> 
+šput
+;
+
+150 
+	m¡d
+::
+veùÜ
+<
+S–eùInfo
+>& 
+cÞInfo
+;
+
+152 
+	mpublic
+:
+
+153 
+¡d
+::
+veùÜ
+<
+ušt64_t
+> 
+checkSums
+;
+
+155 
+Checksum
+(
+¡d
+::
+unique_±r
+<
+O³¿tÜ
+>&& 
+šput
+,¡d::
+veùÜ
+<
+S–eùInfo
+>& 
+cÞInfo
+è: iÅut(¡d::
+move
+(šput)), 
+	$cÞInfo
+(
+cÞInfo
+) {};
+
+157 
+boÞ
+ 
+	$»quœe
+(
+S–eùInfo
+ 
+šfo
+è
+ov”ride
+ { 
+throw
+; 
+	}
+}
+
+159 
+	$run
+(è
+ov”ride
+;
+
+160 
+	}
+};
+
+	@Parser.hpp
+
+1 #´agm¨
+Úû
+
+
+2 
+	~<c¡dšt
+>
+
+3 
+	~<funùiÚ®
+>
+
+4 
+	~<¡ršg
+>
+
+5 
+	~<veùÜ
+>
+
+6 
+	~"R–©iÚ.hµ
+"
+
+8 
+	sS–eùInfo
+ {
+
+10 
+R–©iÚId
+ 
+	m»lId
+;
+
+12 
+	mbšdšg
+;
+
+14 
+	mcÞId
+;
+
+16 
+S–eùInfo
+(
+R–©iÚId
+ 
+»lId
+,
+b
+,
+cÞId
+è:„–IdÔ–Id), 
+bšdšg
+(b), colId(colId) {};
+
+18 
+S–eùInfo
+(
+b
+,
+cÞId
+) : SelectInfo(-1,b,colId) {};
+
+21 
+šlše
+ 
+boÞ
+ 
+	mÝ”©Ü
+==(cÚ¡ 
+S–eùInfo
+& 
+o
+) const {
+
+22  
+o
+.
+»lId
+ =ð»lId && o.
+bšdšg
+ =ðbšdšg && o.
+cÞId
+ == colId;
+
+25 
+šlše
+ 
+boÞ
+ 
+	mÝ”©Ü
+<(cÚ¡ 
+	mS–eùInfo
+& 
+	mo
+) const {
+
+26  
+	mbšdšg
+<
+	mo
+.bšdšg||
+	mcÞId
+<o.colId;
+
+30 
+	m¡d
+::
+¡ršg
+ 
+dumpText
+();
+
+32 
+	m¡d
+::
+¡ršg
+ 
+dumpSQL
+(
+boÞ
+ 
+addSUM
+=
+çl£
+);
+
+35 cÚ¡ 
+	md–im™”
+=' ';
+
+37 
+cÚ¡ex´
+ cÚ¡ 
+	md–im™”SQL
+[]=", ";
+
+40 
+	sFž‹rInfo
+ {
+
+41 
+	mCom·risÚ
+ : { 
+Less
+='<', 
+	mG»©”
+='>', 
+	mEqu®
+='=' };
+
+43 
+S–eùInfo
+ 
+	mfž‹rCÞumn
+;
+
+45 
+ušt64_t
+ 
+	mcÚ¡ªt
+;
+
+47 
+Com·risÚ
+ 
+	mcom·risÚ
+;
+
+49 
+	m¡d
+::
+¡ršg
+ 
+dumpSQL
+();
+
+52 
+Fž‹rInfo
+(
+S–eùInfo
+ 
+fž‹rCÞumn
+,
+ušt64_t
+ 
+cÚ¡ªt
+,
+Com·risÚ
+ 
+com·risÚ
+) : filterColumn(filterColumn), constant(constant), comparison(comparison) {};
+
+54 
+	m¡d
+::
+¡ršg
+ 
+dumpText
+();
+
+57 cÚ¡ 
+	md–im™”
+='&';
+
+59 
+cÚ¡ex´
+ cÚ¡ 
+	md–im™”SQL
+[]="‡nd ";
+
+61 cÚ¡ 
+	g¡d
+::
+veùÜ
+<
+Fž‹rInfo
+::
+Com·risÚ
+> 
+com·risÚTy³s
+ { Fž‹rInfo::Com·risÚ::
+Less
+, 
+	gFž‹rInfo
+::Com·risÚ::
+G»©”
+, Fž‹rInfo::Com·risÚ::
+Equ®
+};
+
+63 
+	sP»diÿ‹Info
+ {
+
+65 
+S–eùInfo
+ 
+	mËá
+;
+
+67 
+S–eùInfo
+ 
+	mright
+;
+
+69 
+P»diÿ‹Info
+(
+S–eùInfo
+ 
+Ëá
+, S–eùInfØ
+right
+) :†eft(left),„ight(right){};
+
+71 
+	m¡d
+::
+¡ršg
+ 
+dumpText
+();
+
+73 
+	m¡d
+::
+¡ršg
+ 
+dumpSQL
+();
+
+76 cÚ¡ 
+	md–im™”
+='&';
+
+78 
+cÚ¡ex´
+ cÚ¡ 
+	md–im™”SQL
+[]="‡nd ";
+
+81 þas 
+	cQu”yInfo
+ {
+
+82 
+	mpublic
+:
+
+84 
+¡d
+::
+veùÜ
+<
+R–©iÚId
+> 
+»ÏtiÚIds
+;
+
+86 
+	m¡d
+::
+veùÜ
+<
+P»diÿ‹Info
+> 
+´ediÿ‹s
+;
+
+88 
+	m¡d
+::
+veùÜ
+<
+Fž‹rInfo
+> 
+fž‹rs
+;
+
+90 
+	m¡d
+::
+veùÜ
+<
+S–eùInfo
+> 
+£ËùiÚs
+;
+
+92 
+þ—r
+();
+
+94 
+	m´iv©e
+:
+
+96 
+·r£P»diÿ‹
+(
+¡d
+::
+¡ršg
+& 
+¿wP»diÿ‹
+);
+
+98 
+»sÞveR–©iÚIds
+();
+
+100 
+	mpublic
+:
+
+102 
+·r£R–©iÚIds
+(
+¡d
+::
+¡ršg
+& 
+¿wR–©iÚs
+);
+
+104 
+·r£P»diÿ‹s
+(
+¡d
+::
+¡ršg
+& 
+¿wP»diÿ‹s
+);
+
+106 
+·r£S–eùiÚs
+(
+¡d
+::
+¡ršg
+& 
+¿wS–eùiÚs
+);
+
+108 
+·r£Qu”y
+(
+¡d
+::
+¡ršg
+& 
+¿wQu”y
+);
+
+110 
+	m¡d
+::
+¡ršg
+ 
+dumpText
+();
+
+112 
+	m¡d
+::
+¡ršg
+ 
+dumpSQL
+();
+
+114 
+	$Qu”yInfo
+() {}
+
+116 
+	`Qu”yInfo
+(
+¡d
+::
+¡ršg
+ 
+¿wQu”y
+);
+
+117 
+	}
+};
+
+	@Relation.hpp
+
+1 #´agm¨
+Úû
+
+
+2 
+	~<c¡dšt
+>
+
+3 
+	~<¡ršg
+>
+
+4 
+	~<veùÜ
+>
+
+6 
+usšg
+ 
+	gR–©iÚId
+ = ;
+
+8 þas 
+	cR–©iÚ
+ {
+
+9 
+	m´iv©e
+:
+
+11 
+boÞ
+ 
+ownsMemÜy
+;
+
+13 
+lßdR–©iÚ
+(cÚ¡ * 
+fžeName
+);
+
+15 
+	mpublic
+:
+
+17 
+ušt64_t
+ 
+size
+;
+
+19 
+	m¡d
+::
+veùÜ
+<
+ušt64_t
+*> 
+cÞumns
+;
+
+22 
+¡ÜeR–©iÚ
+(cÚ¡ 
+¡d
+::
+¡ršg
+& 
+fžeName
+);
+
+24 
+¡ÜeR–©iÚCSV
+(cÚ¡ 
+¡d
+::
+¡ršg
+& 
+fžeName
+);
+
+26 
+dumpSQL
+(cÚ¡ 
+¡d
+::
+¡ršg
+& 
+fžeName
+,
+»ÏtiÚId
+);
+
+29 
+R–©iÚ
+(
+ušt64_t
+ 
+size
+,
+¡d
+::
+veùÜ
+<ušt64_t*>&& 
+cÞumns
+è: 
+ownsMemÜy
+(
+Œue
+), size(size), 
+	$cÞumns
+(
+cÞumns
+) {}
+
+31 
+	`R–©iÚ
+(cÚ¡ * 
+fžeName
+);
+
+33 
+	`R–©iÚ
+(cÚ¡ 
+R–©iÚ
+& 
+Ùh”
+)=
+d–‘e
+;
+
+35 
+	`R–©iÚ
+(
+R–©iÚ
+&& 
+Ùh”
+)=;
+
+37 ~
+	`R–©iÚ
+();
+
+38 
+	}
+};
+
+	@Utils.hpp
+
+1 #´agm¨
+Úû
+
+
+2 
+	~<f¡»am
+>
+
+3 
+	~"R–©iÚ.hµ
+"
+
+5 þas 
+	cUtžs
+ {
+
+6 
+	mpublic
+:
+
+8 
+R–©iÚ
+ 
+ü—‹R–©iÚ
+(
+ušt64_t
+ 
+size
+,ušt64_ˆ
+numCÞumns
+);
+
+11 
+¡ÜeR–©iÚ
+(
+¡d
+::
+of¡»am
+& 
+out
+,
+R–©iÚ
+& 
+r
+,
+i
+);
+
+	@
+1
+.
+0
+5
+59
+Joiner.hpp
+Operators.hpp
+Parser.hpp
+Relation.hpp
+Utils.hpp

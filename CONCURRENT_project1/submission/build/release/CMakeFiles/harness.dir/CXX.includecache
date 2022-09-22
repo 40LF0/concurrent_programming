@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/harness.cpp
+errno.h
+-
+fcntl.h
+-
+stdio.h
+-
+stdlib.h
+-
+sys/time.h
+-
+thread
+-
+unistd.h
+-
+fstream
+-
+iostream
+-
+sstream
+-
+string
+-
+vector
+-
+
