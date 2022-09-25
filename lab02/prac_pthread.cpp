@@ -37,7 +37,7 @@ int main(void)
   long ret;
   for (int i = 0; i < NUM_THREADS; i++) {
     pthread_join(threads[i], (void**)&ret);
-    printf("thread %ld: local count -> %ld\n", threads[i], ret);
+    printf("thread%d %ld: local count -> %ld\n",i ,threads[i], ret);
   }
   printf("global count -> %ld\n", cnt_global);
   //std::cout << "global count -> " << cnt_global << std::endl;
