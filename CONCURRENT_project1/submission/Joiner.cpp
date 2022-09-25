@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 #include "Parser.hpp"
+
 //---------------------------------------------------------------------------
 using namespace std;
 //---------------------------------------------------------------------------
@@ -15,10 +16,6 @@ void Joiner::addRelation(const char* fileName)
 // Loads a relation from disk
 {
   relations.emplace_back(fileName);
-  // emplace_back is introduced in c++11
-  // create object in the function and insert it in the vector
-  // using variable factor templates
-
 }
 //---------------------------------------------------------------------------
 Relation& Joiner::getRelation(unsigned relationId)

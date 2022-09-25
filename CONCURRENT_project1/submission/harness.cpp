@@ -281,10 +281,10 @@ int main(int argc, char *argv[]) {
                   << ", actual: " << val << endl;
         ++failure_cnt;
       }
-      /*if (matched)
-      {
+      if (matched)
+      {   cout << endl  << endl << endl << "query num ::" << query_no << endl;
           cout << endl << val << endl <<  endl << result_batches[batch][i];
-      }*/
+      }
       ++query_no;
     }
   }
@@ -295,7 +295,7 @@ int main(int argc, char *argv[]) {
   if (failure_cnt == 0) {
     // Output the elapsed time in milliseconds
     double elapsed_sec = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
-    cout << (long)(elapsed_sec * 1000) << endl;
+    cout << endl << (long)(elapsed_sec * 1000) << endl;
     return EXIT_SUCCESS;
   }
 

@@ -3,10 +3,6 @@
 #include <iostream>
 //---------------------------------------------------------------------------
 using namespace std;
-
-#define PARALLEL_FOR_BEGIN(nb_elements) parallel_for(nb_elements, [&](int start, int end){ for(int i = start; i < end; ++i)
-#define PARALLEL_FOR_END()})
-
 //---------------------------------------------------------------------------
 bool Scan::require(SelectInfo info)
   // Require a column and add it to results
@@ -167,12 +163,6 @@ void Join::run()
   for (uint64_t i=0,limit=i+left->resultSize;i!=limit;++i) {
     hashTable.emplace(leftKeyColumn[i],i);
   }
-  //PARALLEL_FOR_BEGIN(left->resultSize)
-	//{
-	//	hashTable.emplace(leftKeyColumn[i],i);
-	//}PARALLEL_FOR_END();
-
-
   // Probe phase
   auto rightKeyColumn=rightInputData[rightColId];
   for (uint64_t i=0,limit=i+right->resultSize;i!=limit;++i) {
