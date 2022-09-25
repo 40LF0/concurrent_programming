@@ -67,6 +67,10 @@ vector
 -
 
 /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/main.cpp
+stdio.h
+-
+pthread.h
+-
 iostream
 -
 Joiner.hpp

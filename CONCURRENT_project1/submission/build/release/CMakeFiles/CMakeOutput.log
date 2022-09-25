@@ -631,3 +631,17 @@ make[1]: Leaving directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2
     Feature record: CXX_FEATURE:0cxx_variable_templates
     Feature record: CXX_FEATURE:0cxx_variadic_macros
     Feature record: CXX_FEATURE:0cxx_variadic_templates
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c249e/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c249e.dir/build.make CMakeFiles/cmTC_c249e.dir/build
+make[1]: Entering directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c249e.dir/CheckIncludeFile.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_c249e.dir/CheckIncludeFile.c.o   -c /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_c249e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c249e.dir/link.txt --verbose=1
+/usr/bin/cc      -rdynamic CMakeFiles/cmTC_c249e.dir/CheckIncludeFile.c.o  -o cmTC_c249e 
+make[1]: Leaving directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp'
+
+
