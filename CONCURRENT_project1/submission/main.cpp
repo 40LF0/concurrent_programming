@@ -3,8 +3,9 @@
 #include <iostream>
 #include "Joiner.hpp"
 #include "Parser.hpp"
-
+#include <thread>
 #define NUM_THREAD 20
+
 
 using namespace std;
 Joiner joiner;
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
    // Preparation phase (not timed)
    // Build histograms, indexes,...
    //
-   
+   int NUM_THREAD_ = std::thread::hardware_concurrency();
    long i = 0;
    while (getline(cin, line)) {
       if (line == "F"){ // End of a batch
@@ -50,8 +51,8 @@ int main(int argc, char* argv[]) {
       pthread_create(&threads[i], 0, ThreadFunc, (void*)i);
       ++i;
 
-      if(i == NUM_THREAD){
-        for(int j = 0 ; j < NUM_THREAD ; ++j){
+      if(i == NUM_THREAD_){
+        for(int j = 0 ; j < NUM_THREAD_ ; ++j){
           pthread_join(threads[j], NULL);
           string& ret =  *(thread_ret[j]);
 	  cout << ret << std::flush;
