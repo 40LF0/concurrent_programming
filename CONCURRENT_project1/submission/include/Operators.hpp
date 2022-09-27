@@ -51,9 +51,11 @@ class Scan : public Operator {
   /// The name of the relation in the query
   unsigned relationBinding;
 
+  std::set<unsigned> col_info;
   public:
   /// The constructor
   Scan(Relation& r,unsigned relationBinding) : relation(r), relationBinding(relationBinding) {};
+  Scan(Relation& r,unsigned relationBinding,std::set<unsigned> col_info) : relation(r), relationBinding(relationBinding),col_info(col_info) {};
   /// Require a column and add it to results
   bool require(SelectInfo info) override;
   /// Run
@@ -72,9 +74,12 @@ class FilterScan : public Scan {
   /// Copy tuple to result
   void copy2Result(uint64_t id);
 
+  std::set<unsigned> col_info;
+
   public:
   /// The constructor
-  FilterScan(Relation& r,std::vector<FilterInfo> filters) : Scan(r,filters[0].filterColumn.binding), filters(filters)  {};
+  FilterScan(Relation& r,std::vector<FilterInfo> filters) : Scan(r,filters[0].filterColumn.binding), filters(filters) {};
+  FilterScan(Relation& r,std::vector<FilterInfo> filters,std::set<unsigned> col_info) : Scan(r,filters[0].filterColumn.binding), filters(filters),col_info()  {};
   /// The constructor
   FilterScan(Relation& r,FilterInfo& filterInfo) : FilterScan(r,std::vector<FilterInfo>{filterInfo}) {};
   /// Require a column and add it to results

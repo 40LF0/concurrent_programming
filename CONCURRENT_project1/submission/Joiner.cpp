@@ -38,7 +38,7 @@ unique_ptr<Operator> Joiner::addScan(set<unsigned>& usedRelations,SelectInfo& in
         filters.emplace_back(f);
       }
     }
-  return filters.size()?make_unique<FilterScan>(getRelation(info.relId),filters):make_unique<Scan>(getRelation(info.relId),info.binding);
+  return filters.size()?make_unique<FilterScan>(getRelation(info.relId),filters,this->col_info[info.binding]):make_unique<Scan>(getRelation(info.relId),info.binding,this->col_info[info.binding]);
 }
 //---------------------------------------------------------------------------
 enum QueryGraphProvides {  Left, Right, Both, None };
@@ -66,18 +66,21 @@ string Joiner::join(QueryInfo& query)
 
   // get all column id we will use.
   // use <PredicateInfo>query.predicates,<FilterInfo>query.filters -> <SelectInfo> relId,binding,colId
-  vector<set<unsigned>>  col_info[relations.size()];
+  int sz  = relations.size();
+  set<unsigned>  col_info[sz];
+  //col_info.insert(1);
     for (auto& f : query.filters) {
-        SelectInfo& i = f.filterColumn;
-        col_info[i.relId].emplace(i.colId);
+        col_info[f.filterColumn.binding].emplace(f.filterColumn.colId);
     }
     for (auto& f : query.predicates) {
-        SelectInfo& i = f.left;
-        col_info[i.relId].emplace(i.colId);
-        i = f.right;
-        col_info[i.relId].emplace(i.colId);
+        col_info[f.left.binding].emplace(f.left.colId);
+        col_info[f.right.binding].emplace(f.right.colId);
     }
-  
+    for (auto& f : query.selections) {
+        col_info[f.binding].emplace(f.colId);
+        col_info[f.binding].emplace(f.colId);
+    }
+  this->col_info = col_info;
   //cerr << query.dumpText() << endl;
     set<unsigned> usedRelations;
 

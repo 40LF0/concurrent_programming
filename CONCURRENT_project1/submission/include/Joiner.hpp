@@ -15,6 +15,7 @@ class Joiner {
   /// The relations that might be joined
   std::vector<Relation> relations;
 
+  std::set<unsigned>*  col_info;
   /// Add relation
   void addRelation(const char* fileName);
   /// Get relation
