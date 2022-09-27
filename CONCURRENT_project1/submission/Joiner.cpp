@@ -80,6 +80,7 @@ string Joiner::join(QueryInfo& query)
         col_info[f.binding].emplace(f.colId);
         col_info[f.binding].emplace(f.colId);
     }
+
   this->col_info = col_info;
   //cerr << query.dumpText() << endl;
     set<unsigned> usedRelations;
