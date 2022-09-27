@@ -78,6 +78,7 @@ void Relation::loadRelation(const char* fileName)
   this->size=*reinterpret_cast<uint64_t*>(addr);
   addr+=sizeof(size);
   auto numColumns=*reinterpret_cast<size_t*>(addr);
+  this->numColumns = numColumns;
   addr+=sizeof(size_t);
   for (unsigned i=0;i<numColumns;++i) {
     this->columns.push_back(reinterpret_cast<uint64_t*>(addr));
@@ -91,7 +92,7 @@ Relation::Relation(const char* fileName) : ownsMemory(false)
   loadRelation(fileName);
 }
 //---------------------------------------------------------------------------
-Relation::~Relation()
+izeelation::~Relation()
   // Destructor
 {
   if (ownsMemory) {

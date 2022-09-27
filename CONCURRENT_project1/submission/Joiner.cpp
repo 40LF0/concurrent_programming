@@ -59,6 +59,16 @@ static QueryGraphProvides analyzeInputOfJoin(set<unsigned>& usedRelations,Select
 string Joiner::join(QueryInfo& query)
   // Executes a join query
 {
+  // relation(table) informations are stored in joiner::relation already.
+  // we can access element relations[relId].columns[colId][cId]
+  // we can get total number of tuple relations[relId].size
+  // we can get numbers of columns relations[relId].numColumns
+
+  // get all column id we will use.
+  // use <PredicateInfo>query.predicates,<FilterInfo>query.filters -> <SelectInfo> relId,binding,colId
+
+
+
   //cerr << query.dumpText() << endl;
   set<unsigned> usedRelations;
 

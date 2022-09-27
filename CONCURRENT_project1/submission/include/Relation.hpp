@@ -15,6 +15,8 @@ class Relation {
   public:
   /// The number of tuples
   uint64_t size;
+  /// The number of columns
+  unsigned int numColumns;
   /// The join column containing the keys
   std::vector<uint64_t*> columns;
 
