@@ -14,6 +14,7 @@ class Joiner {
   public:
   /// The relations that might be joined
   std::vector<Relation> relations;
+
   /// Add relation
   void addRelation(const char* fileName);
   /// Get relation

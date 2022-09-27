@@ -39,12 +39,6 @@ Relation.hpp
 ../../include/Relation.hpp
 Parser.hpp
 ../../include/Parser.hpp
-thread
--
-algorithm
--
-functional
--
 
 ../../include/Parser.hpp
 cstdint

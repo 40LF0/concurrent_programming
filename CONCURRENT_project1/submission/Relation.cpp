@@ -92,7 +92,7 @@ Relation::Relation(const char* fileName) : ownsMemory(false)
   loadRelation(fileName);
 }
 //---------------------------------------------------------------------------
-izeelation::~Relation()
+Relation::~Relation()
   // Destructor
 {
   if (ownsMemory) {

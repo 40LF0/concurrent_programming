@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
    // Preparation phase (not timed)
    // Build histograms, indexes,...
    //
-   int NUM_THREAD_ = std::thread::hardware_concurrency();
    long i = 0;
    while (getline(cin, line)) {
       if (line == "F"){ // End of a batch
@@ -51,8 +50,8 @@ int main(int argc, char* argv[]) {
       pthread_create(&threads[i], 0, ThreadFunc, (void*)i);
       ++i;
 
-      if(i == NUM_THREAD_){
-        for(int j = 0 ; j < NUM_THREAD_ ; ++j){
+      if(i == NUM_THREAD){
+        for(int j = 0 ; j < NUM_THREAD ; ++j){
           pthread_join(threads[j], NULL);
           string& ret =  *(thread_ret[j]);
 	  cout << ret << std::flush;
