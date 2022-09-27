@@ -1,22 +1,22 @@
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_dc6ee/fast"
-/usr/bin/make -f CMakeFiles/cmTC_dc6ee.dir/build.make CMakeFiles/cmTC_dc6ee.dir/build
+Run Build Command:"/usr/bin/make" "cmTC_cca02/fast"
+/usr/bin/make -f CMakeFiles/cmTC_cca02.dir/build.make CMakeFiles/cmTC_cca02.dir/build
 make[1]: Entering directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_dc6ee.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -o CMakeFiles/cmTC_dc6ee.dir/CheckSymbolExists.c.o   -c /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_dc6ee
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dc6ee.dir/link.txt --verbose=1
-/usr/bin/cc      -rdynamic CMakeFiles/cmTC_dc6ee.dir/CheckSymbolExists.c.o  -o cmTC_dc6ee 
-CMakeFiles/cmTC_dc6ee.dir/CheckSymbolExists.c.o: In function `main':
+Building C object CMakeFiles/cmTC_cca02.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_cca02.dir/CheckSymbolExists.c.o   -c /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_cca02
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cca02.dir/link.txt --verbose=1
+/usr/bin/cc      -rdynamic CMakeFiles/cmTC_cca02.dir/CheckSymbolExists.c.o  -o cmTC_cca02 
+CMakeFiles/cmTC_cca02.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_dc6ee.dir/build.make:97: recipe for target 'cmTC_dc6ee' failed
-make[1]: *** [cmTC_dc6ee] Error 1
+CMakeFiles/cmTC_cca02.dir/build.make:97: recipe for target 'cmTC_cca02' failed
+make[1]: *** [cmTC_cca02] Error 1
 make[1]: Leaving directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_dc6ee/fast' failed
-make: *** [cmTC_dc6ee/fast] Error 2
+Makefile:126: recipe for target 'cmTC_cca02/fast' failed
+make: *** [cmTC_cca02/fast] Error 2
 
 File /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
