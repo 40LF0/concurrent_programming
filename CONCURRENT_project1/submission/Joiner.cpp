@@ -66,11 +66,22 @@ string Joiner::join(QueryInfo& query)
 
   // get all column id we will use.
   // use <PredicateInfo>query.predicates,<FilterInfo>query.filters -> <SelectInfo> relId,binding,colId
-
-
-
+  vector<set<unsigned>>  col_info[relations.size()];
+    for (auto& f : query.filters) {
+        SelectInfo& i = f.filterColumn;
+        col_info[i.relId].emplace(i.colId);
+    }
+    for (auto& f : query.predicates) {
+        SelectInfo& i = f.left;
+        col_info[i.relId].emplace(i.colId);
+        i = f.right;
+        col_info[i.relId].emplace(i.colId);
+    }
+  
   //cerr << query.dumpText() << endl;
-  set<unsigned> usedRelations;
+    set<unsigned> usedRelations;
+
+   // we have to reorganize query.predicates before joining process
 
   // We always start with the first join predicate and append the other joins to it (--> left-deep join trees)
   // You might want to choose a smarter join ordering ...
@@ -108,6 +119,7 @@ string Joiner::join(QueryInfo& query)
         break;
     };
   }
+
 
   Checksum checkSum(move(root),query.selections);
   checkSum.run();

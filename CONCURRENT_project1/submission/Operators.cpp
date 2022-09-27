@@ -25,6 +25,7 @@ void Scan::run()
 vector<uint64_t*> Scan::getResults()
   // Get materialized results
 {
+  // return Column we scan
   return resultColumns;
 }
 //---------------------------------------------------------------------------
@@ -114,6 +115,7 @@ bool Join::require(SelectInfo info)
 //---------------------------------------------------------------------------
 void Join::copy2Result(uint64_t leftId,uint64_t rightId)
   // Copy to result
+  // i want this part to copy only used part
 {
   unsigned relColId=0;
   for (unsigned cId=0;cId<copyLeftData.size();++cId)
