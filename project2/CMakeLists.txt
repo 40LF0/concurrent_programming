@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.17)
 
 project(atomic_snap_shot VERSION 1.0.0)
 
-
-
 include(CTest)
 
 # C++ settings
