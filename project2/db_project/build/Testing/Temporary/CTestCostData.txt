@@ -1,0 +1,12 @@
+FileInitTest.HandlesInitialization 21 0.000148811
+FileTest.HandlesPageAllocation 21 0.000116524
+FileTest.CheckReadWriteOperation 21 0.0004619
+FactorialTest.HandlesZeroInput 21 0.00035587
+FactorialTest.HandlesPositiveInput 21 0.000179628
+PrimeTest.HandlesOneInput 21 0.000294378
+PrimeTest.HandlesPositiveInput 21 0.000339539
+VectorTest.HasSameContent 21 0.000204489
+IntVectorTest.HasSameContent 21 0.000182761
+IntVectorTest.IsNotEmptyInitialily 21 0.000109347
+atomic_snapshot_Test.atomic_snap_shot_Initialization 12 1.57578
+---

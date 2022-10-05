@@ -1,0 +1,5 @@
+if(EXISTS "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/test/google_test[1]_tests.cmake")
+  include("/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/test/google_test[1]_tests.cmake")
+else()
+  add_test(google_test_NOT_BUILT google_test_NOT_BUILT)
+endif()

@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/atomic_snap_shot.dir/main.cc.o  -o bin/atomic_snap_shot  lib/libcp.a 
