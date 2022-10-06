@@ -1,25 +1,44 @@
 #include <gtest/gtest.h>
-#include <iostream>
-#include <stdio.h>
-#include <cstddef>
-#include <string>
-#include <pthread.h>
-#include <atomic>
-#include <chrono>
-#include <thread>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
+#include "atomic_snap_shot.h"
 
-/*
-#include "reg.h"
+
 using namespace std::chrono;
 using namespace std::this_thread;
 
-#define NUM_THREADS 100
+// Tests class StampedSnap<int>
+// creating StampedSnap<int> object
+TEST(StampedSnapTest, initalize_test) {
+	int i = 1;
+	long label = 184168514;
+	int snap[10] = {1,5,3,5,6,2,56,23,6,1};
+
+	StampedSnap<int> a(i);
+	StampedSnap<int> b(label,i,snap);
+	StampedSnap<int> c();
+	EXPECT_EQ(a.value,i);
+	EXPECT_EQ(a.stamp,0);
+	EXPECT_TRUE(a.snap==0);
+
+	EXPECT_EQ(b.value,i);
+	EXPECT_EQ(b.stamp,label);
+	for(int i = 0 ; i < 10 : i++){
+		EXPECT_EQ(b.snap[i],snap[i]);
+	}
+
+	EXPECT_EQ(c.value,0);
+	EXPECT_EQ(c.stamp,0);
+	EXPECT_TRUE(c.snap==0);
+
+}
 
 
 
+
+
+
+
+
+/*
 struct argu{
 	long index;
 	WFSnapshot<int>* p;
@@ -40,7 +59,8 @@ void* ThreadFunc(void* arg) {
 	}
 	return (void*)cnt;
 }
-
+*/
+/*
 TEST(atomic_snapshot_Test, atomic_snap_shot_Initialization) {
 	WFSnapshot<int>* wf = new WFSnapshot<int>(NUM_THREADS,1);
 
