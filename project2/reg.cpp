@@ -3,12 +3,10 @@
 #include <cstddef>
 #include <string>
 #include <pthread.h>
-#include <math.h>
 #include <chrono>
-#include <thread>
-#include <atomic>
 #include <stdlib.h>
 #include <string.h>
+#include <atomic>
 /////////////////////////////////////////////////////////
 template<typename T>
 class StampedSnap{
