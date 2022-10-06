@@ -6,9 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/atomic_snapshot_test.cc
-gtest/gtest.h
--
+../cp/include/atomic_snap_shot.h
 iostream
 -
 stdio.h
@@ -19,20 +17,20 @@ string
 -
 pthread.h
 -
-atomic
--
 chrono
--
-thread
--
-unistd.h
 -
 stdlib.h
 -
-signal.h
+string.h
 -
-reg.h
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/reg.h
+atomic
+-
+
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/atomic_snapshot_test.cc
+gtest/gtest.h
+-
+atomic_snap_shot.h
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/atomic_snap_shot.h
 
 _deps/googletest-src/googletest/include/gtest/gtest-death-test.h
 gtest/internal/gtest-death-test-internal.h

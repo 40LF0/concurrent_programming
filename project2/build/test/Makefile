@@ -229,60 +229,6 @@ atomic_snapshot_test.cc.s:
 	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/atomic_snapshot_test.cc.s
 .PHONY : atomic_snapshot_test.cc.s
 
-basic_test.o: basic_test.cc.o
-
-.PHONY : basic_test.o
-
-# target to build an object file
-basic_test.cc.o:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/basic_test.cc.o
-.PHONY : basic_test.cc.o
-
-basic_test.i: basic_test.cc.i
-
-.PHONY : basic_test.i
-
-# target to preprocess a source file
-basic_test.cc.i:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/basic_test.cc.i
-.PHONY : basic_test.cc.i
-
-basic_test.s: basic_test.cc.s
-
-.PHONY : basic_test.s
-
-# target to generate assembly for a file
-basic_test.cc.s:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/basic_test.cc.s
-.PHONY : basic_test.cc.s
-
-file_test.o: file_test.cc.o
-
-.PHONY : file_test.o
-
-# target to build an object file
-file_test.cc.o:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/file_test.cc.o
-.PHONY : file_test.cc.o
-
-file_test.i: file_test.cc.i
-
-.PHONY : file_test.i
-
-# target to preprocess a source file
-file_test.cc.i:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/file_test.cc.i
-.PHONY : file_test.cc.i
-
-file_test.s: file_test.cc.s
-
-.PHONY : file_test.s
-
-# target to generate assembly for a file
-file_test.cc.s:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/google_test.dir/build.make test/CMakeFiles/google_test.dir/file_test.cc.s
-.PHONY : file_test.cc.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -300,12 +246,6 @@ help:
 	@echo "... atomic_snapshot_test.o"
 	@echo "... atomic_snapshot_test.i"
 	@echo "... atomic_snapshot_test.s"
-	@echo "... basic_test.o"
-	@echo "... basic_test.i"
-	@echo "... basic_test.s"
-	@echo "... file_test.o"
-	@echo "... file_test.i"
-	@echo "... file_test.s"
 .PHONY : help
 
 

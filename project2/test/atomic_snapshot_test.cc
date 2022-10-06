@@ -2,36 +2,59 @@
 #include "atomic_snap_shot.h"
 
 
-using namespace std::chrono;
-using namespace std::this_thread;
 
-// Tests class StampedSnap<int>
-// creating StampedSnap<int> object
+
+/// Tests class StampedSnap<int>
+/// creating StampedSnap<int> object
 TEST(StampedSnapTest, initalize_test) {
 	int i = 1;
 	long label = 184168514;
 	int snap[10] = {1,5,3,5,6,2,56,23,6,1};
 
+	// create object 
 	StampedSnap<int> a(i);
 	StampedSnap<int> b(label,i,snap);
-	StampedSnap<int> c();
+	StampedSnap<int> c;
+	
+	// test wheather creating object works as intended
+
 	EXPECT_EQ(a.value,i);
 	EXPECT_EQ(a.stamp,0);
 	EXPECT_TRUE(a.snap==0);
 
 	EXPECT_EQ(b.value,i);
 	EXPECT_EQ(b.stamp,label);
-	for(int i = 0 ; i < 10 : i++){
+	for(int i = 0 ; i < 10 ; i++){
 		EXPECT_EQ(b.snap[i],snap[i]);
 	}
-
-	EXPECT_EQ(c.value,0);
+	//class StampedSnap's template, c's value is not initalized yet
+	//EXPECT_EQ(c.value,0);
+	// we should care about it
 	EXPECT_EQ(c.stamp,0);
 	EXPECT_TRUE(c.snap==0);
 
 }
+/// Tests class WFSnapshot<int>
+/// creating WFSnapshot<int> object
+TEST(WFSnapshotTest, init_test) {
+	int capacity = 10;
+	int init = -1;
 
+	WFSnapshot<int> a(capacity,init);
 
+	// test WFSnapshot class
+	// test update,scan operation in sequence situation
+	for(int i = 0 ; i < capacity ; i++){
+		a.update(i,i);
+		int * arr = a.scan();
+		for(int j = 0 ; j <= i ; j++){
+			EXPECT_EQ(arr[j],j);
+		}	
+		for(int k = i+1 ; k < capacity ; k++){
+			EXPECT_EQ(arr[k],init);
+		}
+	}
+}
 
 
 

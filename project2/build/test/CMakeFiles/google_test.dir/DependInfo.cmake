@@ -5,8 +5,6 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/atomic_snapshot_test.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/test/CMakeFiles/google_test.dir/atomic_snapshot_test.cc.o"
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/basic_test.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/test/CMakeFiles/google_test.dir/basic_test.cc.o"
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/file_test.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/test/CMakeFiles/google_test.dir/file_test.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

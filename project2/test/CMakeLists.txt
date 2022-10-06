@@ -12,8 +12,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 set(DB_TESTS
-  file_test.cc
-  basic_test.cc
+  #file_test.cc
+  #basic_test.cc
   atomic_snapshot_test.cc
   # Add your test files here
   # foo/bar/your_test.cc

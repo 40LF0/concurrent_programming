@@ -102,14 +102,25 @@ T* WFSnapshot<T>::scan(){
 	newcopy = collect();
 	for(int j = 0 ; j  < len ; j ++){
 		if(oldcopy[j]->stamp != newcopy[j]->stamp){
-			if(moved[j]) return oldcopy[j]->snap;
+			if(moved[j]){ 
+				T *sp = oldcopy[j]->snap;
+				for (int j = 0; j < len; j++) {
+					delete oldcopy[j];
+				}
+				delete oldcopy;	
+				for (int j = 0; j < len; j++) {
+					delete newcopy[j];
+				}
+				delete newcopy;	
+				return sp;
+			}
 			else {
 				moved[j] = true;
+				for (int j = 0; j < len; j++) {
+					delete oldcopy[j];
+				}
+				delete oldcopy;			
 				oldcopy = newcopy;
-					for (int j = 0; j < len; j++) {
-							delete oldcopy[j];
-					}
-
 				goto COLLECT;
 			}
 		}
@@ -117,14 +128,19 @@ T* WFSnapshot<T>::scan(){
     
 	for (int j = 0; j < len; j++) {
 		delete oldcopy[j];
-	}   
-	  
-	oldcopy = newcopy;		
+	}
+	delete oldcopy;   
+	  		
 	T* result = new T[len];
 	for(int j = 0 ; j < len ; j ++){
 		result[j] = newcopy[j]->value;
 	} 
-	delete oldcopy;
+
+	for (int j = 0; j < len; j++) {
+		delete newcopy[j];
+	}
+	delete newcopy;	
+
 	return result;
 }
 

@@ -7,6 +7,7 @@ include(CTest)
 # C++ settings
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -16,7 +17,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # Options for libraries
-option(USE_CP "Use the DB library" ON)
+option(USE_CP "Use the CP library" ON)
 option(USE_GOOGLE_TEST "Use GoogleTest for testing" ON)
 
 # DB project library
