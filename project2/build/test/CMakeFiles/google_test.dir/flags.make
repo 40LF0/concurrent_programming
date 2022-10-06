@@ -6,5 +6,5 @@ CXX_FLAGS =   -pthread -std=gnu++1z
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/cp/include -isystem /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/_deps/googletest-src/googletest/include -isystem /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/_deps/googletest-src/googletest 
+CXX_INCLUDES = -I/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/include -isystem /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-src/googletest/include -isystem /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-src/googletest 
 

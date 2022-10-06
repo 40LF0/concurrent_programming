@@ -63,10 +63,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project
+CMAKE_SOURCE_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build
+CMAKE_BINARY_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build
 
 # Utility rule file for ContinuousSubmit.
 
@@ -91,6 +91,6 @@ CMakeFiles/ContinuousSubmit.dir/clean:
 .PHONY : CMakeFiles/ContinuousSubmit.dir/clean
 
 CMakeFiles/ContinuousSubmit.dir/depend:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/CMakeFiles/ContinuousSubmit.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2 /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2 /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/ContinuousSubmit.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/ContinuousSubmit.dir/depend
 

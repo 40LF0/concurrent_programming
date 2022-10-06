@@ -1,4 +1,4 @@
-# Install script for directory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/cp
+# Install script for directory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

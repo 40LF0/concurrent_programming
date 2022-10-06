@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcp.a  CMakeFiles/cp.dir/src/bpt.o CMakeFiles/cp.dir/src/file.o CMakeFiles/cp.dir/src/atomic_snap_shot.o
+/usr/bin/ranlib libcp.a

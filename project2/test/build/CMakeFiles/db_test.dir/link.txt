@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/db_test.dir/file_test.o CMakeFiles/db_test.dir/basic_test.o  -o db_test   -L/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/test/build/lib  -ldb lib/libgtest_main.a lib/libgtest.a -lpthread 

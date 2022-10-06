@@ -1,4 +1,4 @@
-# Install script for directory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project
+# Install script for directory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,12 +39,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/cp/cmake_install.cmake")
+  include("/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/cp/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/test/cmake_install.cmake")
+  include("/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/test/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -55,5 +55,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

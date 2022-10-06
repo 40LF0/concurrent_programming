@@ -4,8 +4,8 @@
 
 
 # Configuration directories and files
-SourceDirectory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project
-BuildDirectory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build
+SourceDirectory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2
+BuildDirectory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build
 
 # Where to place the cost data store
 CostDataFile: 
@@ -26,7 +26,7 @@ SubmitURL: http://
 NightlyStartTime: 00:00:00 EDT
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "/usr/local/bin/cmake" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project"
+ConfigureCommand: "/usr/local/bin/cmake" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2"
 MakeCommand: /usr/local/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}"
 DefaultCTestConfigurationType: Release
 

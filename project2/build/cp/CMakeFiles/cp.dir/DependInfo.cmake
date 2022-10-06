@@ -4,8 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/cp/src/bpt.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/cp/CMakeFiles/cp.dir/src/bpt.cc.o"
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/cp/src/file.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/cp/CMakeFiles/cp.dir/src/file.cc.o"
+  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/atomic_snap_shot.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/cp/CMakeFiles/cp.dir/src/atomic_snap_shot.cc.o"
+  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/bpt.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/cp/CMakeFiles/cp.dir/src/bpt.cc.o"
+  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/file.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/cp/CMakeFiles/cp.dir/src/file.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -6,23 +6,7 @@
 
 #IncludeRegexTransform: 
 
-../cp/include/file.h
-stdint.h
--
-
-../cp/include/reg.h
-iostream
--
-stdio.h
--
-cstddef
--
-string
--
-
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/test/atomic_snapshot_test.cc
-reg.h
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/test/reg.h
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/atomic_snapshot_test.cc
 gtest/gtest.h
 -
 iostream
@@ -47,22 +31,8 @@ stdlib.h
 -
 signal.h
 -
-
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/test/basic_test.cc
-gtest/gtest.h
--
-cmath
--
-vector
--
-
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/test/file_test.cc
-file.h
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/test/file.h
-gtest/gtest.h
--
-string
--
+reg.h
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/reg.h
 
 _deps/googletest-src/googletest/include/gtest/gtest-death-test.h
 gtest/internal/gtest-death-test-internal.h

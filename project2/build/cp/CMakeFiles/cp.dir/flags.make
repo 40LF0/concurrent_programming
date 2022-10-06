@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++1z
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/cp/include 
+CXX_INCLUDES = -I/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/include 
 

@@ -1,4 +1,3 @@
-#include "reg.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include <stdio.h>
@@ -12,6 +11,8 @@
 #include <stdlib.h>
 #include <signal.h>
 
+/*
+#include "reg.h"
 using namespace std::chrono;
 using namespace std::this_thread;
 
@@ -78,3 +79,5 @@ TEST(atomic_snapshot_Test, atomic_snap_shot_Initialization) {
 	
 	
 }
+
+*/

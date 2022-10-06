@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../db/include/bpt.h
+stdio.h
+-
+stdlib.h
+-
+stdbool.h
+-
+iostream
+-
+cstddef
+-
+string
+-
+
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/lab04/db_project/main.cc
+bpt.h
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/lab04/db_project/bpt.h
+iostream
+-
+stdio.h
+-
+cstddef
+-
+string
+-
+pthread.h
+-
+chrono
+-
+stdlib.h
+-
+string.h
+-
+atomic
+-
+

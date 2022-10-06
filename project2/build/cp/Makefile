@@ -68,10 +68,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project
+CMAKE_SOURCE_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build
+CMAKE_BINARY_DIR = /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -157,14 +157,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/CMakeFiles /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/cp/CMakeFiles/progress.marks
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build/CMakeFiles 0
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/cp/CMakeFiles/progress.marks
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/clean
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/clean
 .PHONY : clean
 
 # The main clean target
@@ -174,22 +174,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/preinstall
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/preinstall
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 cp/CMakeFiles/cp.dir/rule:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/CMakeFiles/cp.dir/rule
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cp/CMakeFiles/cp.dir/rule
 .PHONY : cp/CMakeFiles/cp.dir/rule
 
 # Convenience name for target.
@@ -199,8 +199,35 @@ cp: cp/CMakeFiles/cp.dir/rule
 
 # fast build rule for target.
 cp/fast:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/build
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/build
 .PHONY : cp/fast
+
+src/atomic_snap_shot.o: src/atomic_snap_shot.cc.o
+
+.PHONY : src/atomic_snap_shot.o
+
+# target to build an object file
+src/atomic_snap_shot.cc.o:
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/atomic_snap_shot.cc.o
+.PHONY : src/atomic_snap_shot.cc.o
+
+src/atomic_snap_shot.i: src/atomic_snap_shot.cc.i
+
+.PHONY : src/atomic_snap_shot.i
+
+# target to preprocess a source file
+src/atomic_snap_shot.cc.i:
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/atomic_snap_shot.cc.i
+.PHONY : src/atomic_snap_shot.cc.i
+
+src/atomic_snap_shot.s: src/atomic_snap_shot.cc.s
+
+.PHONY : src/atomic_snap_shot.s
+
+# target to generate assembly for a file
+src/atomic_snap_shot.cc.s:
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/atomic_snap_shot.cc.s
+.PHONY : src/atomic_snap_shot.cc.s
 
 src/bpt.o: src/bpt.cc.o
 
@@ -208,7 +235,7 @@ src/bpt.o: src/bpt.cc.o
 
 # target to build an object file
 src/bpt.cc.o:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/bpt.cc.o
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/bpt.cc.o
 .PHONY : src/bpt.cc.o
 
 src/bpt.i: src/bpt.cc.i
@@ -217,7 +244,7 @@ src/bpt.i: src/bpt.cc.i
 
 # target to preprocess a source file
 src/bpt.cc.i:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/bpt.cc.i
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/bpt.cc.i
 .PHONY : src/bpt.cc.i
 
 src/bpt.s: src/bpt.cc.s
@@ -226,7 +253,7 @@ src/bpt.s: src/bpt.cc.s
 
 # target to generate assembly for a file
 src/bpt.cc.s:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/bpt.cc.s
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/bpt.cc.s
 .PHONY : src/bpt.cc.s
 
 src/file.o: src/file.cc.o
@@ -235,7 +262,7 @@ src/file.o: src/file.cc.o
 
 # target to build an object file
 src/file.cc.o:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/file.cc.o
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/file.cc.o
 .PHONY : src/file.cc.o
 
 src/file.i: src/file.cc.i
@@ -244,7 +271,7 @@ src/file.i: src/file.cc.i
 
 # target to preprocess a source file
 src/file.cc.i:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/file.cc.i
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/file.cc.i
 .PHONY : src/file.cc.i
 
 src/file.s: src/file.cc.s
@@ -253,7 +280,7 @@ src/file.s: src/file.cc.s
 
 # target to generate assembly for a file
 src/file.cc.s:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/file.cc.s
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(MAKE) $(MAKESILENT) -f cp/CMakeFiles/cp.dir/build.make cp/CMakeFiles/cp.dir/src/file.cc.s
 .PHONY : src/file.cc.s
 
 # Help Target
@@ -270,6 +297,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... cp"
+	@echo "... src/atomic_snap_shot.o"
+	@echo "... src/atomic_snap_shot.i"
+	@echo "... src/atomic_snap_shot.s"
 	@echo "... src/bpt.o"
 	@echo "... src/bpt.i"
 	@echo "... src/bpt.s"
@@ -287,6 +317,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/db_project/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
