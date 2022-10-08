@@ -16,8 +16,9 @@ class StampedSnap{
 	long stamp;
 	T value;
 	T *snap;
+	int len;
 	StampedSnap(T val);
-	StampedSnap(long label,T val,T* snp);
+	StampedSnap(long label,T val,T* snp,int leng);
 	StampedSnap();
 	~StampedSnap();
 };
@@ -44,13 +45,19 @@ StampedSnap<T>::StampedSnap(T val){
 	stamp =0;
 	value = val;
 	snap = 0;
+	len = 0;
 }
 
 template<typename T>
-StampedSnap<T>::StampedSnap(long label,T val,T* snp){
+StampedSnap<T>::StampedSnap(long label,T val,T* snp,int leng){
 	stamp = label;
 	value = val;
-	snap = snp;
+	len = leng;
+	snap = new T[len];
+	for(int i = 0 ; i < len ; i++){
+		snap[i] = snp[i]
+	}
+	
 }
 
 template<typename T>
@@ -89,7 +96,7 @@ void WFSnapshot<T>::update(T value,int thread_id){
 	int id = thread_id;
 	T* snap = scan();
 	StampedSnap<T>* oldVal = a_table[id];
-	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap);
+	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap,len);
 	///-> use preallocated datastructure;
 	delete oldVal;
 	a_table[id] = newVal;
@@ -99,7 +106,7 @@ template<typename T>
 StampedSnap<T>** WFSnapshot<T>::collect(){
 	StampedSnap<T>** copy =(StampedSnap<T>**) new StampedSnap<T>*[len];
 	for (int j = 0; j < len; j++) {
-		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap);  
+		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap,len);  
 	}
 	return copy;
 }	
