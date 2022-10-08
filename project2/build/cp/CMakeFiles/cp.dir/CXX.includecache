@@ -26,27 +26,7 @@ string.h
 atomic
 -
 
-../cp/include/bpt.h
-stdio.h
--
-stdlib.h
--
-stdbool.h
--
-
-../cp/include/file.h
-stdint.h
--
-
 /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/atomic_snap_shot.cc
 atomic_snap_shot.h
 /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/atomic_snap_shot.h
-
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/bpt.cc
-bpt.h
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/bpt.h
-
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/file.cc
-file.h
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/src/file.h
 

@@ -46,7 +46,7 @@ TEST(WFSnapshotTest, init_test) {
 	// test update,scan operation in sequence situation
 	for(int i = 0 ; i < capacity ; i++){
 		a.update(i,i);
-		int * arr = a.scan();
+		int * arr = a.scan(i);
 		for(int j = 0 ; j <= i ; j++){
 			EXPECT_EQ(arr[j],j);
 		}	
