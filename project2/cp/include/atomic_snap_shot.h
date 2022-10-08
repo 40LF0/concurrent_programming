@@ -28,14 +28,19 @@ class WFSnapshot {
 	private:
 	StampedSnap<T>** a_table;
 	int len;
-	StampedSnap<T>** collect();	
-	
+	StampedSnap<T>** collect(int thread_id,int index);	
+
+	StampedSnap<T>**** buffercopy;
+	StampedSnap<T>*** buffercopy1 = buffercopy[0];
+	StampedSnap<T>*** buffercopy2 = buffercopy[1];
+	StampedSnap<T>*** buffercopy3 = buffercopy[2];
+	T** arr_buf;
 
 	public:
 	WFSnapshot(int capacity, T init);
 	~WFSnapshot();
 	void update(T value,int thread_id);
-	T* scan();
+	T* scan(int thread_id);
 
 };
 
@@ -60,7 +65,6 @@ StampedSnap<T>::StampedSnap(long label,T val,T* snp,int leng){
 	for(int i = 0 ; i < len ; i++){
 		snap[i] = snp[i];
 	}
-	
 }
 
 template<typename T>
@@ -80,16 +84,33 @@ template<typename T>
 WFSnapshot<T>::WFSnapshot(int capacity, T init) {
 	a_table = (StampedSnap<T>**) new StampedSnap<T>*[capacity];
 	this->len = capacity;
+	buffercopy = new StampedSnap<T>***[3];
+	buffercopy1 = new StampedSnap<T>**[capacity];
+	buffercopy2 = new StampedSnap<T>**[capacity];
+	buffercopy3 = new StampedSnap<T>**[capacity];
 	for (int i = 0; i < capacity; i++) {
 		a_table[i] = new StampedSnap<T>(init,capacity); 
+		buffercopy1[i] = new StampedSnap<T>(init,capacity);
+		buffercopy2[i] = new StampedSnap<T>(init,capacity);
+		buffercopy3[i] = new StampedSnap<T>(init,capacity);
 	}
+
+
 }
 
 template<typename T>
 WFSnapshot<T>::~WFSnapshot() {
 	for (int i = 0; i < this->len; i++) {
 		delete a_table[i]; 
+		delete buffercopy1[i];
+		delete buffercopy2[i];
+		delete buffercopy3[i] 
 	}
+	delete[] buffercopy1;
+	delete[] buffercopy2;
+	delete[] buffercopy3;
+	delete[] buffercopy;
+
 	delete[] a_table;
 
 }
@@ -98,90 +119,62 @@ template<typename T>
 void WFSnapshot<T>::update(T value,int thread_id){
 	//printf("u v:%d t:%d\n");
 	int id = thread_id;
-	T* snap = scan();
+	T* snap = scan(thread_id);
 	StampedSnap<T>* oldVal = a_table[id];
 	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap,len);
+	a_table[id] = newVal;
 	///-> use preallocated datastructure;
 	delete oldVal;
-	a_table[id] = newVal;
-	delete[] snap;
 }
 
 template<typename T>
-StampedSnap<T>** WFSnapshot<T>::collect(){
-	StampedSnap<T>** copy =(StampedSnap<T>**) new StampedSnap<T>*[len];
+void WFSnapshot<T>::collect(int thread_id,int index){
+	StampedSnap<T>** copy = buffercopy[index][thread_id];
 	for (int j = 0; j < len; j++) {
-		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap,this->len);  
+		copy[j]->stamp = a_table[j]->stamp;
+		copy[j]->value = a_table[j]->value;
+		for(int i = 0 ; i < len ; i ++){
+			copy[j]->snap[i] = a_table[j]->snap[i];
+		}
+		copy[j]->len = a_table[j]->len;
 	}
-	return copy;
 }	
 
 template<typename T>
-T* WFSnapshot<T>::scan(){
-	StampedSnap<T>** oldcopy;
-	StampedSnap<T>** newcopy;
-	bool *moved = new bool[len];
+T* WFSnapshot<T>::scan(int thread_id){
+	StampedSnap<T>** copy1 = buffercopy1[thread_id];
+	StampedSnap<T>** copy2 = buffercopy2[thread_id];
+	StampedSnap<T>** copy3 = buffercopy3[thread_id];
+	T* result = arr_buf[thread_id];
+
+	collect(thread_id,0);
+
+	collect(thread_id,1);
 
 	for(int j = 0 ; j  < len ; j ++){
-		moved[j] = false;
-	}
-
-	oldcopy = collect();
-
-	COLLECT:
-	newcopy = collect();
-	for(int j = 0 ; j  < len ; j ++){
-		if(oldcopy[j]->stamp != newcopy[j]->stamp){
-			if(moved[j]){ 
-				T* result = new T[len];
-				for(int j = 0 ; j < len ; j ++){
-					result[j] = oldcopy[j]->value;
-				} 
-				for (int j = 0; j < len; j++) {
-					delete oldcopy[j];
-				}
-				delete[] oldcopy;	
-
-				for (int j = 0; j < len; j++) {
-					delete newcopy[j];
-				}
-				delete[] newcopy;
-
-				delete[] moved;
-				return result;
-			}
-			else {
-				moved[j] = true;
-
-				for (int j = 0; j < len; j++) {
-					delete oldcopy[j];
-				}
-				delete[] oldcopy;	
-				
-				oldcopy = newcopy;
-				goto COLLECT;
-			}
+		if(copy1[j]->stamp != copy2[j]->stamp){
+			goto COLLECT;
 		}
 	}	
-    
-	for (int j = 0; j < len; j++) {
-		delete oldcopy[j];
-	}
-	delete[] oldcopy;   
-	  		
-	T* result = new T[len];
+
 	for(int j = 0 ; j < len ; j ++){
-		result[j] = newcopy[j]->value;
+		result[j] = copy2[j]->value;
 	} 
-
-	for (int j = 0; j < len; j++) {
-		delete newcopy[j];
-	}
-	delete[] newcopy;	
-
-	delete[] moved;
-
 	return result;
+	
+	COLLECT:
+	collect(thread_id,2);
+	for(int j = 0 ; j  < len ; j ++){
+		if(copy2[j]->stamp != copy3[j]->stamp){
+			return copy2[j]->snap;
+		}
+	}
+
+	for(int j = 0 ; j < len ; j ++){
+		result[j] = copy2[j]->value;
+	} 
+	return result;
+
 }
 
 
