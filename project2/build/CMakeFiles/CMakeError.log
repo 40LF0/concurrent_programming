@@ -1,25 +1,25 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make cmTC_8e337/fast && /usr/bin/make  -f CMakeFiles/cmTC_8e337.dir/build.make CMakeFiles/cmTC_8e337.dir/build
+Run Build Command(s):/usr/bin/make cmTC_0daaa/fast && /usr/bin/make  -f CMakeFiles/cmTC_0daaa.dir/build.make CMakeFiles/cmTC_0daaa.dir/build
 make[1]: Entering directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_8e337.dir/src.c.o
-/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_8e337.dir/src.c.o   -c /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_8e337
-/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8e337.dir/link.txt --verbose=1
-/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_8e337.dir/src.c.o  -o cmTC_8e337 
-CMakeFiles/cmTC_8e337.dir/src.c.o: In function `main':
+Building C object CMakeFiles/cmTC_0daaa.dir/src.c.o
+/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_0daaa.dir/src.c.o   -c /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_0daaa
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0daaa.dir/link.txt --verbose=1
+/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_0daaa.dir/src.c.o  -o cmTC_0daaa 
+CMakeFiles/cmTC_0daaa.dir/src.c.o: In function `main':
 src.c:(.text+0x3e): undefined reference to `pthread_create'
 src.c:(.text+0x4a): undefined reference to `pthread_detach'
 src.c:(.text+0x56): undefined reference to `pthread_cancel'
 src.c:(.text+0x67): undefined reference to `pthread_join'
 src.c:(.text+0x7b): undefined reference to `pthread_atfork'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_8e337.dir/build.make:106: recipe for target 'cmTC_8e337' failed
-make[1]: *** [cmTC_8e337] Error 1
+CMakeFiles/cmTC_0daaa.dir/build.make:106: recipe for target 'cmTC_0daaa' failed
+make[1]: *** [cmTC_0daaa] Error 1
 make[1]: Leaving directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp'
-Makefile:141: recipe for target 'cmTC_8e337/fast' failed
-make: *** [cmTC_8e337/fast] Error 2
+Makefile:141: recipe for target 'cmTC_0daaa/fast' failed
+make: *** [cmTC_0daaa/fast] Error 2
 
 
 Source file was:
