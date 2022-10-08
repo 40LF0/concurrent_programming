@@ -100,6 +100,7 @@ void WFSnapshot<T>::update(T value,int thread_id){
 	///-> use preallocated datastructure;
 	delete oldVal;
 	a_table[id] = newVal;
+	delete[] snap;
 }
 
 template<typename T>
