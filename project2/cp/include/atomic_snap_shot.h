@@ -86,8 +86,9 @@ void WFSnapshot<T>::update(T value,int thread_id){
 	StampedSnap<T>* oldVal = a_table[id];
 	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap);
 	///-> use preallocated datastructure;
-	delete[] oldVal;
+	delete oldVal;
 	a_table[id] = newVal;
+	delete[] snap;
 }
 
 template<typename T>
