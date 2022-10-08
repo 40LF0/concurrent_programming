@@ -19,6 +19,7 @@ class StampedSnap{
 	StampedSnap(T val);
 	StampedSnap(long label,T val,T* snp);
 	StampedSnap();
+	~StampedSnap();
 };
 
 template<typename T>
@@ -57,6 +58,10 @@ StampedSnap<T>::StampedSnap(){
 	stamp = 0;
 	snap = 0;
 }
+template<typename T>
+StampedSnap<T>::~StampedSnap(){
+	delete[] snap;
+}
 
 
 
@@ -88,7 +93,6 @@ void WFSnapshot<T>::update(T value,int thread_id){
 	///-> use preallocated datastructure;
 	delete oldVal;
 	a_table[id] = newVal;
-	delete[] snap;
 }
 
 template<typename T>
@@ -119,7 +123,7 @@ T* WFSnapshot<T>::scan(){
 			if(moved[j]){ 
 				T* result = new T[len];
 				for(int j = 0 ; j < len ; j ++){
-					result[j] = newcopy[j]->snap->value;
+					result[j] = oldcopy[j]->snap->value;
 				} 
 				for (int j = 0; j < len; j++) {
 					delete oldcopy[j];
