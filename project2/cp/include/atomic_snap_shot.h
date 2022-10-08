@@ -147,10 +147,12 @@ T* WFSnapshot<T>::scan(){
 			}
 			else {
 				moved[j] = true;
+
 				for (int j = 0; j < len; j++) {
 					delete oldcopy[j];
 				}
-				delete oldcopy;			
+				delete[] oldcopy;	
+				
 				oldcopy = newcopy;
 				goto COLLECT;
 			}
