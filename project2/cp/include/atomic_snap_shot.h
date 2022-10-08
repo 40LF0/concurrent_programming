@@ -17,7 +17,7 @@ class StampedSnap{
 	T value;
 	T *snap;
 	int len;
-	StampedSnap(T val);
+	StampedSnap(T val,int leng);
 	StampedSnap(long label,T val,T* snp,int leng);
 	StampedSnap();
 	~StampedSnap();
@@ -41,11 +41,14 @@ class WFSnapshot {
 
 
 template<typename T>
-StampedSnap<T>::StampedSnap(T val){
+StampedSnap<T>::StampedSnap(T val,int leng){
 	stamp =0;
 	value = val;
-	snap = 0;
-	len = 0;
+	len = leng;
+	snap = new T[len];
+	for(int i = 0 ; i < len ; i++){
+		snap[i] = val;
+	}
 }
 
 template<typename T>
@@ -55,7 +58,7 @@ StampedSnap<T>::StampedSnap(long label,T val,T* snp,int leng){
 	len = leng;
 	snap = new T[len];
 	for(int i = 0 ; i < len ; i++){
-		snap[i] = snp[i]
+		snap[i] = snp[i];
 	}
 	
 }
@@ -64,6 +67,7 @@ template<typename T>
 StampedSnap<T>::StampedSnap(){
 	stamp = 0;
 	snap = 0;
+	len = 0;
 }
 template<typename T>
 StampedSnap<T>::~StampedSnap(){
@@ -77,7 +81,7 @@ WFSnapshot<T>::WFSnapshot(int capacity, T init) {
 	a_table = (StampedSnap<T>**) new StampedSnap<T>*[capacity];
 	this->len = capacity;
 	for (int i = 0; i < capacity; i++) {
-		a_table[i] = new StampedSnap<T>(init); 
+		a_table[i] = new StampedSnap<T>(init,capacity); 
 	}
 }
 
@@ -107,7 +111,7 @@ template<typename T>
 StampedSnap<T>** WFSnapshot<T>::collect(){
 	StampedSnap<T>** copy =(StampedSnap<T>**) new StampedSnap<T>*[len];
 	for (int j = 0; j < len; j++) {
-		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap,len);  
+		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap,this->len);  
 	}
 	return copy;
 }	
@@ -131,7 +135,7 @@ T* WFSnapshot<T>::scan(){
 			if(moved[j]){ 
 				T* result = new T[len];
 				for(int j = 0 ; j < len ; j ++){
-					result[j] = oldcopy[j]->snap->value;
+					result[j] = oldcopy[j]->value;
 				} 
 				for (int j = 0; j < len; j++) {
 					delete oldcopy[j];
@@ -179,4 +183,5 @@ T* WFSnapshot<T>::scan(){
 
 	return result;
 }
+
 

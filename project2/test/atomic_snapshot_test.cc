@@ -12,15 +12,16 @@ TEST(StampedSnapTest, initalize_test) {
 	int snap[10] = {1,5,3,5,6,2,56,23,6,1};
 
 	// create object 
-	StampedSnap<int> a(i);
-	StampedSnap<int> b(label,i,snap);
+	StampedSnap<int> a(i,10);
+	StampedSnap<int> b(label,i,snap,10);
 	StampedSnap<int> c;
 	
 	// test wheather creating object works as intended
 
 	EXPECT_EQ(a.value,i);
-	EXPECT_EQ(a.stamp,0);
-	EXPECT_TRUE(a.snap==0);
+	for(int j = 0 ; j < 10 ; j++){
+		EXPECT_EQ(a.snap[j],i);
+	}
 
 	EXPECT_EQ(b.value,i);
 	EXPECT_EQ(b.stamp,label);
@@ -41,7 +42,6 @@ TEST(WFSnapshotTest, init_test) {
 	int init = -1;
 
 	WFSnapshot<int> a(capacity,init);
-
 	// test WFSnapshot class
 	// test update,scan operation in sequence situation
 	for(int i = 0 ; i < capacity ; i++){

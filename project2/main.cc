@@ -3,7 +3,7 @@
 using namespace std::chrono;
 
 struct argu{
-	long index;
+	int index;
 	WFSnapshot<int>* p;
 };
 
@@ -44,19 +44,21 @@ int main(int argc,char** argv) {
 	WFSnapshot<int>* wf = new WFSnapshot<int>(NUM_THREAD,1);
 	thread_ret = new long[NUM_THREAD];
         // Create threads to work
+	struct argu** arg; 
+	arg = (struct argu**) new argu[NUM_THREAD];
   for (long i = 0; i < NUM_THREAD; i++) {
-    struct argu* arg = new argu;
-    arg-> index = i;
-    arg-> p = wf; 
+    arg[i] = new argu;
+    arg[i]-> index = i;
+    arg[i]-> p = wf; 
 
 		
 
 
-		if (pthread_create(&threads[i], 0, ThreadFunc, (void*)arg) < 0) {
+		if (pthread_create(&threads[i], 0, ThreadFunc, (void*)arg[i]) < 0) {
       printf("pthread_create error!\n");
         return 0;
     }
-		
+	
   }
 
 
@@ -68,7 +70,8 @@ int main(int argc,char** argv) {
     cnt += thread_ret[i];
   }
   printf("total updates %ld\n",cnt);
-  
+  delete wf;
+  delete[] thread_ret;
 
   return 0;
 }
