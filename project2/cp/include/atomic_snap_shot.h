@@ -74,7 +74,7 @@ WFSnapshot<T>::~WFSnapshot() {
 	for (int i = 0; i < this->len; i++) {
 		delete a_table[i]; 
 	}
-	delete a_table;
+	delete[] a_table;
 
 }
 	
@@ -86,7 +86,7 @@ void WFSnapshot<T>::update(T value,int thread_id){
 	StampedSnap<T>* oldVal = a_table[id];
 	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap);
 	///-> use preallocated datastructure;
-	delete oldVal;
+	delete[] oldVal;
 	a_table[id] = newVal;
 }
 
@@ -121,12 +121,12 @@ T* WFSnapshot<T>::scan(){
 				for (int j = 0; j < len; j++) {
 					delete oldcopy[j];
 				}
-				delete oldcopy;	
+				delete[] oldcopy;	
 
 				for (int j = 0; j < len; j++) {
 					delete newcopy[j];
 				}
-				delete newcopy;
+				delete[] newcopy;
 
 				delete[] moved;
 				return sp;
@@ -146,7 +146,7 @@ T* WFSnapshot<T>::scan(){
 	for (int j = 0; j < len; j++) {
 		delete oldcopy[j];
 	}
-	delete oldcopy;   
+	delete[] oldcopy;   
 	  		
 	T* result = new T[len];
 	for(int j = 0 ; j < len ; j ++){
@@ -156,7 +156,7 @@ T* WFSnapshot<T>::scan(){
 	for (int j = 0; j < len; j++) {
 		delete newcopy[j];
 	}
-	delete newcopy;	
+	delete[] newcopy;	
 
 	delete[] moved;
 
