@@ -31,6 +31,7 @@ class WFSnapshot {
 
 	public:
 	WFSnapshot(int capacity, T init);
+	~WFSnapshot();
 	void update(T value,int thread_id);
 	T* scan();
 
@@ -57,14 +58,7 @@ StampedSnap<T>::StampedSnap(){
 	snap = 0;
 }
 
-template<typename T>
-StampedSnap<T>** WFSnapshot<T>::collect(){
-	StampedSnap<T>** copy =(StampedSnap<T>**) new StampedSnap<T>*[len];
-	for (int j = 0; j < len; j++) {
-		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap);  
-	}
-	return copy;
-}	
+
 
 template<typename T>
 WFSnapshot<T>::WFSnapshot(int capacity, T init) {
@@ -74,6 +68,15 @@ WFSnapshot<T>::WFSnapshot(int capacity, T init) {
 		a_table[i] = new StampedSnap<T>(init); 
 	}
 }
+
+template<typename T>
+WFSnapshot<T>::~WFSnapshot() {
+	for (int i = 0; i < this->len; i++) {
+		delete a_table[i]; 
+	}
+	delete a_table;
+
+}
 	
 template<typename T>
 void WFSnapshot<T>::update(T value,int thread_id){
@@ -82,9 +85,19 @@ void WFSnapshot<T>::update(T value,int thread_id){
 	T* snap = scan();
 	StampedSnap<T>* oldVal = a_table[id];
 	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap);
+	///-> use preallocated datastructure;
 	delete oldVal;
 	a_table[id] = newVal;
 }
+
+template<typename T>
+StampedSnap<T>** WFSnapshot<T>::collect(){
+	StampedSnap<T>** copy =(StampedSnap<T>**) new StampedSnap<T>*[len];
+	for (int j = 0; j < len; j++) {
+		copy[j] = new StampedSnap<T>(a_table[j]->stamp,a_table[j]->value,a_table[j]->snap);  
+	}
+	return copy;
+}	
 
 template<typename T>
 T* WFSnapshot<T>::scan(){
@@ -104,14 +117,18 @@ T* WFSnapshot<T>::scan(){
 		if(oldcopy[j]->stamp != newcopy[j]->stamp){
 			if(moved[j]){ 
 				T *sp = oldcopy[j]->snap;
+
 				for (int j = 0; j < len; j++) {
 					delete oldcopy[j];
 				}
 				delete oldcopy;	
+
 				for (int j = 0; j < len; j++) {
 					delete newcopy[j];
 				}
-				delete newcopy;	
+				delete newcopy;
+
+				delete moved;
 				return sp;
 			}
 			else {
@@ -140,6 +157,8 @@ T* WFSnapshot<T>::scan(){
 		delete newcopy[j];
 	}
 	delete newcopy;	
+
+	delete moved;
 
 	return result;
 }
