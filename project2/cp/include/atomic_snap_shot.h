@@ -128,7 +128,7 @@ T* WFSnapshot<T>::scan(){
 				}
 				delete newcopy;
 
-				delete moved;
+				delete[] moved;
 				return sp;
 			}
 			else {
@@ -158,7 +158,7 @@ T* WFSnapshot<T>::scan(){
 	}
 	delete newcopy;	
 
-	delete moved;
+	delete[] moved;
 
 	return result;
 }
