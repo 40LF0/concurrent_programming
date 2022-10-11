@@ -159,7 +159,17 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 		copy[j]->stamp = a_table[j]->stamp;
 		copy[j]->value = a_table[j]->value;
 		for(int i = 0 ; i < len ; i ++){
-			copy[j]->snap[i] = a_table[j]->snap[i];
+			//copy[j]->snap[i] = a_table[j]->snap[i]; // problem
+			//T value = a_table[j]->snap[i]; // problem
+			GO :
+			T* p = &a_table[j]->snap[i];
+			if((uint64_t)p <= 0xFF){
+				pthread_yield();
+				//printf("error\n");
+				goto GO;
+			}
+			T value = *p; //problem -> sometimes
+			copy[j]->snap[i] = value;
 		}
 		copy[j]->len = a_table[j]->len;
 	}
@@ -190,24 +200,64 @@ T* WFSnapshot<T>::scan(int thread_id){
 	for(int j = 0 ; j < len ; j ++){
 		result[j] = copy2[j]->value;
 	} 
+	delete[] b_table;
 	return result;
 	
-	int flag = 2;
 
 	COLLECT:
-	collect(thread_id,(flag%3));
+	collect(thread_id,2);
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy2[j]->stamp != copy3[j]->stamp){
-			if(b_table[j] == true)
+			if(b_table[j] == true){
+				delete[] b_table;
 				return copy2[j]->snap;
+			}
 			else{
 				b_table[j] = true;
-				flag++;
-				StampedSnap<T>** tmp;
-				tmp = copy1;
-				copy1 = copy2;
-				copy2 = copy3;
-				copy3 = copy1;
+				goto COLLECT2;
+
+			}
+		}
+	}
+
+	for(int j = 0 ; j < len ; j ++){
+		result[j] = copy3[j]->value;
+	} 
+	delete[] b_table;
+	return result;
+
+	COLLECT2:
+	collect(thread_id,0);
+	for(int j = 0 ; j  < len ; j ++){
+		if(copy3[j]->stamp != copy1[j]->stamp){
+			if(b_table[j] == true){
+				delete[] b_table;
+				return copy3[j]->snap;
+			}
+			else{
+				b_table[j] = true;
+				goto COLLECT3;
+
+			}
+		}
+	}
+
+	for(int j = 0 ; j < len ; j ++){
+		result[j] = copy1[j]->value;
+	} 
+	delete[] b_table;
+	return result;
+
+	COLLECT3:
+	collect(thread_id,1);
+	for(int j = 0 ; j  < len ; j ++){
+		if(copy1[j]->stamp != copy2[j]->stamp){
+			if(b_table[j] == true){
+				delete[] b_table;
+				return copy1[j]->snap;
+			}
+			else{
+				b_table[j] = true;
 				goto COLLECT;
 
 			}
@@ -217,8 +267,8 @@ T* WFSnapshot<T>::scan(int thread_id){
 	for(int j = 0 ; j < len ; j ++){
 		result[j] = copy2[j]->value;
 	} 
+	delete[] b_table;
 	return result;
-
 }
 
 
