@@ -174,6 +174,13 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 		copy[j]->len = a_table[j]->len;
 	}
 }	
+/*
+int *p;
+std::cout << p << std::endl; -> 0x56
+p = new int(5);              
+std::cout << p << std::endl; -> 0x505338
+pointer value is less than 0xff means, intialize operation of pointer is not performed yet.
+*/
 
 template<typename T>
 T* WFSnapshot<T>::scan(int thread_id){
