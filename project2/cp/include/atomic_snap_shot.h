@@ -3,10 +3,10 @@
 #include <cstddef>
 #include <string>
 #include <pthread.h>
-#include <chrono>
+#include <chrono>    /// to measure time
 #include <stdlib.h>
 #include <string.h>
-#include <atomic>
+#include <atomic>    /// for main function to count updating.
 
 
 
@@ -35,6 +35,7 @@ class WFSnapshot {
 	StampedSnap<T>*** buffercopy2;
 	StampedSnap<T>*** buffercopy3;
 	T** arr_buf;
+
 
 	public:
 	WFSnapshot(int capacity, T init);
@@ -171,12 +172,17 @@ T* WFSnapshot<T>::scan(int thread_id){
 	StampedSnap<T>** copy3 = buffercopy3[thread_id];
 	T* result = arr_buf[thread_id];
 
+	bool* b_table = new bool[len]();
+	
+
+
 	collect(thread_id,0);
 
 	collect(thread_id,1);
 
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy1[j]->stamp != copy2[j]->stamp){
+			b_table[j] = true;
 			goto COLLECT;
 		}
 	}	
@@ -186,11 +192,25 @@ T* WFSnapshot<T>::scan(int thread_id){
 	} 
 	return result;
 	
+	int flag = 2;
+
 	COLLECT:
-	collect(thread_id,2);
+	collect(thread_id,(flag%3));
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy2[j]->stamp != copy3[j]->stamp){
-			return copy2[j]->snap;
+			if(b_table[j] == true)
+				return copy2[j]->snap;
+			else{
+				b_table[j] = true;
+				flag++;
+				StampedSnap<T>** tmp;
+				tmp = copy1;
+				copy1 = copy2;
+				copy2 = copy3;
+				copy3 = copy1;
+				goto COLLECT;
+
+			}
 		}
 	}
 
