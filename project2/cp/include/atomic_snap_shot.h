@@ -15,10 +15,10 @@ class StampedSnap{
 	public:
 	long stamp;
 	T value;
-	T *snap;
+	T **snap;
 	int len;
 	StampedSnap(T val,int leng);
-	StampedSnap(long label,T val,T* snp,int leng);
+	StampedSnap(long label,T val,T** snp,int leng);
 	StampedSnap();
 	~StampedSnap();
 };
@@ -34,14 +34,14 @@ class WFSnapshot {
 	StampedSnap<T>*** buffercopy1;
 	StampedSnap<T>*** buffercopy2;
 	StampedSnap<T>*** buffercopy3;
-	T** arr_buf;
+	T*** arr_buf;
 
 
 	public:
 	WFSnapshot(int capacity, T init);
 	~WFSnapshot();
 	void update(T value,int thread_id);
-	T* scan(int thread_id);
+	T** scan(int thread_id);
 
 };
 
@@ -51,20 +51,20 @@ StampedSnap<T>::StampedSnap(T val,int leng){
 	stamp =0;
 	value = val;
 	len = leng;
-	snap = new T[len];
+	snap = new T*[len];
 	for(int i = 0 ; i < len ; i++){
-		snap[i] = val;
+		snap[i] = new T(val);
 	}
 }
 
 template<typename T>
-StampedSnap<T>::StampedSnap(long label,T val,T* snp,int leng){
+StampedSnap<T>::StampedSnap(long label,T val,T** snp,int leng){
 	stamp = label;
 	value = val;
 	len = leng;
-	snap = new T[len];
+	snap = new T*[len];
 	for(int i = 0 ; i < len ; i++){
-		snap[i] = snp[i];
+		snap[i] = new T( *snp[i]);
 	}
 }
 
@@ -76,6 +76,9 @@ StampedSnap<T>::StampedSnap(){
 }
 template<typename T>
 StampedSnap<T>::~StampedSnap(){
+	for(int i = 0 ; i < len ; i ++){
+		delete snap[i];
+	}
 	delete[] snap;
 }
 
@@ -83,7 +86,7 @@ StampedSnap<T>::~StampedSnap(){
 
 template<typename T>
 WFSnapshot<T>::WFSnapshot(int capacity, T init) {
-	a_table = (StampedSnap<T>**) new StampedSnap<T>*[capacity];
+	a_table = new StampedSnap<T>*[capacity];
 	this->len = capacity;
 	buffercopy = new StampedSnap<T>***[3];
 	buffercopy1 = buffercopy[0];
@@ -94,7 +97,7 @@ WFSnapshot<T>::WFSnapshot(int capacity, T init) {
 	buffercopy2 = new StampedSnap<T>**[capacity];
 	buffercopy3 = new StampedSnap<T>**[capacity];
 	
-	arr_buf = new T*[capacity];
+	arr_buf = new T**[capacity];
 	
 
 	for (int i = 0; i < capacity; i++) {
@@ -102,9 +105,10 @@ WFSnapshot<T>::WFSnapshot(int capacity, T init) {
 		buffercopy1[i] = (StampedSnap<T>**) new StampedSnap<T>*[capacity];
 		buffercopy2[i] = (StampedSnap<T>**) new StampedSnap<T>*[capacity];
 		buffercopy3[i] = (StampedSnap<T>**) new StampedSnap<T>*[capacity];
+		arr_buf[i] = new T*[capacity];
 
 		for (int j = 0; j < capacity; j++) {
-			arr_buf[i] = new T[capacity];
+			arr_buf[i][j] = new T(init);
 			buffercopy1[i][j] = new StampedSnap<T>(init,capacity);  
 			buffercopy2[i][j] = new StampedSnap<T>(init,capacity);  
 			buffercopy3[i][j] = new StampedSnap<T>(init,capacity);  
@@ -129,12 +133,19 @@ template<typename T>
 void WFSnapshot<T>::update(T value,int thread_id){
 	
 	int id = thread_id;
-	T* snap = scan(thread_id);
-	StampedSnap<T>* oldVal = a_table[id];
-	StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap,len);
-	a_table[id] = newVal;
+	T** snap = scan(thread_id);
+	
+	a_table[id]->value = value;
+	for(int i = 0 ; i < len ; i++){
+		*(a_table[id]->snap[i]) = *(snap[i]);
+	}
+	a_table[id]->stamp++;
 
-	delete oldVal;
+	//StampedSnap<T>* oldVal = a_table[id];
+	//StampedSnap<T>* newVal = new StampedSnap<T>(oldVal->stamp+1,value,snap,len);
+	//a_table[id] = newVal;
+
+	//delete oldVal;
 }
 
 template<typename T>
@@ -159,48 +170,21 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 		copy[j]->stamp = a_table[j]->stamp;
 		copy[j]->value = a_table[j]->value;
 		for(int i = 0 ; i < len ; i ++){
-			//copy[j]->snap[i] = a_table[j]->snap[i]; // problem
-			//T value = a_table[j]->snap[i]; // problem
-			int flag;
-			GO :
-			volatile  T* p = &a_table[j]->snap[i];
-			if((int64_t)p <= 0xFFFFFF){
-				printf("error,pointer value low%x %d\n",(int64_t)p,thread_id);
-				pthread_yield();
-				goto GO;
-			}
-			flag = 0;
-			uint64_t v= (int64_t)p;
-			
-			v  = v >> 12;
-			GO1:
-			while(1){
-					if(v%16 != 0){
-						v = v >> 4;
-					}
-					else{
-						break;
-					}
-			}
-			if(v !=0)
-			while(1){
-					if(v%16 == 0){
-						flag++;
-						v = v >> 4;
-						if(v == 1 || flag > 4){
-							printf("error,pointer value %x %d\n",(int64_t)p,thread_id);
-							pthread_yield();
-							goto GO;
-						}	
-				}
-					else{
-						v >>4;
-						goto GO1;
-					}
-			}	
+			// *(copy[j]->snap[i]) = *(a_table[j]->snap[i]); // problem
+			///*
+			StampedSnap<T>** a = a_table;
+			StampedSnap<T>* b = a[j];
+			T** c = b->snap;
+			T* e = c[i];
+			T d = *e;
 
-			T value = *p; //problem -> sometimes p value is less than 0xFF
-			copy[j]->snap[i] = value;
+			StampedSnap<T>** a_ = copy;
+			StampedSnap<T>* b_ = a_[j];
+			T** c_ = b_->snap;
+			T*e_ = c_[i];
+			*e_ = d;
+			//*/
+
 		}
 		copy[j]->len = a_table[j]->len;
 	}
@@ -240,11 +224,11 @@ address sizes	: 39 bits physical, 48 bits virtual
 */
 
 template<typename T>
-T* WFSnapshot<T>::scan(int thread_id){
+T** WFSnapshot<T>::scan(int thread_id){
 	StampedSnap<T>** copy1 = buffercopy1[thread_id];
 	StampedSnap<T>** copy2 = buffercopy2[thread_id];
 	StampedSnap<T>** copy3 = buffercopy3[thread_id];
-	T* result = arr_buf[thread_id];
+	T** result = arr_buf[thread_id];
 
 	bool* b_table = new bool[len]();
 	
@@ -262,7 +246,7 @@ T* WFSnapshot<T>::scan(int thread_id){
 	}	
 
 	for(int j = 0 ; j < len ; j ++){
-		result[j] = copy2[j]->value;
+		*result[j] = copy2[j]->value;
 	} 
 	delete[] b_table;
 	return result;
@@ -285,7 +269,7 @@ T* WFSnapshot<T>::scan(int thread_id){
 	}
 
 	for(int j = 0 ; j < len ; j ++){
-		result[j] = copy3[j]->value;
+		*result[j] = copy3[j]->value;
 	} 
 	delete[] b_table;
 	return result;
@@ -307,7 +291,7 @@ T* WFSnapshot<T>::scan(int thread_id){
 	}
 
 	for(int j = 0 ; j < len ; j ++){
-		result[j] = copy1[j]->value;
+		*result[j] = copy1[j]->value;
 	} 
 	delete[] b_table;
 	return result;
@@ -329,7 +313,7 @@ T* WFSnapshot<T>::scan(int thread_id){
 	}
 
 	for(int j = 0 ; j < len ; j ++){
-		result[j] = copy2[j]->value;
+		*result[j] = copy2[j]->value;
 	} 
 	delete[] b_table;
 	return result;

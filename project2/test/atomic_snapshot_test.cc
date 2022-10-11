@@ -9,8 +9,11 @@
 TEST(StampedSnapTest, initalize_test) {
 	int i = 1;
 	long label = 184168514;
-	int snap[10] = {1,5,3,5,6,2,56,23,6,1};
-
+	int** snap = new int*[10];
+	for(int j = 0 ; j < 10 ; j ++){
+		snap[j] = new int(j*19);
+	}
+	printf("he\n");
 	// create object 
 	StampedSnap<int> a(i,10);
 	StampedSnap<int> b(label,i,snap,10);
@@ -20,13 +23,13 @@ TEST(StampedSnapTest, initalize_test) {
 
 	EXPECT_EQ(a.value,i);
 	for(int j = 0 ; j < 10 ; j++){
-		EXPECT_EQ(a.snap[j],i);
+		EXPECT_EQ(*a.snap[j],i);
 	}
 
 	EXPECT_EQ(b.value,i);
 	EXPECT_EQ(b.stamp,label);
 	for(int i = 0 ; i < 10 ; i++){
-		EXPECT_EQ(b.snap[i],snap[i]);
+		EXPECT_EQ(*(b.snap[i]),*snap[i]);
 	}
 	//class StampedSnap's template, c's value is not initalized yet
 	//EXPECT_EQ(c.value,0);
@@ -46,12 +49,12 @@ TEST(WFSnapshotTest, init_test) {
 	// test update,scan operation in sequence situation
 	for(int i = 0 ; i < capacity ; i++){
 		a.update(i,i);
-		int * arr = a.scan(i);
+		int ** arr = a.scan(i);
 		for(int j = 0 ; j <= i ; j++){
-			EXPECT_EQ(arr[j],j);
+			EXPECT_EQ(*arr[j],j);
 		}	
 		for(int k = i+1 ; k < capacity ; k++){
-			EXPECT_EQ(arr[k],init);
+			EXPECT_EQ(*arr[k],init);
 		}
 	}
 }
