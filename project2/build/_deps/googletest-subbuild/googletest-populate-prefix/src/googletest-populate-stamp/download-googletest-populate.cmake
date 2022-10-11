@@ -22,14 +22,14 @@ function(check_file_hash has_hash hash_is_good)
   set("${has_hash}" TRUE PARENT_SCOPE)
 
   message(STATUS "verifying file...
-       file='/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'")
+       file='/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'")
 
-  file("" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip" actual_value)
+  file("" "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip" actual_value)
 
   if(NOT "${actual_value}" STREQUAL "")
     set("${hash_is_good}" FALSE PARENT_SCOPE)
     message(STATUS " hash of
-    /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip
+    /mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip
   does not match expected value
     expected: ''
       actual: '${actual_value}'")
@@ -71,7 +71,7 @@ function(sleep_before_download attempt)
   execute_process(COMMAND "${CMAKE_COMMAND}" -E sleep "${sleep_seconds}")
 endfunction()
 
-if("/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip" STREQUAL "")
+if("/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip" STREQUAL "")
   message(FATAL_ERROR "LOCAL can't be empty")
 endif()
 
@@ -79,32 +79,32 @@ if("https://github.com/google/googletest/archive/e4717df71a4f45bf9f0ac88c6cd9846
   message(FATAL_ERROR "REMOTE can't be empty")
 endif()
 
-if(EXISTS "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
+if(EXISTS "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
   check_file_hash(has_hash hash_is_good)
   if(has_hash)
     if(hash_is_good)
       message(STATUS "File already exists and hash match (skip download):
-  file='/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'
+  file='/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'
   =''"
       )
       return()
     else()
       message(STATUS "File already exists but hash mismatch. Removing...")
-      file(REMOVE "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
+      file(REMOVE "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
     endif()
   else()
     message(STATUS "File already exists but no hash specified (use URL_HASH):
-  file='/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'
+  file='/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'
 Old file will be removed and new file downloaded from URL."
     )
-    file(REMOVE "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
+    file(REMOVE "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
   endif()
 endif()
 
 set(retry_number 5)
 
 message(STATUS "Downloading...
-   dst='/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'
+   dst='/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip'
    timeout='none'"
 )
 
@@ -121,7 +121,7 @@ foreach(i RANGE ${retry_number})
 
     file(
         DOWNLOAD
-        "${url}" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip"
+        "${url}" "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip"
         SHOW_PROGRESS
         # no TIMEOUT
         STATUS status
@@ -137,7 +137,7 @@ foreach(i RANGE ${retry_number})
       check_file_hash(has_hash hash_is_good)
       if(has_hash AND NOT hash_is_good)
         message(STATUS "Hash mismatch, removing...")
-        file(REMOVE "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
+        file(REMOVE "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip")
       else()
         message(STATUS "Downloading... done")
         return()

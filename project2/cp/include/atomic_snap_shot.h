@@ -163,7 +163,7 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			//T value = a_table[j]->snap[i]; // problem
 			int flag;
 			GO :
-			T* p = &a_table[j]->snap[i];
+			volatile  T* p = &a_table[j]->snap[i];
 			if((int64_t)p <= 0xFFFFFF){
 				printf("error,pointer value low%x %d\n",(int64_t)p,thread_id);
 				pthread_yield();
@@ -171,6 +171,9 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			}
 			flag = 0;
 			uint64_t v= (int64_t)p;
+			
+			v  = v >> 12;
+			GO1:
 			while(1){
 					if(v%16 != 0){
 						v = v >> 4;
@@ -184,14 +187,15 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 					if(v%16 == 0){
 						flag++;
 						v = v >> 4;
-						if(flag >4){
+						if(v == 1 || flag > 4){
 							printf("error,pointer value %x %d\n",(int64_t)p,thread_id);
 							pthread_yield();
 							goto GO;
 						}	
 				}
 					else{
-						break;
+						v >>4;
+						goto GO1;
 					}
 			}	
 

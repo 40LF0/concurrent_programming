@@ -1,4 +1,4 @@
-# Install script for directory: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild
+# Install script for directory: /mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
