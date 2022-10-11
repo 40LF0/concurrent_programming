@@ -165,7 +165,7 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			T* p = &a_table[j]->snap[i];
 			if((uint64_t)p <= 0xFF){
 				pthread_yield();
-				//printf("error\n");
+				printf("error\n");
 				goto GO;
 			}
 			T value = *p; //problem -> sometimes p value is less than 0xFF
@@ -180,6 +180,32 @@ std::cout << p << std::endl; -> 0x56
 p = new int(5);              
 std::cout << p << std::endl; -> 0x505338
 pointer value is less than 0xff means, intialize operation of pointer is not performed yet.
+this problem occur when childe thread number is 25 to 40.
+
+Hardware spec
+
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 142
+model name	: Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz
+stepping	: 11
+cpu MHz		: 1800.001
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 1
+core id		: 0
+cpu cores	: 1
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 22
+wp		: yes
+bogomips	: 3600.00
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
 */
 
 template<typename T>
