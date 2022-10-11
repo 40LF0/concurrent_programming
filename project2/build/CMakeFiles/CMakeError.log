@@ -1,21 +1,25 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
-Change Dir: /mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp
+Change Dir: /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make cmTC_f7945/fast && /usr/bin/make -f CMakeFiles/cmTC_f7945.dir/build.make CMakeFiles/cmTC_f7945.dir/build
-make[1]: Entering directory '/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_f7945.dir/src.c.o
-/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_f7945.dir/src.c.o   -c "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp/src.c"
-Linking C executable cmTC_f7945
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f7945.dir/link.txt --verbose=1
-/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_f7945.dir/src.c.o  -o cmTC_f7945 
-/usr/bin/ld: CMakeFiles/cmTC_f7945.dir/src.c.o: in function `main':
-src.c:(.text+0x46): undefined reference to `pthread_create'
-/usr/bin/ld: src.c:(.text+0x52): undefined reference to `pthread_detach'
-/usr/bin/ld: src.c:(.text+0x63): undefined reference to `pthread_join'
+Run Build Command(s):/usr/bin/make cmTC_f33c5/fast && /usr/bin/make  -f CMakeFiles/cmTC_f33c5.dir/build.make CMakeFiles/cmTC_f33c5.dir/build
+make[1]: Entering directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f33c5.dir/src.c.o
+/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_f33c5.dir/src.c.o   -c /home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_f33c5
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f33c5.dir/link.txt --verbose=1
+/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_f33c5.dir/src.c.o  -o cmTC_f33c5 
+CMakeFiles/cmTC_f33c5.dir/src.c.o: In function `main':
+src.c:(.text+0x3e): undefined reference to `pthread_create'
+src.c:(.text+0x4a): undefined reference to `pthread_detach'
+src.c:(.text+0x56): undefined reference to `pthread_cancel'
+src.c:(.text+0x67): undefined reference to `pthread_join'
+src.c:(.text+0x7b): undefined reference to `pthread_atfork'
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_f7945.dir/build.make:87: cmTC_f7945] Error 1
-make[1]: Leaving directory '/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp'
-make: *** [Makefile:121: cmTC_f7945/fast] Error 2
+CMakeFiles/cmTC_f33c5.dir/build.make:106: recipe for target 'cmTC_f33c5' failed
+make[1]: *** [cmTC_f33c5] Error 1
+make[1]: Leaving directory '/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/CMakeFiles/CMakeTmp'
+Makefile:141: recipe for target 'cmTC_f33c5/fast' failed
+make: *** [cmTC_f33c5/fast] Error 2
 
 
 Source file was:
@@ -31,6 +35,7 @@ int main(void)
   pthread_t thread;
   pthread_create(&thread, NULL, test_func, NULL);
   pthread_detach(thread);
+  pthread_cancel(thread);
   pthread_join(thread, NULL);
   pthread_atfork(NULL, NULL, NULL);
   pthread_exit(NULL);

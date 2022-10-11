@@ -1,7 +1,7 @@
 # Make file names absolute:
 #
-get_filename_component(filename "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip" ABSOLUTE)
-get_filename_component(directory "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-src" ABSOLUTE)
+get_filename_component(filename "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-subbuild/googletest-populate-prefix/src/e4717df71a4f45bf9f0ac88c6cd9846a0bc248dd.zip" ABSOLUTE)
+get_filename_component(directory "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-src" ABSOLUTE)
 
 message(STATUS "extracting...
      src='${filename}'

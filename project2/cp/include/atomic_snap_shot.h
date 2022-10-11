@@ -165,40 +165,35 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			GO :
 			T* p = &a_table[j]->snap[i];
 			if((int64_t)p <= 0xFFFFFF){
-				//printf("error,pointer value low%x %d\n",(int64_t)p,thread_id);
+				printf("error,pointer value low%x %d\n",(int64_t)p,thread_id);
 				pthread_yield();
 				goto GO;
 			}
 			flag = 0;
-			uint64_t val = (uint64_t)p;
-			uint64_t val1 = (uint64_t)p;
-			val = val >> 8;
+			uint64_t v= (int64_t)p;
 			while(1){
-				if(val%16 == 0 || val%16 == 1){
-					val = val >>4 ;
-					flag++;
-					if(val == 1){
-						//printf("error,pointer value%x %d\n",(int64_t)p,thread_id);
-						pthread_yield();
-						goto GO;
+					if(v%16 != 0){
+						v = v >> 4;
 					}
-					if(flag >3){
-						//printf("error,pointer value%x %d\n",(int64_t)p,thread_id);
-						pthread_yield();
-						goto GO;
-					}
-
-					if( val < 16){
+					else{
 						break;
 					}
-
-				}
-				else{
-					break;
-				}
-					
-
 			}
+			if(v !=0)
+			while(1){
+					if(v%16 == 0){
+						flag++;
+						v = v >> 4;
+						if(flag >4){
+							printf("error,pointer value %x %d\n",(int64_t)p,thread_id);
+							pthread_yield();
+							goto GO;
+						}	
+				}
+					else{
+						break;
+					}
+			}	
 
 			T value = *p; //problem -> sometimes p value is less than 0xFF
 			copy[j]->snap[i] = value;
