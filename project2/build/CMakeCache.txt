@@ -415,6 +415,12 @@ gtest_hide_internal_symbols:BOOL=OFF
 //Dependencies for the target
 gtest_main_LIB_DEPENDS:STATIC=general;gtest;
 
+//Value Computed by CMake
+run_BINARY_DIR:STATIC=/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build
+
+//Value Computed by CMake
+run_SOURCE_DIR:STATIC=/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2
+
 
 ########################
 # INTERNAL cache entries

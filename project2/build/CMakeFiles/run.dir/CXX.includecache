@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../cp/include/atomic_snap_shot.h
+iostream
+-
+stdio.h
+-
+cstddef
+-
+string
+-
+pthread.h
+-
+chrono
+-
+stdlib.h
+-
+string.h
+-
+atomic
+-
+
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/main.cc
+atomic_snap_shot.h
+/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/atomic_snap_shot.h
+

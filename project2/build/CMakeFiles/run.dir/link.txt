@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/run.dir/main.cc.o  -o bin/run  lib/libcp.a lib/libcp.a -pthread 
