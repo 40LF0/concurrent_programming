@@ -168,7 +168,7 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 				//printf("error\n");
 				goto GO;
 			}
-			T value = *p; //problem -> sometimes
+			T value = *p; //problem -> sometimes p value is less than 0xFF
 			copy[j]->snap[i] = value;
 		}
 		copy[j]->len = a_table[j]->len;
