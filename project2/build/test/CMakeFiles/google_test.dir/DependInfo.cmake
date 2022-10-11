@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/test/atomic_snapshot_test.cc" "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/test/CMakeFiles/google_test.dir/atomic_snapshot_test.cc.o"
+  "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/test/atomic_snapshot_test.cc" "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/test/CMakeFiles/google_test.dir/atomic_snapshot_test.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -17,9 +17,9 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/cp/CMakeFiles/cp.dir/DependInfo.cmake"
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/DependInfo.cmake"
-  "/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/build/_deps/googletest-build/googletest/CMakeFiles/gtest.dir/DependInfo.cmake"
+  "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/cp/CMakeFiles/cp.dir/DependInfo.cmake"
+  "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/DependInfo.cmake"
+  "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/_deps/googletest-build/googletest/CMakeFiles/gtest.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

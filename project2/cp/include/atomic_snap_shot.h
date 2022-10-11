@@ -150,7 +150,7 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 		copy = buffercopy3[thread_id];
 	}
 	else{
-		printf("error\n");
+		printf("error,buffercopy\n");
 		return;
 	}
 
@@ -161,13 +161,45 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 		for(int i = 0 ; i < len ; i ++){
 			//copy[j]->snap[i] = a_table[j]->snap[i]; // problem
 			//T value = a_table[j]->snap[i]; // problem
+			int flag;
 			GO :
 			T* p = &a_table[j]->snap[i];
-			if((uint64_t)p <= 0xFF){
+			if((int64_t)p <= 0xFFFFFF){
+				//printf("error,pointer value low%x %d\n",(int64_t)p,thread_id);
 				pthread_yield();
-				printf("error\n");
 				goto GO;
 			}
+			flag = 0;
+			uint64_t val = (uint64_t)p;
+			uint64_t val1 = (uint64_t)p;
+			val = val >> 8;
+			while(1){
+				if(val%16 == 0 || val%16 == 1){
+					val = val >>4 ;
+					flag++;
+					if(val == 1){
+						//printf("error,pointer value%x %d\n",(int64_t)p,thread_id);
+						pthread_yield();
+						goto GO;
+					}
+					if(flag >3){
+						//printf("error,pointer value%x %d\n",(int64_t)p,thread_id);
+						pthread_yield();
+						goto GO;
+					}
+
+					if( val < 16){
+						break;
+					}
+
+				}
+				else{
+					break;
+				}
+					
+
+			}
+
 			T value = *p; //problem -> sometimes p value is less than 0xFF
 			copy[j]->snap[i] = value;
 		}
