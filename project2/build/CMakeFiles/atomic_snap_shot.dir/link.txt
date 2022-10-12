@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/atomic_snap_shot.dir/main.cc.o  -o bin/atomic_snap_shot  lib/libcp.a lib/libcp.a -pthread 

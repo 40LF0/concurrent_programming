@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/google_test.dir/atomic_snapshot_test.cc.o  -o ../bin/google_test  ../lib/libcp.a ../lib/libgtest_main.a ../lib/libgtest.a -pthread 

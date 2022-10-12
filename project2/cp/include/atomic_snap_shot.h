@@ -12,10 +12,18 @@
 
 template<typename T>
 class StampedSnap{
+	/// Definition of thread local snapshot
+	/// only one thread can modify this class object.
+	/// other thread only can read members' value.
 	public:
+	/// stamp is time value for snap. stamp means number of thread local updates.
+	/// other thread will notice modification by different stamp value.
 	long stamp;
+	/// thread local value.
 	T value;
+	/// thread local snapshot which is used for other thread's scan.
 	T **snap;
+	/// len is number of thread which cooperative with include it's own thread.
 	int len;
 	StampedSnap(T val,int leng);
 	StampedSnap(long label,T val,T** snp,int leng);
@@ -25,15 +33,39 @@ class StampedSnap{
 
 template<typename T>
 class WFSnapshot {
+	/// Definition of wait free atomic snapshot
 	private:
+	/// a_table is array of thread local StampedSnap
+	/// a_table help to access each thread local stamp,value and snap.
 	StampedSnap<T>** a_table;
+	/// len is number of thread which WFSnapshot class object should deal with
 	int len;
+	/// collect every thread local StampedSnap object.
 	void collect(int thread_id,int index);	
 
+	/// we need dummy for collecting a_table!
+	/// we preallocate 3 dummy for each thread!
+	/// 1st dummy is stored in buffercopy1
+	/// 2nt dummy is stored in buffercopy2
+	/// 3rd dummy is stored in buffercopy3
+	/// buffercopy is entry array for buffercopy1,buffercopy2,and buffercopy3
+
+	// if you want to access thread i 2rd dummy this process will helpful
+	/*
+	StampedSnap<T>*** entry = buffercopy[1];
+	StampedSnap<T>** dummy2_for_i = entry[i];
+	//or just
+	StampedSnap<T>** dummy2_for_i = buffercopy2[i];
+	*/
+	
 	StampedSnap<T>**** buffercopy;
 	StampedSnap<T>*** buffercopy1;
 	StampedSnap<T>*** buffercopy2;
 	StampedSnap<T>*** buffercopy3;
+
+	/// we need dummy for return snap for collect function.
+	/// we preallocate dummy snap for each thread.
+
 	T*** arr_buf;
 
 
@@ -131,7 +163,7 @@ WFSnapshot<T>::~WFSnapshot() {
 	
 template<typename T>
 void WFSnapshot<T>::update(T value,int thread_id){
-	
+	// update value with clean snapshot and stamp
 	int id = thread_id;
 	T** snap = scan(thread_id);
 	
@@ -150,7 +182,10 @@ void WFSnapshot<T>::update(T value,int thread_id){
 
 template<typename T>
 void WFSnapshot<T>::collect(int thread_id,int index){
+	/// collect a_table to a_table dummy!
 	StampedSnap<T>** copy;
+
+	// set entry to correct a_table dummy
 	if(index == 0){
 		copy = buffercopy1[thread_id];
 	}
@@ -165,11 +200,14 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 		return;
 	}
 
-
+	// collect a_table to dummy
 	for (int j = 0; j < len; j++) {
 		copy[j]->stamp = a_table[j]->stamp;
 		copy[j]->value = a_table[j]->value;
 		for(int i = 0 ; i < len ; i ++){
+			*(copy[j]->snap[i]) = *(a_table[j]->snap[i]);
+			/*
+			BUG FIXED BY DUMMY
 			// *(copy[j]->snap[i]) = *(a_table[j]->snap[i]); // problem
 			///*
 			StampedSnap<T>** a = a_table;
@@ -184,12 +222,14 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			T*e_ = c_[i];
 			*e_ = d;
 			//*/
+			*/
 
 		}
 		copy[j]->len = a_table[j]->len;
 	}
 }	
 /*
+BUG FIXED BY DUMMY
 int *p;
 std::cout << p << std::endl; -> 0x56
 p = new int(5);              
@@ -225,11 +265,18 @@ address sizes	: 39 bits physical, 48 bits virtual
 
 template<typename T>
 T** WFSnapshot<T>::scan(int thread_id){
+	/// scan for clean snapshot!
+
+	// declare entry for a_table dummys
 	StampedSnap<T>** copy1 = buffercopy1[thread_id];
 	StampedSnap<T>** copy2 = buffercopy2[thread_id];
 	StampedSnap<T>** copy3 = buffercopy3[thread_id];
+
+	// delare entry for snap dummy 
+	// later, this can be used as return value.
 	T** result = arr_buf[thread_id];
 
+	// This is bool array to check which thread local stamp is modified.
 	bool* b_table = new bool[len]();
 	
 
@@ -240,11 +287,13 @@ T** WFSnapshot<T>::scan(int thread_id){
 
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy1[j]->stamp != copy2[j]->stamp){
+			// modification occur, try another collect!
 			b_table[j] = true;
 			goto COLLECT;
 		}
 	}	
 
+	// we have clean snapshot!
 	for(int j = 0 ; j < len ; j ++){
 		*result[j] = copy2[j]->value;
 	} 
@@ -256,18 +305,23 @@ T** WFSnapshot<T>::scan(int thread_id){
 	collect(thread_id,2);
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy2[j]->stamp != copy3[j]->stamp){
+			// modification occur
 			if(b_table[j] == true){
+				// same thread local stamp is modified twice!
+				// get clean snap from that thread!
 				delete[] b_table;
 				return copy2[j]->snap;
 			}
 			else{
+				// new thread local stamp is modified
+				// try another collect!
 				b_table[j] = true;
 				goto COLLECT2;
 
 			}
 		}
 	}
-
+	// we have clean snapshot!
 	for(int j = 0 ; j < len ; j ++){
 		*result[j] = copy3[j]->value;
 	} 
@@ -279,17 +333,21 @@ T** WFSnapshot<T>::scan(int thread_id){
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy3[j]->stamp != copy1[j]->stamp){
 			if(b_table[j] == true){
+				// same thread local stamp is modified twice!
+				// get clean snap from that thread!
 				delete[] b_table;
 				return copy3[j]->snap;
 			}
 			else{
+				// new thread local stamp is modified
+				// try another collect!
 				b_table[j] = true;
 				goto COLLECT3;
 
 			}
 		}
 	}
-
+	// we have clean snapshot!
 	for(int j = 0 ; j < len ; j ++){
 		*result[j] = copy1[j]->value;
 	} 
@@ -301,17 +359,21 @@ T** WFSnapshot<T>::scan(int thread_id){
 	for(int j = 0 ; j  < len ; j ++){
 		if(copy1[j]->stamp != copy2[j]->stamp){
 			if(b_table[j] == true){
+				// same thread local stamp is modified twice!
+				// get clean snap from that thread!
 				delete[] b_table;
 				return copy1[j]->snap;
 			}
 			else{
+				// new thread local stamp is modified
+				// try another collect!
 				b_table[j] = true;
 				goto COLLECT;
 
 			}
 		}
 	}
-
+	// we have clean snapshot!
 	for(int j = 0 ; j < len ; j ++){
 		*result[j] = copy2[j]->value;
 	} 
