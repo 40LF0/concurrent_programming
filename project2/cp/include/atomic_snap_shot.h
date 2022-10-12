@@ -209,7 +209,7 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			/*
 			BUG FIXED BY DUMMY
 			// *(copy[j]->snap[i]) = *(a_table[j]->snap[i]); // problem
-			///*
+
 			StampedSnap<T>** a = a_table;
 			StampedSnap<T>* b = a[j];
 			T** c = b->snap;
@@ -221,7 +221,7 @@ void WFSnapshot<T>::collect(int thread_id,int index){
 			T** c_ = b_->snap;
 			T*e_ = c_[i];
 			*e_ = d;
-			//*/
+
 			*/
 
 		}
