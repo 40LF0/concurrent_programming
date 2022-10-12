@@ -319,4 +319,3 @@ T** WFSnapshot<T>::scan(int thread_id){
 	return result;
 }
 
-

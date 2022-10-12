@@ -1,3 +1,0 @@
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/build/CMakeFiles/rebuild_cache.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/build/CMakeFiles/cp.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/project2/cp/build/CMakeFiles/edit_cache.dir

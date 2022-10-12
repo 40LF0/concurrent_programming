@@ -1,5 +1,0 @@
-add_test( StampedSnapTest.initalize_test [==[/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/bin/google_test]==] [==[--gtest_filter=StampedSnapTest.initalize_test]==] --gtest_also_run_disabled_tests)
-set_tests_properties( StampedSnapTest.initalize_test PROPERTIES WORKING_DIRECTORY [==[/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/test]==])
-add_test( WFSnapshotTest.init_test [==[/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/bin/google_test]==] [==[--gtest_filter=WFSnapshotTest.init_test]==] --gtest_also_run_disabled_tests)
-set_tests_properties( WFSnapshotTest.init_test PROPERTIES WORKING_DIRECTORY [==[/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project2/build/test]==])
-set( google_test_TESTS StampedSnapTest.initalize_test WFSnapshotTest.init_test)
