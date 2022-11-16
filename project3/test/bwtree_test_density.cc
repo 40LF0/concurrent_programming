@@ -35,7 +35,7 @@ class BwtreeTest_db_init : public ::testing::Test {
       
 
       // Inserts in a 1M key space randomly until all keys has been inserted
-      auto workload = [&](uint32_t id) {
+      auto workload = [&]() {
         const uint32_t gcid = id + 1;
         tree->AssignGCID(gcid);
         std::default_random_engine thread_generator(id);
@@ -69,7 +69,7 @@ class BwtreeTest_db_init : public ::testing::Test {
 
 };
 TEST_F(BwtreeTest_db_init, db_init) {
-
+    template_test();
 }
 
 
