@@ -8,10 +8,12 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 set(BWTREE_TESTS
-  bwtree_test.cc
+  #bwtree_test.cc
+  bwtree_test_density.cc
   # Add your test files here
   # foo/bar/your_test.cc
   )
+
 
 add_executable(bwtree_test ${BWTREE_TESTS})
 

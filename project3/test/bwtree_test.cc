@@ -51,6 +51,9 @@ class BwtreeTest : public ::testing::Test {
 /*
  * Basic functionality test of 1M concurrent random inserts
  */
+
+ // outcome: 7200
+/*
 TEST_F(BwtreeTest, ConcurrentRandomInsert) {
   // This defines the key space (0 ~ (1M - 1))
   const uint32_t key_num = 1024 * 1024;
@@ -89,6 +92,11 @@ TEST_F(BwtreeTest, ConcurrentRandomInsert) {
 
   delete tree;
 }
+*/
+
+ // outcome: 15000
+
+
 
 TEST_F(BwtreeTest, ConcurrentMixed) {
   NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
@@ -132,3 +140,639 @@ TEST_F(BwtreeTest, ConcurrentMixed) {
 
   delete tree;
 }
+
+TEST_F(BwtreeTest, Concurrentmixed_range_2_2) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 4-1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_3) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 8-1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_4) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 16-1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_5) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 32-1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_6) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 64 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_7) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 128 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_8) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 256 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_9) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 512 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_10) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 1024 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_11) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 1024*2 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_12) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 1024*4 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_13) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 1024*8 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_15) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 1024*32 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_18) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 1024*32*8 -1);
+
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+TEST_F(BwtreeTest, Concurrentmixed_range_2_20) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, key_num - 1);
+    if ((id % 2) == 0) {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Insert(key, key);
+      }
+    } else {
+      for (uint32_t i = 0; i < key_num; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+
+        tree->Delete(key, key);
+      }
+    }
+    tree->UnregisterThread(gcid);
+  };
+
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+}
+
+
+TEST_F(BwtreeTest, Concurrentmixed_range_2_7_intensive) {
+  NOISEPAGE_ASSERT(num_threads_ % 2 == 0,
+      "This test requires an even number of threads. This should have been handled when it was assigned.");
+
+  // This defines the key space (0 ~ (1M - 1))
+  const uint32_t key_num = 1024 * 1024;
+
+  common::WorkerPool thread_pool(num_threads_, {});
+  thread_pool.Startup();
+  auto *const tree = test::BwTreeTestUtil::GetEmptyTree();
+
+  auto workload = [&](uint32_t id) {
+    const uint32_t gcid = id + 1;
+    tree->AssignGCID(gcid);
+    std::default_random_engine thread_generator(id);
+    std::uniform_int_distribution<int> uniform_dist(0, 128 -1);
+
+
+    for (uint32_t i = 0; i < key_num/2; i++) {
+        int key = uniform_dist(thread_generator);  // NOLINT
+        tree->Insert(key, key);
+        tree->Delete(key, key);
+    }
+    tree->UnregisterThread(gcid);
+  };
+    
+  tree->UpdateThreadLocal(num_threads_ + 1);
+  test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload);
+  tree->UpdateThreadLocal(1);
+
+
+  delete tree;
+
+ };

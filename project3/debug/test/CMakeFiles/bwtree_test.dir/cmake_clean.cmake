@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "../bin/bwtree_test"
   "../bin/bwtree_test.pdb"
-  "CMakeFiles/bwtree_test.dir/bwtree_test.cc.o"
+  "CMakeFiles/bwtree_test.dir/bwtree_test_density.cc.o"
   "bwtree_test[1]_tests.cmake"
 )
 

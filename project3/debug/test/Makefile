@@ -182,32 +182,32 @@ bwtree_test/fast:
 	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/build
 .PHONY : bwtree_test/fast
 
-bwtree_test.o: bwtree_test.cc.o
+bwtree_test_density.o: bwtree_test_density.cc.o
 
-.PHONY : bwtree_test.o
+.PHONY : bwtree_test_density.o
 
 # target to build an object file
-bwtree_test.cc.o:
-	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/bwtree_test.cc.o
-.PHONY : bwtree_test.cc.o
+bwtree_test_density.cc.o:
+	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/bwtree_test_density.cc.o
+.PHONY : bwtree_test_density.cc.o
 
-bwtree_test.i: bwtree_test.cc.i
+bwtree_test_density.i: bwtree_test_density.cc.i
 
-.PHONY : bwtree_test.i
+.PHONY : bwtree_test_density.i
 
 # target to preprocess a source file
-bwtree_test.cc.i:
-	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/bwtree_test.cc.i
-.PHONY : bwtree_test.cc.i
+bwtree_test_density.cc.i:
+	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/bwtree_test_density.cc.i
+.PHONY : bwtree_test_density.cc.i
 
-bwtree_test.s: bwtree_test.cc.s
+bwtree_test_density.s: bwtree_test_density.cc.s
 
-.PHONY : bwtree_test.s
+.PHONY : bwtree_test_density.s
 
 # target to generate assembly for a file
-bwtree_test.cc.s:
-	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/bwtree_test.cc.s
-.PHONY : bwtree_test.cc.s
+bwtree_test_density.cc.s:
+	cd "/mnt/c/Users/wjdac/Desktop/22년 일정/22-2학기/concurrent_programing/2022_ite4065_2019082851/project3/debug" && $(MAKE) -f test/CMakeFiles/bwtree_test.dir/build.make test/CMakeFiles/bwtree_test.dir/bwtree_test_density.cc.s
+.PHONY : bwtree_test_density.cc.s
 
 # Help Target
 help:
@@ -223,9 +223,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... bwtree_test"
-	@echo "... bwtree_test.o"
-	@echo "... bwtree_test.i"
-	@echo "... bwtree_test.s"
+	@echo "... bwtree_test_density.o"
+	@echo "... bwtree_test_density.i"
+	@echo "... bwtree_test_density.s"
 .PHONY : help
 
 
