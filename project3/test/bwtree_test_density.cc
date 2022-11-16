@@ -26,7 +26,7 @@ class BwtreeTest_db_init : public ::testing::Test {
     const uint32_t num_threads_ =
       test::MultiThreadTestUtil::HardwareConcurrency() + (test::MultiThreadTestUtil::HardwareConcurrency() % 2);
 
-    void template_test(int k){
+    void template_test(){
       const uint32_t key_num = 1024 * 1024;
       std::atomic<size_t> insert_success_counter = 0;
 
@@ -35,7 +35,7 @@ class BwtreeTest_db_init : public ::testing::Test {
       
 
       // Inserts in a 1M key space randomly until all keys has been inserted
-      auto workload = [&]() {
+      auto workload = [&](uint32_t id) {
         const uint32_t gcid = id + 1;
         tree->AssignGCID(gcid);
         std::default_random_engine thread_generator(id);
