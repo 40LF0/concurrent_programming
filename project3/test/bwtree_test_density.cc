@@ -4,7 +4,6 @@
 #include "worker_pool.h"
 
 #include <gtest/gtest.h>
-
 #include <algorithm>
 #include <random>
 #include <vector>
@@ -124,6 +123,11 @@ class BwtreeTest_density_with_exist_db : public ::testing::Test {
         EXPECT_EQ(*s.begin(), i);
       }
       
+      std::atomic<size_t> insert_success_counter = 0;
+      std::atomic<size_t> insert_fail_counter = 0;
+      std::atomic<size_t> delete_success_counter = 0;
+      std::atomic<size_t> delete_fail_counter = 0;
+
       auto workload1 = [&](uint32_t id) {
         const uint32_t gcid = id + 1;
         tree->AssignGCID(gcid);
@@ -131,10 +135,22 @@ class BwtreeTest_density_with_exist_db : public ::testing::Test {
         std::uniform_int_distribution<int> uniform_dist(0, static_cast<int>(pow(2,k)) -1);
 
 
+
         for (uint32_t i = 0; i < key_num/2; i++) {
             int key = uniform_dist(thread_generator);  // NOLINT
-            tree->Delete(key, key);
-            tree->Insert(key, key);
+            if(tree->Delete(key, key)){
+                delete_success_counter.fetch_add(1);
+            }
+            else{
+                delete_fail_counter.fetch_add(1);
+            }
+            if(tree->Insert(key, key)){
+                insert_success_counter.fetch_add(1);
+            }
+            else{
+                insert_fail_counter.fetch_add(1);
+            }
+            
         }
         tree->UnregisterThread(gcid);
        };
@@ -144,6 +160,9 @@ class BwtreeTest_density_with_exist_db : public ::testing::Test {
        tree->UpdateThreadLocal(1);
 
        delete tree;
+
+       EXPECT_EQ(insert_success_counter.load(),insert_fail_counter.load());
+       EXPECT_EQ(delete_success_counter.load(),delete_fail_counter.load());
 
     }
     test::BwTreeTestUtil::TreeType *const tree = test::BwTreeTestUtil::GetEmptyTree();
