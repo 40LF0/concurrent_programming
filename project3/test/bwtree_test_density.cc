@@ -90,7 +90,7 @@ class BwtreeTest_density_with_exist_db : public ::testing::Test {
 
     void template_test(int k){
       const uint32_t key_num = 1024 * 1024;
-      std::atomic<size_t> insert_success_counter = 0;
+      std::atomic<size_t> insert_success_counter_ = 0;
 
       common::WorkerPool thread_pool(num_threads_, {});
       thread_pool.Startup();
@@ -103,10 +103,10 @@ class BwtreeTest_density_with_exist_db : public ::testing::Test {
         std::default_random_engine thread_generator(id);
         std::uniform_int_distribution<int> uniform_dist(0, key_num - 1);
 
-        while (insert_success_counter.load() < key_num) {
+        while (insert_success_counter_.load() < key_num) {
           int key = uniform_dist(thread_generator);
 
-          if (tree->Insert(key, key)) insert_success_counter.fetch_add(1);
+          if (tree->Insert(key, key)) insert_success_counter_.fetch_add(1);
         }
         tree->UnregisterThread(gcid);
       };
