@@ -67,17 +67,11 @@ class BwtreeTest_db_init : public ::testing::Test {
     test::BwTreeTestUtil::TreeType *const tree = test::BwTreeTestUtil::GetEmptyTree();
 
 };
+/*
 TEST_F(BwtreeTest_db_init, db_init) {
     template_test();
 }
 
-class BwtreeTest_density_with_thead_num : public ::testing::Test {
-  protected:
-    /*
-     * NOTE: You can also use constructor/destructor instead of SetUp() and
-     * TearDown(). The official document says that the former is actually
-     * perferred due to some reasons. Checkout the document for the difference.
-     */
     BwtreeTest_density_with_thead_num() {
     }
 
@@ -167,7 +161,8 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
     test::BwTreeTestUtil::TreeType *const tree = test::BwTreeTestUtil::GetEmptyTree();
 
 };
-
+*/
+/*
 TEST_F(BwtreeTest_density_with_thead_num, 1) {
     template_test(1);
 }
@@ -228,6 +223,8 @@ TEST_F(BwtreeTest_density_with_thead_num,19 ) {
 TEST_F(BwtreeTest_density_with_thead_num,20 ) {
     template_test(20);
 }
+*/
+
 class BwtreeTest_density_with_exist_db : public ::testing::Test {
   protected:
     /*
@@ -247,6 +244,8 @@ class BwtreeTest_density_with_exist_db : public ::testing::Test {
     void template_test(int k){
       const uint32_t key_num = 1024 * 1024;
       std::atomic<size_t> insert_success_counter_ = 0;
+
+      EXPECT_EQ(num_threads_,-1);
 
       common::WorkerPool thread_pool(num_threads_, {});
       thread_pool.Startup();
