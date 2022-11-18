@@ -183,7 +183,7 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
 
        };
 
-       tree->UpdateThreadLocal(knum_threads_+ 1);
+       tree->UpdateThreadLocal(num_threads_+ 1);
        test::MultiThreadTestUtil::RunThreadsUntilFinish(&thread_pool, num_threads_, workload1);
        tree->UpdateThreadLocal(1);
 
