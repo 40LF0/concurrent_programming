@@ -198,7 +198,7 @@ TEST_F(BwtreeTest_density_with_thead_num,9 ) {
 TEST_F(BwtreeTest_density_with_thead_num,10 ) {
     template_test(10);
 }
-TEST_F(BwtreeTest_density_with_thead_num, 1) {
+TEST_F(BwtreeTest_density_with_thead_num, 11) {
     template_test(11);
 }
 TEST_F(BwtreeTest_density_with_thead_num,12 ) {
