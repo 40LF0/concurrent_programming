@@ -180,7 +180,7 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
             }
             tree->UnregisterThread(gcid);
         }
-        }
+
        };
 
        tree->UpdateThreadLocal(knum_threads_+ 1);
