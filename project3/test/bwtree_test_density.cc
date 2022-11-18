@@ -81,7 +81,7 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
     BwtreeTest_density_with_thead_num() {
     }
 
-    BwtreeTest_density_with_thead_num() {
+    ~BwtreeTest_density_with_thead_num() {
     }
     
     const uint32_t num_threads_ =
