@@ -164,19 +164,8 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
 
             for (uint32_t i = 0; i < key_num/2; i++) {
                 int key = uniform_dist(thread_generator);  // NOLINT
-                if(tree->Delete(key, key)){
-                    delete_success_counter.fetch_add(1);
-                }
-                else{
-                    delete_fail_counter.fetch_add(1);
-                }
-                if(tree->Insert(key, key)){
-                    insert_success_counter.fetch_add(1);
-                }
-                else{
-                    insert_fail_counter.fetch_add(1);
-                }
-            
+                tree->Delete(key, key);
+                tree->Insert(key, key);
             }
             tree->UnregisterThread(gcid);
         }
