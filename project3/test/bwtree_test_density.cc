@@ -128,30 +128,59 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
       std::atomic<size_t> delete_fail_counter = 0;
 
       auto workload1 = [&](uint32_t id) {
-        const uint32_t gcid = id + 1;
-        tree->AssignGCID(gcid);
-        std::default_random_engine thread_generator(id);
-        std::uniform_int_distribution<int> uniform_dist(0, static_cast<int>(pow(2,6)) -1);
+        if(id < k){
+            const uint32_t gcid = id + 1;
+            tree->AssignGCID(gcid);
+            std::default_random_engine thread_generator(id);
+            std::uniform_int_distribution<int> uniform_dist(0, static_cast<int>(pow(2,6)) -1);
 
 
 
-        for (uint32_t i = 0; i < key_num/2; i++) {
-            int key = uniform_dist(thread_generator);  // NOLINT
-            if(tree->Delete(key, key)){
-                delete_success_counter.fetch_add(1);
-            }
-            else{
-                delete_fail_counter.fetch_add(1);
-            }
-            if(tree->Insert(key, key)){
-                insert_success_counter.fetch_add(1);
-            }
-            else{
-                insert_fail_counter.fetch_add(1);
-            }
+            for (uint32_t i = 0; i < key_num/2; i++) {
+                int key = uniform_dist(thread_generator);  // NOLINT
+                if(tree->Delete(key, key)){
+                    delete_success_counter.fetch_add(1);
+                }
+                else{
+                    delete_fail_counter.fetch_add(1);
+                }
+                if(tree->Insert(key, key)){
+                    insert_success_counter.fetch_add(1);
+                }
+                else{
+                    insert_fail_counter.fetch_add(1);
+                }
             
+            }
+            tree->UnregisterThread(gcid);
         }
-        tree->UnregisterThread(gcid);
+        else{
+            const uint32_t gcid = id + 1;
+            tree->AssignGCID(gcid);
+            std::default_random_engine thread_generator(id);
+            std::uniform_int_distribution<int> uniform_dist(static_cast<int>(pow(2,6)), key_num - 1);
+
+
+
+            for (uint32_t i = 0; i < key_num/2; i++) {
+                int key = uniform_dist(thread_generator);  // NOLINT
+                if(tree->Delete(key, key)){
+                    delete_success_counter.fetch_add(1);
+                }
+                else{
+                    delete_fail_counter.fetch_add(1);
+                }
+                if(tree->Insert(key, key)){
+                    insert_success_counter.fetch_add(1);
+                }
+                else{
+                    insert_fail_counter.fetch_add(1);
+                }
+            
+            }
+            tree->UnregisterThread(gcid);
+        }
+        }
        };
 
        tree->UpdateThreadLocal(k + 1);
