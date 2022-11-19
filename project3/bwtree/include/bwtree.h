@@ -1770,6 +1770,10 @@ class BwTree : public BwTreeBase {
     // This is the starting point
     ElementType start[0];
 
+    // 2022-12-22 new member for ElasticNode
+    std::atomic<bool> consolidation_flag;
+    uint64_t time_stamp;
+
    public:
     /*
      * Constructor
@@ -1777,19 +1781,24 @@ class BwTree : public BwTreeBase {
      * Note that this constructor uses the low key and high key stored as
      * members to initialize the NodeMetadata object in class BaseNode
      */
+
+     // 2022-12-22
     NO_ASAN ElasticNode(NodeType p_type, int p_depth, int p_item_count, const KeyNodeIDPair &p_low_key,
                         const KeyNodeIDPair &p_high_key)
         : BaseNode{p_type, &low_key, &high_key, p_depth, p_item_count},
           low_key{p_low_key},
           high_key{p_high_key},
-          end{start} {}
+          end{start},
+          consolidation_flag{false},
+          time_stamp{0}
+          {}
 
     /*
      * Copy() - Copy constructs another instance
      */
     NO_ASAN static ElasticNode *Copy(const ElasticNode &other) {
       ElasticNode *node_p = ElasticNode::Get(other.GetItemCount(), other.GetType(), other.GetDepth(),
-                                             other.GetItemCount(), other.GetLowKeyPair(), other.GetHighKeyPair());
+                                             other.GetItemCount(), other.GetLowKeyPair(), other.GetHighKeyPair(),other.time_stamp);
 
       node_p->PushBack(other.Begin(), other.End());
 
@@ -1909,7 +1918,7 @@ class BwTree : public BwTreeBase {
     NO_ASAN inline static ElasticNode *Get(int size,  // Number of elements
                                            NodeType p_type, int p_depth,
                                            int p_item_count,  // Usually equal to size
-                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key) {
+                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key, uint64_t time_stamp) {
       // Currently this is always true - if we want a larger array then
       // just remove this line
       NOISEPAGE_ASSERT(size == p_item_count, "Remove this if you want a larger array.");
@@ -1936,7 +1945,7 @@ class BwTree : public BwTreeBase {
 
       // Call placement new to initialize all that could be initialized
       new (node_p) ElasticNode{p_type, p_depth, p_item_count, p_low_key, p_high_key};
-
+      ++node_p->time_stamp;
       return node_p;
     }
 
@@ -5685,7 +5694,15 @@ class BwTree : public BwTreeBase {
 
     if (snapshot_p->IsLeaf()) {
       if (depth < GetLeafDeltaChainLengthThreshold()) {
-        return;
+        if(node_p->time_stamp != GetNode(snapshot_p->node_id)->time_stamp){
+            return;
+        }
+
+        bool expected = false;
+        GetNode(snapshot_p->node_id)->consolidation_flag.compare_exchange_strong(expected,true);
+        if(expected){
+            return;
+        }
       }
     } else {
       if (depth < GetInnerDeltaChainLengthThreshold()) {
@@ -5696,6 +5713,7 @@ class BwTree : public BwTreeBase {
     // After this point we decide to consolidate node
 
     ConsolidateNode(snapshot_p);
+    
   }
 
   /*
