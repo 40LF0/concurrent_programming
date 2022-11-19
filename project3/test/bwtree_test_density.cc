@@ -185,7 +185,9 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
     test::BwTreeTestUtil::TreeType *const tree = test::BwTreeTestUtil::GetEmptyTree();
 
 };
-
+TEST_F(BwtreeTest_density_with_thead_num, 0) {
+    template_test(0);
+}
 TEST_F(BwtreeTest_density_with_thead_num, 1) {
     template_test(1);
 }
