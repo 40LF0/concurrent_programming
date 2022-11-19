@@ -1918,7 +1918,7 @@ class BwTree : public BwTreeBase {
     NO_ASAN inline static ElasticNode *Get(int size,  // Number of elements
                                            NodeType p_type, int p_depth,
                                            int p_item_count,  // Usually equal to size
-                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key, uint64_t time_stamp = 0) {
+                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key, uint64_t time_stamp) {
       // Currently this is always true - if we want a larger array then
       // just remove this line
       NOISEPAGE_ASSERT(size == p_item_count, "Remove this if you want a larger array.");
@@ -5713,7 +5713,7 @@ class BwTree : public BwTreeBase {
     // After this point we decide to consolidate node
 
     ConsolidateNode(snapshot_p);
-    
+     
   }
 
   /*
