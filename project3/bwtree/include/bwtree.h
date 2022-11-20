@@ -5662,7 +5662,9 @@ class BwTree : public BwTreeBase {
     NodeID current_node_id = snapshot_p->node_id;
     bool expected = false;
     bool ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
-
+    if(!ret_flag){
+        return;
+    }
 
 
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
@@ -5681,7 +5683,7 @@ class BwTree : public BwTreeBase {
 
     expected = true;
     ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, false);
-
+    NOISEPAGE_ASSERT(ret_flag == true, "ret_flag should be always true");
 
   }
 
