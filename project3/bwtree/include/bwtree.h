@@ -70,7 +70,10 @@ namespace bwtree {
 
 // If the length of delta chain exceeds ( >= ) this then we consolidate the node
 #define INNER_DELTA_CHAIN_LENGTH_THRESHOLD ((int)8)
-#define LEAF_DELTA_CHAIN_LENGTH_THRESHOLD ((int)8)
+
+// 2022-11-20 by changed policy about leaf_node Consolidation
+// change LEAF_DELTA_CHAIN_LENGTH_THRESHOLD from 8 to 9
+#define LEAF_DELTA_CHAIN_LENGTH_THRESHOLD ((int)9)
 
 // If node size goes above this then we split it
 #define INNER_NODE_SIZE_UPPER_THRESHOLD ((int)128)
@@ -2396,6 +2399,10 @@ class BwTree : public BwTreeBase {
 
     mapping_table[node_id] = nullptr;
 
+    //2022-11-20 init both leaf_consolidation_flag and leaf_base_depth
+    leaf_consolidation_flag[node_id] = false;
+    leaf_base_depth[node_id] = 0;
+
     return FreeNodeByPointer(node_p);
   }
 
@@ -2418,6 +2425,11 @@ class BwTree : public BwTreeBase {
   NO_ASAN inline void InvalidateNodeID(NodeID node_id) {
     node_id_list_lock.lock();
     mapping_table[node_id] = nullptr;
+
+    //2022-11-20 init both leaf_consolidation_flag and leaf_base_depth
+    leaf_consolidation_flag[node_id] = false;
+    leaf_base_depth[node_id] = 0;
+
     node_id_list.push_back(node_id);
     // free_node_id_list.SingleThreadPush(node_id);
     node_id_list_lock.unlock();
@@ -5647,6 +5659,12 @@ class BwTree : public BwTreeBase {
   NO_ASAN inline void ConsolidateLeafNode(NodeSnapshot *snapshot_p) {
     NOISEPAGE_ASSERT(snapshot_p->node_p->IsOnLeafDeltaChain(), "Leaf node must be on delta chain.");
 
+    NodeID current_node_id = snapshot_p->node_id;
+    bool expected = false;
+    bool ret = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
+
+
+
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
 
     bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
@@ -5658,6 +5676,13 @@ class BwTree : public BwTreeBase {
     } else {
       epoch_manager.AddGarbageNode(leaf_node_p);
     }
+
+
+
+    expected = true;
+    ret = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, false);
+
+
   }
 
   /*
@@ -5725,6 +5750,9 @@ class BwTree : public BwTreeBase {
     // to locate garbage delta chain
     const BaseNode *node_p = snapshot_p->node_p;
 
+    // 2022-11-20 get node_id
+    NodeID current_node_id = snapshot_p->node_id;
+
     // We could only perform consolidation on delta node
     // because we want to see depth field
     if (!node_p->IsDeltaNode()) {
@@ -5742,6 +5770,18 @@ class BwTree : public BwTreeBase {
     int depth = node_p->GetDepth();
 
     if (snapshot_p->IsLeaf()) {
+
+      /*
+      // 2022-11-20 new policy for leafnode consolidation
+      if(leaf_consolidation_flag[current_node_id].load()){
+        return;
+      }
+      int real_depth = depth -  leaf_base_depth[current_node_id].load();
+      if(real_depth < GetLeafDeltaChainLengthThreshold()){
+        return;
+      }
+      */
+
       if (depth < GetLeafDeltaChainLengthThreshold()) {
         return;
       }
