@@ -2659,12 +2659,9 @@ class BwTree : public BwTreeBase {
    * It initialize all elements to false in order to make
    * first CAS on the leaf_consolidation_flag would succeed
    *
-   * NOTE: As an optimization we do not set the leaf_consolidation_flag to zero
-   * since installing new node could be done as directly writing into
-   * the leaf_consolidation_flag rather than CAS with nullptr
    */
   NO_ASAN void Init_leaf_consolidation_flag() {
-    leaf_consolidation_flag = (std::atomic<bool> *)mmap(false, sizeof(bool) * MAPPING_TABLE_SIZE,
+    leaf_consolidation_flag = (std::atomic<bool> *)mmap(nullptr, sizeof(bool) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     // If allocation fails, we throw an error because this is uncoverable
     // The upper level functions should either catch this exception
@@ -2688,7 +2685,7 @@ class BwTree : public BwTreeBase {
    *
    */
   NO_ASAN void Init_leaf_base_depth() {
-    leaf_base_depth = (std::atomic<uint64_t> *)mmap(0, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
+    leaf_base_depth = (std::atomic<uint64_t> *)mmap(nullptr, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     // If allocation fails, we throw an error because this is uncoverable
     // The upper level functions should either catch this exception
