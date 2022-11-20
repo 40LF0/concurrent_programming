@@ -5661,7 +5661,7 @@ class BwTree : public BwTreeBase {
 
     NodeID current_node_id = snapshot_p->node_id;
     bool expected = false;
-    bool ret = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
+    bool ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
 
 
 
@@ -5680,7 +5680,7 @@ class BwTree : public BwTreeBase {
 
 
     expected = true;
-    ret = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, false);
+    ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, false);
 
 
   }
