@@ -1770,10 +1770,6 @@ class BwTree : public BwTreeBase {
     // This is the starting point
     ElementType start[0];
 
-    // 2022-12-22 new member for ElasticNode
-    std::atomic<bool> consolidation_flag;
-    uint64_t time_stamp;
-
    public:
     /*
      * Constructor
@@ -1781,24 +1777,19 @@ class BwTree : public BwTreeBase {
      * Note that this constructor uses the low key and high key stored as
      * members to initialize the NodeMetadata object in class BaseNode
      */
-
-     // 2022-12-22
     NO_ASAN ElasticNode(NodeType p_type, int p_depth, int p_item_count, const KeyNodeIDPair &p_low_key,
                         const KeyNodeIDPair &p_high_key)
         : BaseNode{p_type, &low_key, &high_key, p_depth, p_item_count},
           low_key{p_low_key},
           high_key{p_high_key},
-          end{start},
-          consolidation_flag{false},
-          time_stamp{0}
-          {}
+          end{start} {}
 
     /*
      * Copy() - Copy constructs another instance
      */
     NO_ASAN static ElasticNode *Copy(const ElasticNode &other) {
       ElasticNode *node_p = ElasticNode::Get(other.GetItemCount(), other.GetType(), other.GetDepth(),
-                                             other.GetItemCount(), other.GetLowKeyPair(), other.GetHighKeyPair(),other.time_stamp);
+                                             other.GetItemCount(), other.GetLowKeyPair(), other.GetHighKeyPair());
 
       node_p->PushBack(other.Begin(), other.End());
 
@@ -1918,7 +1909,7 @@ class BwTree : public BwTreeBase {
     NO_ASAN inline static ElasticNode *Get(int size,  // Number of elements
                                            NodeType p_type, int p_depth,
                                            int p_item_count,  // Usually equal to size
-                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key, uint64_t time_stamp) {
+                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key) {
       // Currently this is always true - if we want a larger array then
       // just remove this line
       NOISEPAGE_ASSERT(size == p_item_count, "Remove this if you want a larger array.");
@@ -1945,7 +1936,7 @@ class BwTree : public BwTreeBase {
 
       // Call placement new to initialize all that could be initialized
       new (node_p) ElasticNode{p_type, p_depth, p_item_count, p_low_key, p_high_key};
-      ++node_p->time_stamp;
+
       return node_p;
     }
 
@@ -2301,6 +2292,12 @@ class BwTree : public BwTreeBase {
         "Setting up execution environment...");
 
     InitMappingTable();
+    //2022-11-20 to implement new algorithm about consolidation for leaf_node
+    // Two new members are needed.
+    // Init leaf_consolidation_flag and leaf_base_depth
+    Init_leaf_consolidation_flag();
+    Init_leaf_base_depth();
+
     InitNodeLayout();
 
     INDEX_LOG_TRACE("sizeof(NodeMetaData) = %lu is the overhead for each node", sizeof(NodeMetaData));
@@ -2654,6 +2651,61 @@ class BwTree : public BwTreeBase {
     INDEX_LOG_TRACE("Initializing mapping table.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
   }
+
+  //2022-11-20
+  /*
+   * Init_leaf_consolidation_flag() - Initialize the leaf_consolidation_flag
+   *
+   * It initialize all elements to false in order to make
+   * first CAS on the leaf_consolidation_flag would succeed
+   *
+   * NOTE: As an optimization we do not set the leaf_consolidation_flag to zero
+   * since installing new node could be done as directly writing into
+   * the leaf_consolidation_flag rather than CAS with nullptr
+   */
+  NO_ASAN void Init_leaf_consolidation_flag() {
+    leaf_consolidation_flag = (std::atomic<bool> *)mmap(false, sizeof(bool) * MAPPING_TABLE_SIZE,
+                                                          PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    // If allocation fails, we throw an error because this is uncoverable
+    // The upper level functions should either catch this exception
+    // and then use another index instead, or simply kill the system
+    if (leaf_consolidation_flag == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize leaf_consolidation_flag");
+      //      throw IndexException("mmap() failed to initialize leaf_consolidation_flag for Bw-Tree");
+      // TODO(Matt): fix this
+    }
+
+    INDEX_LOG_TRACE("Leaf_consolidation_flag allocated via mmap()");
+
+    INDEX_LOG_TRACE("Initializing leaf_consolidation_flag.... size = %lu", MAPPING_TABLE_SIZE);
+  }
+
+  //2022-11-20
+  /*
+   * Init_leaf_base_depth() - Initialize the leaf_base_depth
+   *
+   * It initialize all elements to 0.
+   *
+   */
+  NO_ASAN void Init_leaf_base_depth() {
+    leaf_base_depth = (std::atomic<uint64_t> *)mmap(0, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
+                                                          PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    // If allocation fails, we throw an error because this is uncoverable
+    // The upper level functions should either catch this exception
+    // and then use another index instead, or simply kill the system
+    if (leaf_base_depth == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize leaf_base_depth");
+      //      throw IndexException("mmap() failed to initialize leaf_base_depth for Bw-Tree");
+      // TODO(Matt): fix this
+    }
+
+    INDEX_LOG_TRACE("Leaf_base_depth allocated via mmap()");
+
+    INDEX_LOG_TRACE("Initializing leaf_base_depth.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+  }
+
+
 
   /*
    * GetNextNodeID() - Thread-safe lock free method to get next node ID
@@ -5694,15 +5746,7 @@ class BwTree : public BwTreeBase {
 
     if (snapshot_p->IsLeaf()) {
       if (depth < GetLeafDeltaChainLengthThreshold()) {
-        if(node_p->time_stamp != GetNode(snapshot_p->node_id)->time_stamp){
-            return;
-        }
-
-        bool expected = false;
-        GetNode(snapshot_p->node_id)->consolidation_flag.compare_exchange_strong(expected,true);
-        if(expected){
-            return;
-        }
+        return;
       }
     } else {
       if (depth < GetInnerDeltaChainLengthThreshold()) {
@@ -5713,7 +5757,6 @@ class BwTree : public BwTreeBase {
     // After this point we decide to consolidate node
 
     ConsolidateNode(snapshot_p);
-     
   }
 
   /*
@@ -6942,6 +6985,19 @@ class BwTree : public BwTreeBase {
   std::atomic<NodeID> next_unused_node_id;
   std::atomic<const BaseNode *> *mapping_table;
 
+  //2022-11-20 to implement new algorithm about consolidation for leaf_node
+  // Two new members are needed.
+  // leaf_consolidation_flag & leaf_base_depth
+
+  // leaf_consolidation_flag tells if there is a thead doing consolidation about target leaf_node.
+  std::atomic<bool> *leaf_consolidation_flag;
+
+  // leaf_base_depth tells base_depth of target leaf_node.
+  // we can calculate actual depth of delta by this. `delta.GetDepth() - leaf_base_depth[node_id]`
+  std::atomic<uint64_t> *leaf_base_depth;
+
+
+
   // This list holds free NodeID which was removed by remove delta
   // We recycle NodeID in epoch manager
 
@@ -7156,7 +7212,6 @@ class BwTree : public BwTreeBase {
       // table in the above routine. If it was unmapped in ~BwTree() then this
       // function will invoke illegal memory access
       int munmap_ret = munmap(tree_p->mapping_table, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
-
       // Although failure of munmap is not fatal, we still print out
       // an error log entry
       // Otherwise just trace log
@@ -7165,6 +7220,35 @@ class BwTree : public BwTreeBase {
       } else {
         INDEX_LOG_TRACE("Mapping table is unmapped for Bw-Tree");
       }
+
+
+      // NOTE: Only unmap memory here because we need to access the leaf_consolidation_flag
+      // in the above routine. If it was unmapped in ~BwTree() then this
+      // function will invoke illegal memory access
+      int munflag_ret = munmap(tree_p->leaf_consolidation_flag, sizeof(bool) * MAPPING_TABLE_SIZE);
+      // Although failure of munmap is not fatal, we still print out
+      // an error log entry
+      // Otherwise just trace log
+      if (munflag_ret != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munflag_ret);
+      } else {
+        INDEX_LOG_TRACE("leaf_consolidation_flag is unmapped for Bw-Tree");
+      }
+
+
+      // NOTE: Only unmap memory here because we need to access the leaf_base_depth
+      // in the above routine. If it was unmapped in ~BwTree() then this
+      // function will invoke illegal memory access
+      int munbase_depth_ret = munmap(tree_p->leaf_base_depth, sizeof(uint64_t) * MAPPING_TABLE_SIZE);
+      // Although failure of munmap is not fatal, we still print out
+      // an error log entry
+      // Otherwise just trace log
+      if (munbase_depth_ret != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munbase_depth_ret);
+      } else {
+        INDEX_LOG_TRACE("leaf_base_depth is unmapped for Bw-Tree");
+      }
+
     }
 
     /*
