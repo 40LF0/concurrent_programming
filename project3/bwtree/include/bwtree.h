@@ -5667,10 +5667,17 @@ class BwTree : public BwTreeBase {
     if(!ret_flag){
         return;
     }
+    const BaseNode *newest_node =  snapshot_p->node_p;
+    const real_depth = newest_node->GetDepth();
+    const used_depth = real_depth -1;
+    const BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
+
     */
 
+    // we have to modify CollectAllValuesOnLeaf logic 
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
 
+    // we have to modify InstallNodeToReplace logic
     bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
 
     if (ret) {
