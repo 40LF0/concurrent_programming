@@ -1126,7 +1126,7 @@ class BwTree : public BwTreeBase {
     /*
      * GetDepth_with_snapshot() - Returns the depth of the current node
      */
-    NO_ASAN int GetDepth_with_snapshot(NodeSnapshot *snapshot_p){
+    NO_ASAN int GetDepth_with_snapshot(NodeSnapshot *snapshot_p) const{
         if(snapshot_p->IsLeaf()){
             NodeID current_node_id = snapshot_p->node_id;
             int depth = metadata.depth;
