@@ -3,6 +3,9 @@
 // 2020-08-27: modified by Wan to track index_size, exposed via GetSize()
 // 2020-10-05: modified by Wan to disable ASAN per function, because apparently gcc refuses to add fsanitize-blacklist.
 
+// 2022-11-23: change GetDepth() function! to GetDepth_with_snapshot(snapshot_p)
+
+
 // As we have learned from recent events, if we do not test for something, then it does not exist.
 #define NO_ASAN __attribute__((no_sanitize("address")))
 
@@ -1119,6 +1122,21 @@ class BwTree : public BwTreeBase {
      * GetDepth() - Returns the depth of the current node
      */
     NO_ASAN inline int GetDepth() const { return metadata.depth; }
+
+    /*
+     * GetDepth_with_snapshot() - Returns the depth of the current node
+     */
+    NO_ASAN int GetDepth_with_snapshot(NodeSnapshot *snapshot_p){
+        if(snapshot_p->IsLeaf()){
+            NodeID current_node_id = snapshot_p->node_id;
+            int depth = metadata.depth;
+            return depth -  leaf_base_depth[current_node_id].load()
+        }
+        else{
+            return metadata.depth;
+        }
+   }
+
 
     /*
      * GetItemCount() - Returns the item count of the current node
@@ -3438,7 +3456,7 @@ class BwTree : public BwTreeBase {
 
     // This is the number of insert + delete records which contributes
     // to the size of the bloom filter
-    int delta_record_num = node_p->GetDepth();
+    int delta_record_num = node_p->GetDepth_with_snapshot(snapshot_p);
 
     // This array will hold sorted InnerDataNode pointers in order to
     // perform a log merging
@@ -3776,7 +3794,7 @@ class BwTree : public BwTreeBase {
     // The maximum size of present set and deleted set is just
     // the length of the delta chain. Since when we reached the leaf node
     // we just probe and add to value set
-    const int set_max_size = node_p->GetDepth();
+    const int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p);
 
     // 1. This works even if depth is 0
     // 2. We choose to store const ValueType * because we want to bound the
@@ -4135,7 +4153,7 @@ class BwTree : public BwTreeBase {
 
     const KeyType &search_key = context_p->search_key;
 
-    const int set_max_size = node_p->GetDepth();
+    const int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p);
 
     const ValueType *present_set_data_p[set_max_size];
     const ValueType *deleted_set_data_p[set_max_size];
@@ -4312,7 +4330,7 @@ class BwTree : public BwTreeBase {
 
     // This is the number of delta records inside the logical node
     // including merged delta chains
-    int delta_change_num = node_p->GetDepth();
+    int delta_change_num = node_p->GetDepth_with_snapshot(snapshot_p);
 
     // We only need to keep those on the delta chian into a set
     // and those in the data list of leaf page do not need to be
@@ -5668,7 +5686,7 @@ class BwTree : public BwTreeBase {
         return;
     }
     const BaseNode *newest_node =  snapshot_p->node_p;
-    const real_depth = newest_node->GetDepth();
+    const real_depth = newest_node->GetDepth_with_snapshot(snapshot_p);
     const used_depth = real_depth -1;
     const BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
 
@@ -5778,17 +5796,13 @@ class BwTree : public BwTreeBase {
     }
 
     // If depth does not exceed threshold then we check recommendation flag
-    int depth = node_p->GetDepth();
+    int depth = node_p->GetDepth_with_snapshot(snapshot_p);
 
     if (snapshot_p->IsLeaf()) {
 
       /*
       // 2022-11-20 new policy for leafnode consolidation
       if(leaf_consolidation_flag[current_node_id].load()){
-        return;
-      }
-      int real_depth = depth -  leaf_base_depth[current_node_id].load();
-      if(real_depth < GetLeafDeltaChainLengthThreshold()){
         return;
       }
       */
@@ -6398,7 +6412,7 @@ class BwTree : public BwTreeBase {
     // We can only search for left sibling on inner delta chain
     NOISEPAGE_ASSERT(!node_p->IsOnLeafDeltaChain(), "We can only search for left sibling on inner delta chain.");
 
-    const InnerDataNode *data_node_list[node_p->GetDepth()];
+    const InnerDataNode *data_node_list[node_p->GetDepth_with_snapshot(snapshot_p)];
 
     // These two are used to compare InnerDataNode for < and == relation
 
@@ -6568,7 +6582,7 @@ class BwTree : public BwTreeBase {
           InnerNode *inner_node_p = CollectAllSepsOnInner(snapshot_p,
                                                           // Must +1 to avoid looping on the same depth
                                                           // without any consolidation
-                                                          snapshot_p->node_p->GetDepth() + 1);
+                                                          snapshot_p->node_p->GetDepth_with_snapshot(snapshot_p) + 1);
 
           bool ret = InstallNodeToReplace(snapshot_p->node_id, inner_node_p, snapshot_p->node_p);
 
