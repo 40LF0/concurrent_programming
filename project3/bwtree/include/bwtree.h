@@ -1130,7 +1130,7 @@ class BwTree : public BwTreeBase {
         if(snapshot_p->IsLeaf()){
             NodeID current_node_id = snapshot_p->node_id;
             int depth = metadata.depth;
-            return depth -  leaf_base_depth[current_node_id].load()
+            return depth -  leaf_base_depth[current_node_id].load();
         }
         else{
             return metadata.depth;
