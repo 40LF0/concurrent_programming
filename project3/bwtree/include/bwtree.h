@@ -1860,14 +1860,13 @@ class BwTree : public BwTreeBase {
      */
     NO_ASAN inline ElementType *Begin() { return start; }
 
-    NO_ASAN inline  ElementType *Begin()  { return start; }
+
 
     /*
      * End() - Returns an end iterator that is similar to the one for vector
      */
     NO_ASAN inline ElementType *End() { return end; }
 
-    NO_ASAN inline  ElementType *End()  { return end; }
 
     /*
      * REnd() - Returns the element before the first element
@@ -1877,7 +1876,6 @@ class BwTree : public BwTreeBase {
      */
     NO_ASAN inline  ElementType *REnd() { return start - 1; }
 
-    NO_ASAN inline  ElementType *REnd()  { return start - 1; }
 
     /*
      * GetSize() - Returns the size of the embedded list
@@ -2019,12 +2017,7 @@ class BwTree : public BwTreeBase {
       return *(Begin() + index);
     }
 
-    NO_ASAN inline  ElementType &At( int index)  {
-      // The index must be inside the valid range
-      NOISEPAGE_ASSERT(index < GetSize(), "Index out of range.");
 
-      return *(Begin() + index);
-    }
   };
 
   /*
