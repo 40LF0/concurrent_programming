@@ -1,7 +1,0 @@
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/rebuild_cache.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/Driver.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/harness.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/database.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/Query2SQL.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/link_target.dir
-/home/seungyeon/CONCURRENT_PROGRAMING/2022_ite4065_2019082851/CONCURRENT_project1/submission/build/release/CMakeFiles/edit_cache.dir

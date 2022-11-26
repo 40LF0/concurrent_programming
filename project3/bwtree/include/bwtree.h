@@ -1162,7 +1162,7 @@ class BwTree : public BwTreeBase {
    */
   class DeltaNode : public BaseNode {
    public:
-    std::atomic<BaseNode *> child_node_p;
+    const BaseNode *child_node_p;
 
     /*
      * Constructor
@@ -4310,10 +4310,7 @@ class BwTree : public BwTreeBase {
   NO_ASAN LeafNode *CollectAllValuesOnLeaf(NodeSnapshot *snapshot_p, LeafNode *leaf_node_p = nullptr) {
     NOISEPAGE_ASSERT(snapshot_p->IsLeaf(), "Must be a leaf node.");
 
-    //const BaseNode *node_p = snapshot_p->node_p;
-    // 2022-11-24 node_p should be previous delta
-    const BaseNode *node_p = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
-
+    const BaseNode *node_p = snapshot_p->node_p;
 
     /////////////////////////////////////////////////////////////////
     // Prepare new node
@@ -4870,10 +4867,6 @@ class BwTree : public BwTreeBase {
 
     // This does not abort
     TryConsolidateNode(context_p);
-
-    if (context_p->abort_flag) {
-      return;
-    }
 
     AdjustNodeSize(context_p);
   }
@@ -5681,14 +5674,12 @@ class BwTree : public BwTreeBase {
    *
    * This function does not check delta chain size
    */
-  NO_ASAN inline void ConsolidateLeafNode(NodeSnapshot *snapshot_p,Context *context_p) {
+  NO_ASAN inline void ConsolidateLeafNode(NodeSnapshot *snapshot_p) {
     NOISEPAGE_ASSERT(snapshot_p->node_p->IsOnLeafDeltaChain(), "Leaf node must be on delta chain.");
 
-    
+    /*
     //2022-11-20
-    const BaseNode *node_p = snapshot_p->node_p;
-    BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
-    const NodeID current_node_id = snapshot_p->node_id;
+    NodeID current_node_id = snapshot_p->node_id;
     bool expected = false;
     bool ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
     if(!ret_flag){
@@ -5699,44 +5690,28 @@ class BwTree : public BwTreeBase {
     const used_depth = real_depth -1;
     const BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
 
-    
+    */
 
     // we have to modify CollectAllValuesOnLeaf logic 
-    // logic changed 2022-11-24
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
 
     // we have to modify InstallNodeToReplace logic
-    //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-
-    bool ret = node_p->child_node_p.compare_exchange_strong(node_child, leaf_node_p);
-
+    bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
 
     if (ret) {
-      epoch_manager.AddGarbageNode(node_child);
+      epoch_manager.AddGarbageNode(snapshot_p->node_p);
 
-      //2022-11-24
-      uint64_t old_base_value = leaf_base_depth[current_node_id].load()
-      bool ret_base = leaf_base_depth[current_node_id].compare_exchange_strong(old_base_value, old_base_value+used_depth);
-      NOISEPAGE_ASSERT(ret_base == true, "ret_base should be always true");
-
+      snapshot_p->node_p = leaf_node_p;
     } else {
       epoch_manager.AddGarbageNode(leaf_node_p);
     }
 
-    // we should do AdjustNodeSize(context_p) opreation and FinishPartialSMO(context_p) opreation!
-
-    AdjustNodeSize_for_leaf(context_p,leaf_node_p);
-
+    /*
     //2022-11-20
-    bool new_expected = true;
-    bool new_ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(new_expected, false);
-    NOISEPAGE_ASSERT(new_ret_flag == true, "new_ret_flag should be always true");
-    
-
-
-
-
-    
+    expected = true;
+    ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, false);
+    NOISEPAGE_ASSERT(ret_flag == true, "ret_flag should be always true");
+    */
   }
 
   /*
@@ -5771,9 +5746,9 @@ class BwTree : public BwTreeBase {
    * of CAS operation, since consolidation is an optional operation, and it
    * would not have any effect even if it fails
    */
-  NO_ASAN void ConsolidateNode(NodeSnapshot *snapshot_p,Context *context_p) {
+  NO_ASAN void ConsolidateNode(NodeSnapshot *snapshot_p) {
     if (snapshot_p->node_p->IsOnLeafDeltaChain()) {
-      ConsolidateLeafNode(snapshot_p,context_p);
+      ConsolidateLeafNode(snapshot_p);
     } else {
       ConsolidateInnerNode(snapshot_p);
     }  // if on leaf/inner node
@@ -5825,11 +5800,12 @@ class BwTree : public BwTreeBase {
 
     if (snapshot_p->IsLeaf()) {
 
-
+      /*
       // 2022-11-20 new policy for leafnode consolidation
       if(leaf_consolidation_flag[current_node_id].load()){
         return;
       }
+      */
 
       if (depth < GetLeafDeltaChainLengthThreshold()) {
         return;
@@ -5842,159 +5818,8 @@ class BwTree : public BwTreeBase {
 
     // After this point we decide to consolidate node
 
-    ConsolidateNode(snapshot_p,context_p);
+    ConsolidateNode(snapshot_p);
   }
-
-
-  NO_ASAN void AdjustNodeSize_for_leaf(Context *context_p,LeafNode *leaf_node_p){
-
-    // NOTE: We use key number as the size of the node
-    // because using item count might result in a very unstable
-    // split, in a sense that we could not always split the node
-    // evenly, and in the worst case if there is one key in the
-    // node the node could not be splited while having a large
-    // item count
-    size_t node_size = leaf_node_p->GetItemCount();
-
-    // Perform corresponding action based on node size
-    if (node_size >= GetLeafNodeSizeUpperThreshold()) {
-    INDEX_LOG_TRACE("Node size >= leaf upper threshold. Split");
-
-    // Note: This function takes this as argument since it will
-    // do key comparison
-    const LeafNode *new_leaf_node_p = leaf_node_p->GetSplitSibling(this);
-
-    // If the new leaf node pointer is nullptr then it means the
-    // although the size of the leaf node exceeds split threshold
-    // but we could not find a spliting point that evenly or almost
-    // evenly divides the key space into two siblings whose sizes
-    // are both larger than the merge threshold (o.w. the node will
-    // be immediately merged)
-    // NOTE: This is a potential problem if a leaf becomes very unbalanced
-    // since all threads will try to split the leaf node when traversing
-    // to it (not for reader threads)
-    if (new_leaf_node_p == nullptr) {
-        INDEX_LOG_TRACE(
-            "LeafNode size exceeds overhead, "
-            "but could not find split point");
-
-        return;
-    }
-
-    // Since we would like to access its first element to get the low key
-    NOISEPAGE_ASSERT(new_leaf_node_p->GetSize() > 0, "Invalid node size.");
-
-    // The split key must be a valid key
-    // Note that the lowkey for leaf node is not defined, so in the
-    // case that it is required we must manually goto its data list
-    // and find the low key in its leftmost element
-    const KeyType &split_key = new_leaf_node_p->At(0).first;
-
-    // If leaf split fails this should be recyced using a fake remove node
-    NodeID new_node_id = GetNextNodeID();
-
-    // Note that although split node only stores the new node ID
-    // we still need its pointer to compute item_count
-    const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
-        LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p);
-
-    //  First install the NodeID -> split sibling mapping
-    // If CAS fails we also need to recycle the node ID allocated here
-    InstallNewNode(new_node_id, new_leaf_node_p);
-
-    // Then CAS split delta into current node's NodeID
-    bool ret = InstallNodeToReplace(node_id, split_node_p, node_p);
-
-    if (ret) {
-        INDEX_LOG_TRACE("Leaf split delta (from %" PRIu64 " to %" PRIu64 ") CAS succeeds. ABORT", node_id,
-                        new_node_id);
-
-        // TODO(Ziqi): WE ABORT HERE TO AVOID THIS THREAD POSTING ANYTHING
-        // ON TOP OF IT WITHOUT HELPING ALONG AND ALSO BLOCKING OTHER
-        // THREAD TO HELP ALONG
-        context_p->abort_flag = true;
-
-        return;
-    }
-
-    INDEX_LOG_TRACE("Leaf split delta CAS fails");
-
-    // Need to use the epoch manager to recycle NodeID
-    // Note that this node must not be created on new_leaf_node_p
-    // since they are both put into the GC chain, it is possible
-    // for new_leaf_node_p to be deleted first and then remove node
-    // is deleted
-    const LeafRemoveNode *fake_remove_node_p = new LeafRemoveNode{new_node_id, new_leaf_node_p};
-
-    // Must put both of them into GC chain since RemoveNode
-    // will not be followed by GC thread
-    epoch_manager.AddGarbageNode(fake_remove_node_p);
-    epoch_manager.AddGarbageNode(new_leaf_node_p);
-
-    // We have two nodes to delete here
-    split_node_p->~LeafSplitNode();
-
-    return;
-
-    } else if (node_size <= LEAF_NODE_SIZE_LOWER_THRESHOLD) {
-    // This might yield a false positive of left child
-    // but correctness is not affected - sometimes the merge is delayed
-    if (IsOnLeftMostChild(context_p)) {
-        INDEX_LOG_TRACE("Left most leaf node cannot be removed");
-
-        return;
-    }
-
-    // After this point we decide to remove leaf node
-
-    INDEX_LOG_TRACE("Node size <= leaf lower threshold. Remove");
-
-    // Install an abort node on parent
-    const BaseNode *abort_node_p;
-    const BaseNode *abort_child_node_p;
-    NodeID parent_node_id;
-
-    bool abort_node_ret = PostAbortOnParent(context_p, &parent_node_id, &abort_node_p, &abort_child_node_p);
-
-    // If we could not block the parent then the parent has changed
-    // (splitted, etc.)
-    if (abort_node_ret) {
-        INDEX_LOG_TRACE("Blocked parent node (current node is leaf)");
-    } else {
-        INDEX_LOG_TRACE(
-            "Unable to block parent node "
-            "(current node is leaf). ABORT");
-
-        // ABORT and return
-        context_p->abort_flag = true;
-
-        return;
-    }
-
-    const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
-
-    bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
-    if (ret) {
-        INDEX_LOG_TRACE("LeafRemoveNode CAS succeeds. ABORT.");
-
-        context_p->abort_flag = true;
-
-        RemoveAbortOnParent(parent_node_id, abort_node_p, abort_child_node_p);
-
-        return;
-    }
-
-    INDEX_LOG_TRACE("LeafRemoveNode CAS failed");
-
-    delete remove_node_p;
-
-    context_p->abort_flag = true;
-
-    RemoveAbortOnParent(parent_node_id, abort_node_p, abort_child_node_p);
-
-    return;
-      
-}
 
   /*
    * AdjustNodeSize() - Post split or merge delta if a node becomes overflow
