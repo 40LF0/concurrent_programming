@@ -1173,13 +1173,6 @@ class BwTree : public BwTreeBase {
         : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p},
         leaf_delta_id{leafdelta_id}{}
 
-    NO_ASAN ~DeltaNode(){
-        if(leaf_delta_id == -1){
-            return;
-        }
-
-        mapping_leaf_delta_table[leaf_delta_id] = nullptr;
-    }
 
   };
 
@@ -2527,20 +2520,30 @@ class BwTree : public BwTreeBase {
       switch (type) {
         case NodeType::LeafInsertType:
           next_node_p = ((LeafInsertNode *)node_p)->child_node_p;
-
+          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          if(leaf_delta > -1){
+              mapping_leaf_delta_table[leaf_delta] = nullptr;
+          }
           ((LeafInsertNode *)node_p)->~LeafInsertNode();
           freed_count++;
+
 
           break;
         case NodeType::LeafDeleteType:
           next_node_p = ((LeafDeleteNode *)node_p)->child_node_p;
-
+          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          if(leaf_delta > -1){
+              mapping_leaf_delta_table[leaf_delta] = nullptr;
+          }
           ((LeafDeleteNode *)node_p)->~LeafDeleteNode();
 
           break;
         case NodeType::LeafSplitType:
           next_node_p = ((LeafSplitNode *)node_p)->child_node_p;
-
+          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          if(leaf_delta > -1){
+              mapping_leaf_delta_table[leaf_delta] = nullptr;
+          }
           freed_count += FreeNodeByNodeID(((LeafSplitNode *)node_p)->insert_item.second);
 
           ((LeafSplitNode *)node_p)->~LeafSplitNode();
@@ -2550,7 +2553,10 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafMergeType:
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->child_node_p);
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->right_merge_p);
-
+          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          if(leaf_delta > -1){
+              mapping_leaf_delta_table[leaf_delta] = nullptr;
+          }
           ((LeafMergeNode *)node_p)->~LeafMergeNode();
           freed_count++;
 
@@ -2559,6 +2565,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafType:
           // Call destructor first, and then call Destroy() on its preallocated
           // linked list of chunks
+
           ((LeafNode *)node_p)->~LeafNode();
 
           // Free the memory
