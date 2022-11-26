@@ -5199,7 +5199,7 @@ class BwTree : public BwTreeBase {
       // updated
       parent_snapshot_p->node_p = insert_node_p;
 
-      ConsolidateNode(GetLatestNodeSnapshot(context_p));
+      ConsolidateNode(GetLatestNodeSnapshot(context_p),context_p);
 
       return true;
     }
@@ -5281,7 +5281,7 @@ class BwTree : public BwTreeBase {
 
       parent_snapshot_p->node_p = delete_node_p;
 
-      ConsolidateNode(GetLatestNodeSnapshot(context_p));
+      ConsolidateNode(GetLatestNodeSnapshot(context_p),context_p);
 
       return true;
     }
