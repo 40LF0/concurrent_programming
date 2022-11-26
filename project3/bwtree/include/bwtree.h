@@ -5709,8 +5709,7 @@ class BwTree : public BwTreeBase {
     // we have to modify InstallNodeToReplace logic
     //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
     const BaseNode *expected_node = node_child;
-    const BaseNode *changede_node = leaf_node_p;
-    bool ret = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.compare_exchange_strong(expected_node, changede_node);
+    auto ret = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
 
 
     if (ret) {
