@@ -5599,12 +5599,12 @@ class BwTree : public BwTreeBase {
           const auto *split_node_p = static_cast<const InnerSplitNode *>(snapshot_p->node_p);
 
           insert_item_p = &split_node_p->insert_item;
-          next_item_p = &split_node_p->child_node_p.load()->GetHighKeyPair();
+          next_item_p = &split_node_p->child_node_p->GetHighKeyPair();
         } else {
           const auto *split_node_p = static_cast<const LeafSplitNode *>(snapshot_p->node_p);
 
           insert_item_p = &split_node_p->insert_item;
-          next_item_p = &split_node_p->child_node_p.load()->GetHighKeyPair();
+          next_item_p = &split_node_p->child_node_p->GetHighKeyPair();
         }
 
 #ifdef BWTREE_DEBUG
@@ -5779,7 +5779,7 @@ class BwTree : public BwTreeBase {
     //2022-11-20
     //NodeID current_node_id = snapshot_p->node_id;
     const BaseNode *node_p = snapshot_p->node_p;
-    const BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.load();
+    const BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
     const NodeID current_node_id = snapshot_p->node_id;
 
     bool expected = false;
