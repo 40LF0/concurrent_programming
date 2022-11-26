@@ -6004,8 +6004,10 @@ class BwTree : public BwTreeBase {
 
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
+
+        NodeID leaf_node_id = GetNextleafdeltaID();
         const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
-            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p);
+            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p,leaf_node_id);
 
         //  First install the NodeID -> split sibling mapping
         // If CAS fails we also need to recycle the node ID allocated here
@@ -6082,6 +6084,7 @@ class BwTree : public BwTreeBase {
 
         const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
 
+        bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         if (ret) {
             INDEX_LOG_TRACE("LeafRemoveNode CAS succeeds. ABORT.");
@@ -6173,8 +6176,9 @@ class BwTree : public BwTreeBase {
 
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
+        NodeID leaf_node_id = GetNextleafdeltaID();
         const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
-            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p);
+            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p,leaf_node_id);
 
         //  First install the NodeID -> split sibling mapping
         // If CAS fails we also need to recycle the node ID allocated here
@@ -6248,8 +6252,8 @@ class BwTree : public BwTreeBase {
 
           return;
         }
-
-        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
+        NodeID leaf_node_id = GetNextleafdeltaID();
+        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p,leaf_node_id};
 
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         if (ret) {
@@ -6994,7 +6998,7 @@ class BwTree : public BwTreeBase {
 
       NodeID leaf_node_id = GetNextleafdeltaID();
       const LeafInsertNode *insert_node_p =
-          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
+          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair,leaf_node_id);
 
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
       if (ret) {
@@ -7096,8 +7100,9 @@ class BwTree : public BwTreeBase {
 
       // Here since we could not know which is the next key node
       // just use child node as a cpnservative way of inserting
+      NodeID leaf_node_id = GetNextleafdeltaID();
       const LeafInsertNode *insert_node_p =
-          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
+          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair,leaf_node_id);
 
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
       if (ret) {
@@ -7170,8 +7175,9 @@ class BwTree : public BwTreeBase {
       const BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
+      NodeID leaf_node_id = GetNextleafdeltaID();
       const LeafDeleteNode *delete_node_p =
-          LeafInlineAllocateOfType(LeafDeleteNode, node_p, key, value, node_p, index_pair);
+          LeafInlineAllocateOfType(LeafDeleteNode, node_p, key, value, node_p, index_pair,leaf_node_id);
 
       bool ret = InstallNodeToReplace(node_id, delete_node_p, node_p);
       if (ret) {
