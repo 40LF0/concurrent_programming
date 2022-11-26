@@ -2486,7 +2486,7 @@ class BwTree : public BwTreeBase {
 
   NO_ASAN inline void InvalidateleafdeltaID(NodeID leaf_delta_id) {
     leaf_delta_id_list_lock.lock();
-    mapping_delta_table[leaf_delta_id] = nullptr;
+    mapping_leaf_delta_table[leaf_delta_id] = nullptr;
     leaf_delta_id_list.push_back(leaf_delta_id);
     // free_node_id_list.SingleThreadPush(leaf_delta_id);
     leaf_delta_id_list_lock.unlock();
@@ -2814,22 +2814,6 @@ class BwTree : public BwTreeBase {
     return ret;
   }
 
-    NO_ASAN inline NodeID GetNextleafdeltaID() {
-    // This is a std::pair<bool, NodeID>
-    // If the first element is true then the NodeID is a valid one
-    // If the first element is false then NodeID is invalid and the
-    // stack is either empty or being used (we cannot lock and wait)
-    NodeID ret;
-    eaf_delta_id_list_lock.lock();
-    if (leaf_delta_id_list.size() == 0) {
-      ret = next_unused_leaf_delta_id.fetch_add(1);
-    } else {
-      ret = leaf_delta_id_list.front();
-      leaf_delta_id_list.pop_front();
-    }
-    eaf_delta_id_list_lock.unlock();
-    return ret;
-  }
 
   NO_ASAN inline NodeID GetNextleafdeltaID() {
     // This is a std::pair<bool, NodeID>
