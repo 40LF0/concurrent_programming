@@ -1169,7 +1169,7 @@ class BwTree : public BwTreeBase {
      */
     NO_ASAN DeltaNode(NodeType p_type, const BaseNode *p_child_node_p, const KeyNodeIDPair *p_low_key_p,
                       const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
-        : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p} {}
+        : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}{child_node_p = p_child_node_p;}
   };
 
   /*
