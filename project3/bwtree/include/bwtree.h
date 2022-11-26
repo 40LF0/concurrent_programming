@@ -1174,7 +1174,11 @@ class BwTree : public BwTreeBase {
         leaf_delta_id{leafdelta_id}{}
 
     NO_ASAN ~DeltaNode(){
-        FreeNodeByleafdeltaID(leaf_delta_id);
+        if(leaf_delta_id == -1){
+            return 0UL;
+        }
+
+        mapping_leaf_delta_table[leaf_delta_id] = nullptr;
     }
 
   };
@@ -2445,15 +2449,6 @@ class BwTree : public BwTreeBase {
     return FreeNodeByPointer(node_p);
   }
 
-  NO_ASAN size_t FreeNodeByleafdeltaID(NodeID node_id) {
-    if(node_id == -1){
-        return 0UL;
-    }
-
-    mapping_leaf_delta_table[node_id] = nullptr;
-
-    return 0UL;
-  }
 
   /*
    * InvalidateNodeID() - Recycle NodeID
