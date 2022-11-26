@@ -1175,7 +1175,7 @@ class BwTree : public BwTreeBase {
 
     NO_ASAN ~DeltaNode(){
         if(leaf_delta_id == -1){
-            return 0UL;
+            return;
         }
 
         mapping_leaf_delta_table[leaf_delta_id] = nullptr;
