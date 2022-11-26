@@ -5501,12 +5501,12 @@ class BwTree : public BwTreeBase {
           const auto *split_node_p = static_cast<const InnerSplitNode *>(snapshot_p->node_p);
 
           insert_item_p = &split_node_p->insert_item;
-          next_item_p = &split_node_p->child_node_p->GetHighKeyPair();
+          next_item_p = &split_node_p->child_node_p.load()->GetHighKeyPair();
         } else {
           const auto *split_node_p = static_cast<const LeafSplitNode *>(snapshot_p->node_p);
 
           insert_item_p = &split_node_p->insert_item;
-          next_item_p = &split_node_p->child_node_p->GetHighKeyPair();
+          next_item_p = &split_node_p->child_node_p.load()->GetHighKeyPair();
         }
 
 #ifdef BWTREE_DEBUG
