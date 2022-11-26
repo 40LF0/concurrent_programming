@@ -6860,7 +6860,7 @@ class BwTree : public BwTreeBase {
    * we allow the same key with different values. For a primary key index this
    * should be set true. By default we allow non-unique key
    */
-  NO_ASAN bool Insert( KeyType &key,  ValueType &value, bool unique_key = false) {
+  NO_ASAN bool Insert(cosnt KeyType &key,const  ValueType &value, bool unique_key = false) {
     INDEX_LOG_TRACE("Insert called");
 
 #ifdef BWTREE_DEBUG
