@@ -5708,7 +5708,7 @@ class BwTree : public BwTreeBase {
 
     // we have to modify InstallNodeToReplace logic
     //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-    bool ret = node_p->child_node_p.compare_exchange_strong(node_child, leaf_node_p);
+    bool ret = &node_p->child_node_p.compare_exchange_strong(node_child, leaf_node_p);
 
 
     if (ret) {
@@ -5725,7 +5725,7 @@ class BwTree : public BwTreeBase {
 
     // we should do AdjustNodeSize(context_p) opreation and FinishPartialSMO(context_p) opreation!
 
-    AdjustNodeSize_for_leaf(context_p,leaf_node_p);
+    //AdjustNodeSize_for_leaf(context_p,leaf_node_p);
 
     //2022-11-26
     bool new_expected = true;
