@@ -2516,11 +2516,11 @@ class BwTree : public BwTreeBase {
       NOISEPAGE_ASSERT(node_p != nullptr, "node_p cannot be a nullptr.");
 
       NodeType type = node_p->GetType();
-
+      NodeID leaf_delta = -1;
       switch (type) {
         case NodeType::LeafInsertType:
           next_node_p = ((LeafInsertNode *)node_p)->child_node_p;
-          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
               mapping_leaf_delta_table[leaf_delta] = nullptr;
           }
@@ -2531,7 +2531,7 @@ class BwTree : public BwTreeBase {
           break;
         case NodeType::LeafDeleteType:
           next_node_p = ((LeafDeleteNode *)node_p)->child_node_p;
-          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
               mapping_leaf_delta_table[leaf_delta] = nullptr;
           }
@@ -2540,7 +2540,7 @@ class BwTree : public BwTreeBase {
           break;
         case NodeType::LeafSplitType:
           next_node_p = ((LeafSplitNode *)node_p)->child_node_p;
-          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
               mapping_leaf_delta_table[leaf_delta] = nullptr;
           }
@@ -2553,7 +2553,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafMergeType:
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->child_node_p);
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->right_merge_p);
-          NodeID leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
+          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
               mapping_leaf_delta_table[leaf_delta] = nullptr;
           }
