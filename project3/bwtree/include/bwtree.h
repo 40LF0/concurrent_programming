@@ -1195,8 +1195,8 @@ class BwTree : public BwTreeBase {
 
     NO_ASAN LeafDataNode(const KeyValuePair &p_item, NodeType p_type, const BaseNode *p_child_node_p,
                          std::pair<int, bool> p_index_pair, const KeyNodeIDPair *p_low_key_p,
-                         const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
-        : DeltaNode{p_type, p_child_node_p, p_low_key_p, p_high_key_p, p_depth, p_item_count},
+                         const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count, NodeID leafdelta_id = -1)
+        : DeltaNode{p_type, p_child_node_p, p_low_key_p, p_high_key_p, p_depth, p_item_count,leafdelta_id},
           item{p_item},
           index_pair{p_index_pair} {}
 
@@ -1221,13 +1221,14 @@ class BwTree : public BwTreeBase {
      * Constructor
      */
     NO_ASAN LeafInsertNode(const KeyType &p_insert_key, const ValueType &p_value, const BaseNode *p_child_node_p,
-                           std::pair<int, bool> p_index_pair)
+                           std::pair<int, bool> p_index_pair,NodeID leafdelta_id = -1)
         : LeafDataNode{std::make_pair(p_insert_key, p_value), NodeType::LeafInsertType, p_child_node_p, p_index_pair,
                        &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
                        p_child_node_p->GetDepth() + 1,
                        // For insert nodes, the item count is inheried from the child
                        // node + 1 since it inserts new item
-                       p_child_node_p->GetItemCount() + 1} {}
+                       p_child_node_p->GetItemCount() + 1,
+                       leafdelta_id,} {}
   };
 
   /*
@@ -1243,13 +1244,14 @@ class BwTree : public BwTreeBase {
      * Constructor
      */
     NO_ASAN LeafDeleteNode(const KeyType &p_delete_key, const ValueType &p_value, const BaseNode *p_child_node_p,
-                           std::pair<int, bool> p_index_pair)
+                           std::pair<int, bool> p_index_pair,NodeID leafdelta_id = -1)
         : LeafDataNode{std::make_pair(p_delete_key, p_value), NodeType::LeafDeleteType, p_child_node_p, p_index_pair,
                        &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
                        p_child_node_p->GetDepth() + 1,
                        // For delete node it inherits item count from its child
                        // and - 1 from it since one element was deleted
-                       p_child_node_p->GetItemCount() - 1} {}
+                       p_child_node_p->GetItemCount() - 1,
+                       leafdelta_id,} {}
   };
 
   /*
@@ -1275,7 +1277,7 @@ class BwTree : public BwTreeBase {
      * the current node
      */
     NO_ASAN LeafSplitNode(const KeyNodeIDPair &p_insert_item, const BaseNode *p_child_node_p,
-                          const BaseNode *p_split_node_p)
+                          const BaseNode *p_split_node_p,NodeID leafdelta_id = -1)
         : DeltaNode{NodeType::LeafSplitType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     // High key is redirected to the split item inside the node
                     &insert_item,
@@ -1286,7 +1288,8 @@ class BwTree : public BwTreeBase {
                     // For split node it is a little bit tricky - we must
                     // know the item count of its sibling to decide how many
                     // items were removed by the split delta
-                    p_child_node_p->GetItemCount() - p_split_node_p->GetItemCount()},
+                    p_child_node_p->GetItemCount() - p_split_node_p->GetItemCount(),
+                    leafdelta_id,},
           insert_item{p_insert_item} {}
   };
 
@@ -1306,11 +1309,12 @@ class BwTree : public BwTreeBase {
     /*
      * Constructor
      */
-    NO_ASAN LeafRemoveNode(NodeID p_removed_id, const BaseNode *p_child_node_p)
+    NO_ASAN LeafRemoveNode(NodeID p_removed_id, const BaseNode *p_child_node_p,NodeID leafdelta_id = -1)
         : DeltaNode{NodeType::LeafRemoveType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     &p_child_node_p->GetHighKeyPair(),
                     // REMOVE node is an SMO and does not introduce data
-                    p_child_node_p->GetDepth(), p_child_node_p->GetItemCount()},
+                    p_child_node_p->GetDepth(), p_child_node_p->GetItemCount(),
+                    leafdelta_id,},
           removed_id{p_removed_id} {}
   };
 
@@ -6988,7 +6992,7 @@ class BwTree : public BwTreeBase {
       NodeID node_id = snapshot_p->node_id;
 
 
-      
+      NodeID leaf_node_id = GetNextleafdeltaID();
       const LeafInsertNode *insert_node_p =
           LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
 
