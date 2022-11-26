@@ -1313,7 +1313,8 @@ class BwTree : public BwTreeBase {
         : DeltaNode{NodeType::LeafRemoveType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     &p_child_node_p->GetHighKeyPair(),
                     // REMOVE node is an SMO and does not introduce data
-                    p_child_node_p->GetDepth(), p_child_node_p->GetItemCount(),
+                    p_child_node_p->GetDepth(), 
+                    p_child_node_p->GetItemCount(),
                     leafdelta_id,},
           removed_id{p_removed_id} {}
   };
@@ -6006,6 +6007,7 @@ class BwTree : public BwTreeBase {
         // we still need its pointer to compute item_count
 
         NodeID leaf_node_id = GetNextleafdeltaID();
+        mapping_leaf_delta_table[leaf_node_id] = node_p;
         const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
             LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p,leaf_node_id);
 
@@ -6177,6 +6179,7 @@ class BwTree : public BwTreeBase {
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
         NodeID leaf_node_id = GetNextleafdeltaID();
+        mapping_leaf_delta_table[leaf_node_id] = node_p;
         const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
             LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p,leaf_node_id);
 
@@ -6253,6 +6256,7 @@ class BwTree : public BwTreeBase {
           return;
         }
         NodeID leaf_node_id = GetNextleafdeltaID();
+        mapping_leaf_delta_table[leaf_node_id] = node_p;
         const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p,leaf_node_id};
 
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
@@ -6997,6 +7001,7 @@ class BwTree : public BwTreeBase {
 
 
       NodeID leaf_node_id = GetNextleafdeltaID();
+      mapping_leaf_delta_table[leaf_node_id] = node_p;
       const LeafInsertNode *insert_node_p =
           LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair,leaf_node_id);
 
@@ -7101,6 +7106,7 @@ class BwTree : public BwTreeBase {
       // Here since we could not know which is the next key node
       // just use child node as a cpnservative way of inserting
       NodeID leaf_node_id = GetNextleafdeltaID();
+      mapping_leaf_delta_table[leaf_node_id] = node_p;
       const LeafInsertNode *insert_node_p =
           LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair,leaf_node_id);
 
@@ -7176,6 +7182,7 @@ class BwTree : public BwTreeBase {
       NodeID node_id = snapshot_p->node_id;
 
       NodeID leaf_node_id = GetNextleafdeltaID();
+      mapping_leaf_delta_table[leaf_node_id] = node_p;
       const LeafDeleteNode *delete_node_p =
           LeafInlineAllocateOfType(LeafDeleteNode, node_p, key, value, node_p, index_pair,leaf_node_id);
 
