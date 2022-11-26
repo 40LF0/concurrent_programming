@@ -57,7 +57,7 @@ TEST_F(BwtreeTest, ConcurrentRandomInsert) {
     const uint32_t gcid = id + 1;
     tree->AssignGCID(gcid);
     std::default_random_engine thread_generator(id);
-    std::uniform_int_distribution<int> uniform_dist(0, 31);
+    std::uniform_int_distribution<int> uniform_dist(0, 15);
 
     while (insert_success_counter.load() < key_num) {
       int key = uniform_dist(thread_generator);
