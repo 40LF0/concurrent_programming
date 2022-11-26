@@ -5696,8 +5696,8 @@ class BwTree : public BwTreeBase {
         return;
     }
     const BaseNode *newest_node =  snapshot_p->node_p;
-    const real_depth = newest_node->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
-    const used_depth = real_depth -1;
+    const uint64_t real_depth = newest_node->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+    const uint64_t used_depth = real_depth -1;
     const BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
 
     
@@ -5715,7 +5715,7 @@ class BwTree : public BwTreeBase {
       //epoch_manager.AddGarbageNode(snapshot_p->node_p);
       epoch_manager.AddGarbageNode(node_child);
       //2022-11-26
-      uint64_t old_base_value = leaf_base_depth[current_node_id].load()
+      uint64_t old_base_value = leaf_base_depth[current_node_id].load();
       bool ret_base = leaf_base_depth[current_node_id].compare_exchange_strong(old_base_value, old_base_value+used_depth);
       NOISEPAGE_ASSERT(ret_base == true, "ret_base should be always true");
 
