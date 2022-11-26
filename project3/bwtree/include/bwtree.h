@@ -5857,6 +5857,7 @@ class BwTree : public BwTreeBase {
    * TODO: In the future we might want to change this
    */
 
+/*
  NO_ASAN void AdjustNodeSize_for_leaf(Context *context_p,LeafNode *leaf_node_p){
 
     // NOTE: We use key number as the size of the node
@@ -6006,7 +6007,7 @@ class BwTree : public BwTreeBase {
         return;
       
 }
-
+*/
 
 
   NO_ASAN void AdjustNodeSize(Context *context_p) {
