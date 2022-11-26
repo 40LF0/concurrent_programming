@@ -2522,8 +2522,9 @@ class BwTree : public BwTreeBase {
           next_node_p = ((LeafInsertNode *)node_p)->child_node_p;
           leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
-              mapping_leaf_delta_table[leaf_delta] = nullptr;
+              InvalidateleafdeltaID(leaf_delta);
           }
+
           ((LeafInsertNode *)node_p)->~LeafInsertNode();
           freed_count++;
 
@@ -2533,7 +2534,7 @@ class BwTree : public BwTreeBase {
           next_node_p = ((LeafDeleteNode *)node_p)->child_node_p;
           leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
-              mapping_leaf_delta_table[leaf_delta] = nullptr;
+              InvalidateleafdeltaID(leaf_delta);
           }
           ((LeafDeleteNode *)node_p)->~LeafDeleteNode();
 
@@ -2542,7 +2543,7 @@ class BwTree : public BwTreeBase {
           next_node_p = ((LeafSplitNode *)node_p)->child_node_p;
           leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
-              mapping_leaf_delta_table[leaf_delta] = nullptr;
+              InvalidateleafdeltaID(leaf_delta);
           }
           freed_count += FreeNodeByNodeID(((LeafSplitNode *)node_p)->insert_item.second);
 
@@ -2555,7 +2556,7 @@ class BwTree : public BwTreeBase {
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->right_merge_p);
           leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
           if(leaf_delta > -1){
-              mapping_leaf_delta_table[leaf_delta] = nullptr;
+              InvalidateleafdeltaID(leaf_delta);
           }
           ((LeafMergeNode *)node_p)->~LeafMergeNode();
           freed_count++;
