@@ -5708,9 +5708,9 @@ class BwTree : public BwTreeBase {
 
     // we have to modify InstallNodeToReplace logic
     //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-    BaseNode *expected_node = node_child;
-    auto ret = (static_cast<const DeltaNode *> (node_p))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
-
+    const BaseNode *expected_node = node_child;
+    (static_cast<const DeltaNode *> (node_p))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
+    bool ret = true;
 
     if (ret) {
       //epoch_manager.AddGarbageNode(snapshot_p->node_p);
