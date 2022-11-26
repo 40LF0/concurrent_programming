@@ -1163,15 +1163,23 @@ class BwTree : public BwTreeBase {
   class DeltaNode : public BaseNode {
    public:
     // 2022-11-26 modify type of child_node_p to atomic
-    std::atomic<const BaseNode *> child_node_p;
-
+    const BaseNode * child_node_p;
+    const NodeID leaf_delta_id;
     /*
      * Constructor
      */
     NO_ASAN DeltaNode(NodeType p_type, const BaseNode *p_child_node_p, const KeyNodeIDPair *p_low_key_p,
-                      const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
-        : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p} {}
+                      const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count, NodeID leafdelta_id = -1)
+        : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p},
+        leaf_delta_id{leafdelta_id}{}
+
+    NO_ASAN ~DeltaNode(){
+        FreeNodeByleafdeltaID(leaf_delta_id);
+    }
+
   };
+
+
 
   /*
    * class LeafDataNode - Holds LeafInsertNode and LeafDeleteNode's data
@@ -1202,6 +1210,9 @@ class BwTree : public BwTreeBase {
      * that there is no way to modify the index pair
      */
     NO_ASAN std::pair<int, bool> GetIndexPair() const { return index_pair; }
+
+
+
   };
 
   /*
@@ -2294,9 +2305,18 @@ class BwTree : public BwTreeBase {
         // NodeID counter
         next_unused_node_id{1},
 
+        next_unused_leaf_delta_id{1},
+
+
         // Initialize free NodeID stack
         node_id_list_lock{},
         node_id_list{},
+
+        leaf_delta_id_list_lock{},
+        leaf_delta_id_list{},
+
+
+
 
         // Statistical information
         insert_op_count{0},
@@ -2425,6 +2445,16 @@ class BwTree : public BwTreeBase {
     return FreeNodeByPointer(node_p);
   }
 
+  NO_ASAN size_t FreeNodeByleafdeltaID(NodeID node_id) {
+    if(node_id == -1){
+        return 0UL;
+    }
+
+    mapping_leaf_delta_table[node_id] = nullptr;
+
+    return 0UL;
+  }
+
   /*
    * InvalidateNodeID() - Recycle NodeID
    *
@@ -2452,6 +2482,14 @@ class BwTree : public BwTreeBase {
     node_id_list.push_back(node_id);
     // free_node_id_list.SingleThreadPush(node_id);
     node_id_list_lock.unlock();
+  }
+
+  NO_ASAN inline void InvalidateleafdeltaID(NodeID leaf_delta_id) {
+    leaf_delta_id_list_lock.lock();
+    mapping_delta_table[leaf_delta_id] = nullptr;
+    leaf_delta_id_list.push_back(leaf_delta_id);
+    // free_node_id_list.SingleThreadPush(leaf_delta_id);
+    leaf_delta_id_list_lock.unlock();
   }
 
   /*
@@ -2681,6 +2719,24 @@ class BwTree : public BwTreeBase {
 
     INDEX_LOG_TRACE("Initializing mapping table.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+
+    mapping_leaf_delta_table = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
+                                                          PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    // If allocation fails, we throw an error because this is uncoverable
+    // The upper level functions should either catch this exception
+    // and then use another index instead, or simply kill the system
+    if (mapping_leaf_delta_table == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize mapping table");
+      //      throw IndexException("mmap() failed to initialize mapping table for Bw-Tree");
+      // TODO(Matt): fix this
+    }
+
+    INDEX_LOG_TRACE("Mapping leaf delta table allocated via mmap()");
+
+    INDEX_LOG_TRACE("Initializing mapping leaf delta table.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+
+
   }
 
   //2022-11-20
@@ -2758,6 +2814,39 @@ class BwTree : public BwTreeBase {
     return ret;
   }
 
+    NO_ASAN inline NodeID GetNextleafdeltaID() {
+    // This is a std::pair<bool, NodeID>
+    // If the first element is true then the NodeID is a valid one
+    // If the first element is false then NodeID is invalid and the
+    // stack is either empty or being used (we cannot lock and wait)
+    NodeID ret;
+    eaf_delta_id_list_lock.lock();
+    if (leaf_delta_id_list.size() == 0) {
+      ret = next_unused_leaf_delta_id.fetch_add(1);
+    } else {
+      ret = leaf_delta_id_list.front();
+      leaf_delta_id_list.pop_front();
+    }
+    eaf_delta_id_list_lock.unlock();
+    return ret;
+  }
+
+  NO_ASAN inline NodeID GetNextleafdeltaID() {
+    // This is a std::pair<bool, NodeID>
+    // If the first element is true then the NodeID is a valid one
+    // If the first element is false then NodeID is invalid and the
+    // stack is either empty or being used (we cannot lock and wait)
+    NodeID ret;
+    leaf_delta_id_list_lock.lock();
+    if (leaf_delta_id_list.size() == 0) {
+      ret = next_unused_leaf_delta_id.fetch_add(1);
+    } else {
+      ret = leaf_delta_id_list.front();
+      leaf_delta_id_list.pop_front();
+    }
+    leaf_delta_id_list_lock.unlock();
+    return ret;
+  }
   /*
    * InstallNodeToReplace() - Install a node to replace a previous one
    *
@@ -2779,6 +2868,22 @@ class BwTree : public BwTreeBase {
     return mapping_table[node_id].compare_exchange_strong(prev_p, node_p);
   }
 
+
+  NO_ASAN inline bool InstallleafdeltaToReplace(NodeID node_id, const BaseNode *node_p, const BaseNode *prev_p) {
+    // Make sure node id is valid and does not exceed maximum
+    NOISEPAGE_ASSERT(node_id != INVALID_NODE_ID, "Node count exceeded maximum.");
+    NOISEPAGE_ASSERT(node_id < MAPPING_TABLE_SIZE, "Node count exceeded maximum.");
+
+// If idb is activated, then all operation will be blocked before
+// they could call CAS and change the key
+#ifdef INTERACTIVE_DEBUG
+    debug_stop_mutex.lock();
+    debug_stop_mutex.unlock();
+#endif
+
+    return mapping_leaf_delta_table[node_id].compare_exchange_strong(prev_p, node_p);
+  }
+
   /*
    * InstallRootNode() - Replace the old root with a new one
    *
@@ -2796,6 +2901,7 @@ class BwTree : public BwTreeBase {
    * installation would always succeed
    */
   NO_ASAN inline void InstallNewNode(NodeID node_id, const BaseNode *node_p) { mapping_table[node_id] = node_p; }
+  NO_ASAN inline void InstallNewleafdelta(NodeID node_id, const BaseNode *node_p) { mapping_leaf_delta_table[node_id] = node_p; }
 
   /*
    * GetNode() - Return the pointer mapped by a node ID
@@ -5707,13 +5813,9 @@ class BwTree : public BwTreeBase {
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
 
     // we have to modify InstallNodeToReplace logic
-    //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-    const BaseNode *expected_node = node_child;
+    bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
+    //const BaseNode *expected_node = node_child;
     //auto ret = (static_cast<DeltaNode *> (node_p))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
-
-    //const BaseNode *node_p, const BaseNode *prev_p
-    //mapping_table[node_id].compare_exchange_strong(prev_p, node_p);
-
 
     if (ret) {
       //epoch_manager.AddGarbageNode(snapshot_p->node_p);
@@ -6874,7 +6976,7 @@ class BwTree : public BwTreeBase {
 #endif
 
     EpochNode *epoch_node_p = epoch_manager.JoinEpoch();
-
+    NodeID new_leaf_delta_id = GetNextNodeID();
     while (1) {
       Context context{key};
       std::pair<int, bool> index_pair;
@@ -6898,6 +7000,8 @@ class BwTree : public BwTreeBase {
       const BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
+
+      
       const LeafInsertNode *insert_node_p =
           LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
 
@@ -7225,7 +7329,12 @@ class BwTree : public BwTreeBase {
   NodeID first_leaf_id;
 
   std::atomic<NodeID> next_unused_node_id;
+
+  std::atomic<NodeID> next_unused_leaf_delta_id;
+
   std::atomic<const BaseNode *> *mapping_table;
+
+  std::atomic<const BaseNode *> *mapping_leaf_delta_table;
 
   //2022-11-20 to implement new algorithm about consolidation for leaf_node
   // Two new members are needed.
@@ -7245,6 +7354,9 @@ class BwTree : public BwTreeBase {
 
   std::mutex node_id_list_lock;
   std::deque<NodeID> node_id_list;
+
+  std::mutex leaf_delta_id_list_lock;
+  std::deque<NodeID> leaf_delta_id_list;
 
   std::atomic<uint64_t> insert_op_count;
   std::atomic<uint64_t> insert_abort_count;
@@ -7463,6 +7575,18 @@ class BwTree : public BwTreeBase {
         INDEX_LOG_TRACE("Mapping table is unmapped for Bw-Tree");
       }
 
+      // NOTE: Only unmap memory here because we need to access the mapping leaf delta
+      // table in the above routine. If it was unmapped in ~BwTree() then this
+      // function will invoke illegal memory access
+      int munmap_leaf_ret = munmap(tree_p->mapping_leaf_delta_table, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+      // Although failure of munmap is not fatal, we still print out
+      // an error log entry
+      // Otherwise just trace log
+      if (munmap_leaf_ret != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret);
+      } else {
+        INDEX_LOG_TRACE("Mapping leaf delta table is unmapped for Bw-Tree");
+      }
 
       // NOTE: Only unmap memory here because we need to access the leaf_consolidation_flag
       // in the above routine. If it was unmapped in ~BwTree() then this
