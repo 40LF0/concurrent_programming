@@ -1162,7 +1162,7 @@ class BwTree : public BwTreeBase {
    */
   class DeltaNode : public BaseNode {
    public:
-    const BaseNode *child_node_p;
+    std::atomic<BaseNode *> child_node_p;
 
     /*
      * Constructor
