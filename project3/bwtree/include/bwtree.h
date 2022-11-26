@@ -57,7 +57,7 @@ using NodeID = uint64_t;
 
 namespace bwtree {
 
-// This constant represents INVALID_NODE_ID which is used as an indication
+// This  ant represents INVALID_NODE_ID which is used as an indication
 // that the node is actually the last node on that level
 #define INVALID_NODE_ID ((NodeID)0UL)
 
@@ -115,26 +115,26 @@ namespace bwtree {
 class BwTreeBase {
  public:
   // This is the presumed size of cache line
-  static constexpr size_t CACHE_LINE_SIZE = 64;
+  static  expr size_t CACHE_LINE_SIZE = 64;
 
   // This is the mask we used for address alignment (AND with this)
-  static constexpr size_t CACHE_LINE_MASK = ~(CACHE_LINE_SIZE - 1);
+  static  expr size_t CACHE_LINE_MASK = ~(CACHE_LINE_SIZE - 1);
 
   // We invoke the GC procedure after this has been reached
-  static constexpr size_t GC_NODE_COUNT_THREADHOLD = 1024;
+  static  expr size_t GC_NODE_COUNT_THREADHOLD = 1024;
 
   /** @return inner_delta_chain_length_threshold */
-  NO_ASAN int GetInnerDeltaChainLengthThreshold() const { return inner_delta_chain_length_threshold_; }
+  NO_ASAN int GetInnerDeltaChainLengthThreshold()   { return inner_delta_chain_length_threshold_; }
   /** @return leaf_delta_chain_length_threshold */
-  NO_ASAN int GetLeafDeltaChainLengthThreshold() const { return leaf_delta_chain_length_threshold_; }
+  NO_ASAN int GetLeafDeltaChainLengthThreshold()   { return leaf_delta_chain_length_threshold_; }
   /** @return inner_node_size_upper_threshold */
-  NO_ASAN int GetInnerNodeSizeUpperThreshold() const { return inner_node_size_upper_threshold_; }
+  NO_ASAN int GetInnerNodeSizeUpperThreshold()   { return inner_node_size_upper_threshold_; }
   /** @return inner_node_size_lower_threshold */
-  NO_ASAN int GetInnerNodeSizeLowerThreshold() const { return inner_node_size_lower_threshold_; }
+  NO_ASAN int GetInnerNodeSizeLowerThreshold()   { return inner_node_size_lower_threshold_; }
   /** @return leaf_node_size_upper_threshold */
-  NO_ASAN int GetLeafNodeSizeUpperThreshold() const { return leaf_node_size_upper_threshold_; }
+  NO_ASAN int GetLeafNodeSizeUpperThreshold()   { return leaf_node_size_upper_threshold_; }
   /** @return leaf_node_size_lower_threshold */
-  NO_ASAN int GetLeafNodeSizeLowerThreshold() const { return leaf_node_size_lower_threshold_; }
+  NO_ASAN int GetLeafNodeSizeLowerThreshold()   { return leaf_node_size_lower_threshold_; }
 
   /*
    * class GarbageNode - Garbage node used to represent delayed allocation
@@ -153,7 +153,7 @@ class BwTreeBase {
     GarbageNode *next_p;
 
     /*
-     * Constructor
+     *  ructor
      */
     NO_ASAN GarbageNode(uint64_t p_delete_epoch, void *p_node_p)
         : delete_epoch{p_delete_epoch}, node_p{p_node_p}, next_p{nullptr} {}
@@ -189,7 +189,7 @@ class BwTreeBase {
     uint64_t node_count;
 
     /*
-     * Default constructor
+     * Default  ructor
      */
     NO_ASAN GCMetaData() : last_active_epoch{0UL}, header{}, last_p{&header}, node_count{0UL} {}
   };
@@ -205,14 +205,14 @@ class BwTreeBase {
    public:
     // This is the alignment of padded data - we adjust its alignment
     // after malloc() a chunk of memory
-    static constexpr size_t ALIGNMENT = Alignment;
+    static  expr size_t ALIGNMENT = Alignment;
 
     // This is where real data goes
     DataType data;
 
     /*
-     * Default constructor - This is called if DataType could be initialized
-     *                       without any constructor
+     * Default  ructor - This is called if DataType could be initialized
+     *                       without any  ructor
      */
     NO_ASAN PaddedData() : data{} {}
 
@@ -354,7 +354,7 @@ class BwTreeBase {
                        ((size_t)original_p + (thread_num + 1) * CACHE_LINE_SIZE),
                    "Overflowed chunk memory.");
 
-    // At last call constructor of the class; we use placement new
+    // At last call  ructor of the class; we use placement new
     for (size_t i = 0; i < thread_num; i++) {
       new (gc_metadata_p + i) PaddedGCMetadata{};
     }
@@ -367,7 +367,7 @@ class BwTreeBase {
 
  public:
   /*
-   * Constructor - Initialize GC data structure
+   *  ructor - Initialize GC data structure
    */
   NO_ASAN BwTreeBase() : gc_metadata_p{nullptr}, original_p{nullptr}, thread_num{total_thread_num.load()}, epoch{0UL} {
     // Allocate memory for thread local data structure
@@ -521,7 +521,7 @@ class BwTreeBase {
  *  - KeyComparator: "less than" relation comparator for KeyType
  *                   Returns true if "less than" relation holds
  *                   *** NOTE: THIS OBJECT DO NOT NEED TO HAVE A DEFAULT
- *                   CONSTRUCTOR.
+ *                    RUCTOR.
  *                   Please refer to main.cpp, class KeyComparator for more
  *                   information on how to define a proper key comparator
  *
@@ -611,15 +611,15 @@ class BwTree : public BwTreeBase {
    */
   class KeyNodeIDPairComparator {
    public:
-    const KeyComparator *key_cmp_obj_p;
+      KeyComparator *key_cmp_obj_p;
 
     /*
-     * Default constructor - deleted
+     * Default  ructor - deleted
      */
     NO_ASAN KeyNodeIDPairComparator() = delete;
 
     /*
-     * Constructor - Initialize a key-NodeID pair comparator using
+     *  ructor - Initialize a key-NodeID pair comparator using
      *               wrapped key comparator
      */
     NO_ASAN KeyNodeIDPairComparator(BwTree *p_tree_p) : key_cmp_obj_p{&p_tree_p->key_cmp_obj} {}
@@ -630,7 +630,7 @@ class BwTree : public BwTreeBase {
      * We only compare keys since there should not be duplicated
      * keys inside an inner node
      */
-    NO_ASAN inline bool operator()(const KeyNodeIDPair &knp1, const KeyNodeIDPair &knp2) const {
+    NO_ASAN inline bool operator()(  KeyNodeIDPair &knp1,   KeyNodeIDPair &knp2)   {
       // First compare keys for relation
       return (*key_cmp_obj_p)(knp1.first, knp2.first);
     }
@@ -645,22 +645,22 @@ class BwTree : public BwTreeBase {
    */
   class KeyNodeIDPairEqualityChecker {
    public:
-    const KeyEqualityChecker *key_eq_obj_p;
+      KeyEqualityChecker *key_eq_obj_p;
 
     /*
-     * Default constructor - deleted
+     * Default  ructor - deleted
      */
     NO_ASAN KeyNodeIDPairEqualityChecker() = delete;
 
     /*
-     * Constructor - Initialize a key node pair eq checker
+     *  ructor - Initialize a key node pair eq checker
      */
     NO_ASAN KeyNodeIDPairEqualityChecker(BwTree *p_tree_p) : key_eq_obj_p{&p_tree_p->key_eq_obj} {}
 
     /*
      * operator() - Compares key-NodeID pair by comparing keys
      */
-    NO_ASAN inline bool operator()(const KeyNodeIDPair &knp1, const KeyNodeIDPair &knp2) const {
+    NO_ASAN inline bool operator()(  KeyNodeIDPair &knp1,   KeyNodeIDPair &knp2)   {
       return (*key_eq_obj_p)(knp1.first, knp2.first);
     }
   };
@@ -670,15 +670,15 @@ class BwTree : public BwTreeBase {
    */
   class KeyNodeIDPairHashFunc {
    public:
-    const KeyHashFunc *key_hash_obj_p;
+      KeyHashFunc *key_hash_obj_p;
 
     /*
-     * Default constructor - deleted
+     * Default  ructor - deleted
      */
     NO_ASAN KeyNodeIDPairHashFunc() = delete;
 
     /*
-     * Constructor - Initialize a key value pair hash function
+     *  ructor - Initialize a key value pair hash function
      */
     NO_ASAN KeyNodeIDPairHashFunc(BwTree *p_tree_p) : key_hash_obj_p{&p_tree_p->key_hash_obj} {}
 
@@ -689,7 +689,7 @@ class BwTree : public BwTreeBase {
      * We use XOR to combine hashes of the key and value together into one
      * single hash value
      */
-    NO_ASAN inline size_t operator()(const KeyNodeIDPair &knp) const { return (*key_hash_obj_p)(knp.first); }
+    NO_ASAN inline size_t operator()(  KeyNodeIDPair &knp)   { return (*key_hash_obj_p)(knp.first); }
   };
 
   ///////////////////////////////////////////////////////////////////
@@ -701,15 +701,15 @@ class BwTree : public BwTreeBase {
    */
   class KeyValuePairComparator {
    public:
-    const KeyComparator *key_cmp_obj_p;
+      KeyComparator *key_cmp_obj_p;
 
     /*
-     * Default constructor - deleted
+     * Default  ructor - deleted
      */
     NO_ASAN KeyValuePairComparator() = delete;
 
     /*
-     * Constructor
+     *  ructor
      */
     NO_ASAN KeyValuePairComparator(BwTree *p_tree_p) : key_cmp_obj_p{&p_tree_p->key_cmp_obj} {}
 
@@ -720,7 +720,7 @@ class BwTree : public BwTreeBase {
      * NOTE: This function only compares keys with KeyType. For +/-Inf
      * the wrapped raw key comparator will fail
      */
-    NO_ASAN inline bool operator()(const KeyValuePair &kvp1, const KeyValuePair &kvp2) const {
+    NO_ASAN inline bool operator()(  KeyValuePair &kvp1,   KeyValuePair &kvp2)   {
       return (*key_cmp_obj_p)(kvp1.first, kvp2.first);
     }
   };
@@ -730,16 +730,16 @@ class BwTree : public BwTreeBase {
    */
   class KeyValuePairEqualityChecker {
    public:
-    const KeyEqualityChecker *key_eq_obj_p;
-    const ValueEqualityChecker *value_eq_obj_p;
+      KeyEqualityChecker *key_eq_obj_p;
+      ValueEqualityChecker *value_eq_obj_p;
 
     /*
-     * Default constructor - deleted
+     * Default  ructor - deleted
      */
     NO_ASAN KeyValuePairEqualityChecker() = delete;
 
     /*
-     * Constructor - Initialize a key value pair equality checker with
+     *  ructor - Initialize a key value pair equality checker with
      *               WrappedKeyEqualityChecker and ValueEqualityChecker
      */
     NO_ASAN KeyValuePairEqualityChecker(BwTree *p_tree_p)
@@ -752,7 +752,7 @@ class BwTree : public BwTreeBase {
      * NOTE: This function only compares keys with KeyType. For +/-Inf
      * the wrapped raw key comparator will fail
      */
-    NO_ASAN inline bool operator()(const KeyValuePair &kvp1, const KeyValuePair &kvp2) const {
+    NO_ASAN inline bool operator()(  KeyValuePair &kvp1,   KeyValuePair &kvp2)   {
       return ((*key_eq_obj_p)(kvp1.first, kvp2.first)) && ((*value_eq_obj_p)(kvp1.second, kvp2.second));
     }
   };
@@ -764,16 +764,16 @@ class BwTree : public BwTreeBase {
    */
   class KeyValuePairHashFunc {
    public:
-    const KeyHashFunc *key_hash_obj_p;
-    const ValueHashFunc *value_hash_obj_p;
+      KeyHashFunc *key_hash_obj_p;
+      ValueHashFunc *value_hash_obj_p;
 
     /*
-     * Default constructor - deleted
+     * Default  ructor - deleted
      */
     NO_ASAN KeyValuePairHashFunc() = delete;
 
     /*
-     * Constructor - Initialize a key value pair hash function
+     *  ructor - Initialize a key value pair hash function
      */
     NO_ASAN KeyValuePairHashFunc(BwTree *p_tree_p)
         : key_hash_obj_p{&p_tree_p->key_hash_obj}, value_hash_obj_p{&p_tree_p->value_hash_obj} {}
@@ -785,7 +785,7 @@ class BwTree : public BwTreeBase {
      * We use XOR to combine hashes of the key and value together into one
      * single hash value
      */
-    NO_ASAN inline size_t operator()(const KeyValuePair &kvp) const {
+    NO_ASAN inline size_t operator()(  KeyValuePair &kvp)   {
       return ((*key_hash_obj_p)(kvp.first)) ^ ((*value_hash_obj_p)(kvp.second));
     }
   };
@@ -805,21 +805,21 @@ class BwTree : public BwTreeBase {
    * been removed from the newest implementation, and this function
    * compares KeyType specified in template argument.
    */
-  NO_ASAN inline bool KeyCmpLess(const KeyType &key1, const KeyType &key2) const { return key_cmp_obj(key1, key2); }
+  NO_ASAN inline bool KeyCmpLess(  KeyType &key1,   KeyType &key2)   { return key_cmp_obj(key1, key2); }
 
   /*
    * KeyCmpEqual() - Compare a pair of keys for equality
    *
    * This functions compares keys for equality relation
    */
-  NO_ASAN inline bool KeyCmpEqual(const KeyType &key1, const KeyType &key2) const { return key_eq_obj(key1, key2); }
+  NO_ASAN inline bool KeyCmpEqual(  KeyType &key1,   KeyType &key2)   { return key_eq_obj(key1, key2); }
 
   /*
    * KeyCmpGreaterEqual() - Compare a pair of keys for >= relation
    *
    * It negates result of keyCmpLess()
    */
-  NO_ASAN inline bool KeyCmpGreaterEqual(const KeyType &key1, const KeyType &key2) const {
+  NO_ASAN inline bool KeyCmpGreaterEqual(  KeyType &key1,   KeyType &key2)   {
     return !KeyCmpLess(key1, key2);
   }
 
@@ -828,12 +828,12 @@ class BwTree : public BwTreeBase {
    *
    * It flips input for keyCmpLess()
    */
-  NO_ASAN inline bool KeyCmpGreater(const KeyType &key1, const KeyType &key2) const { return KeyCmpLess(key2, key1); }
+  NO_ASAN inline bool KeyCmpGreater(  KeyType &key1,   KeyType &key2)   { return KeyCmpLess(key2, key1); }
 
   /*
    * KeyCmpLessEqual() - Compare a pair of keys for <= relation
    */
-  NO_ASAN inline bool KeyCmpLessEqual(const KeyType &key1, const KeyType &key2) const {
+  NO_ASAN inline bool KeyCmpLessEqual(  KeyType &key1,   KeyType &key2)   {
     return !KeyCmpGreater(key1, key2);
   }
 
@@ -844,20 +844,20 @@ class BwTree : public BwTreeBase {
   /*
    * ValueCmpEqual() - Compares whether two values are equal
    */
-  NO_ASAN inline bool ValueCmpEqual(const ValueType &v1, const ValueType &v2) { return value_eq_obj(v1, v2); }
+  NO_ASAN inline bool ValueCmpEqual(  ValueType &v1,   ValueType &v2) { return value_eq_obj(v1, v2); }
 
   /*
    * class Context - Stores per thread context data that is used during
    *                 tree traversal
    *
    * NOTE: For each thread there could be only 1 instance of this object
-   * so we forbid copy construction and assignment and move
+   * so we forbid copy  ruction and assignment and move
    */
   class Context {
    public:
     // We choose to keep the search key as a member rather than pointer
     // inside the context object
-    const KeyType search_key;
+      KeyType search_key;
 
     // We only need to keep current snapshot and parent snapshot
     NodeSnapshot current_snapshot;
@@ -884,9 +884,9 @@ class BwTree : public BwTreeBase {
     bool abort_flag;
 
     /*
-     * Constructor - Initialize a context object into initial state
+     *  ructor - Initialize a context object into initial state
      */
-    NO_ASAN inline Context(const KeyType &p_search_key)
+    NO_ASAN inline Context(  KeyType &p_search_key)
         : search_key{p_search_key},
 #ifdef BWTREE_DEBUG
 
@@ -904,13 +904,13 @@ class BwTree : public BwTreeBase {
     NO_ASAN ~Context() = default;
 
     /*
-     * Copy constructor - deleted
+     * Copy  ructor - deleted
      * Assignment operator - deleted
-     * Move constructor - deleted
+     * Move  ructor - deleted
      * Move assignment - deleted
      */
-    Context(const Context &p_context) = delete;
-    Context &operator=(const Context &p_context) = delete;
+    Context(  Context &p_context) = delete;
+    Context &operator=(  Context &p_context) = delete;
     Context(Context &&p_context) = delete;
     Context &operator=(Context &&p_context) = delete;
 
@@ -925,7 +925,7 @@ class BwTree : public BwTreeBase {
      * release mode, this function is unnecessary (also current_level is not
      * present) and is not compiled into the binary.
      */
-    NO_ASAN inline bool HasParentNode() const { return current_level >= 1; }
+    NO_ASAN inline bool HasParentNode()   { return current_level >= 1; }
 
 #endif
 
@@ -935,7 +935,7 @@ class BwTree : public BwTreeBase {
      * Though root node might change during traversal, but once it has been
      * fixed using LoadNodeID(), the identity of root node has also been fixed
      */
-    NO_ASAN inline bool IsOnRootNode() const { return parent_snapshot.node_id == INVALID_NODE_ID; }
+    NO_ASAN inline bool IsOnRootNode()   { return parent_snapshot.node_id == INVALID_NODE_ID; }
   };
 
   /*
@@ -961,12 +961,12 @@ class BwTree : public BwTreeBase {
     // the low key pointer always points to a KeyNodeIDPair structure
     // inside the base node, which is either the first element of the
     // node sep list (InnerNode), or a class member (LeafNode)
-    const KeyNodeIDPair *low_key_p;
+      KeyNodeIDPair *low_key_p;
 
     // high key points to the KeyNodeIDPair inside the LeafNode and InnerNode
     // if there is neither SplitNode nor MergeNode. Otherwise it
     // points to the item inside split node or merge right sibling branch
-    const KeyNodeIDPair *high_key_p;
+      KeyNodeIDPair *high_key_p;
 
     // The type of the node; this is forced to be represented as a short type
     NodeType type;
@@ -982,9 +982,9 @@ class BwTree : public BwTreeBase {
     int item_count;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN NodeMetaData(const KeyNodeIDPair *p_low_key_p, const KeyNodeIDPair *p_high_key_p, NodeType p_type,
+    NO_ASAN NodeMetaData(  KeyNodeIDPair *p_low_key_p,   KeyNodeIDPair *p_high_key_p, NodeType p_type,
                          int p_depth, int p_item_count)
         : low_key_p{p_low_key_p},
           high_key_p{p_high_key_p},
@@ -1006,9 +1006,9 @@ class BwTree : public BwTreeBase {
 
    public:
     /*
-     * Constructor - Initialize type and metadata
+     *  ructor - Initialize type and metadata
      */
-    NO_ASAN BaseNode(NodeType p_type, const KeyNodeIDPair *p_low_key_p, const KeyNodeIDPair *p_high_key_p, int p_depth,
+    NO_ASAN BaseNode(NodeType p_type,   KeyNodeIDPair *p_low_key_p,   KeyNodeIDPair *p_high_key_p, int p_depth,
                      int p_item_count)
         : metadata{p_low_key_p, p_high_key_p, p_type, p_depth, p_item_count} {}
 
@@ -1017,14 +1017,14 @@ class BwTree : public BwTreeBase {
      *
      * This method does not allow overridding
      */
-    NO_ASAN inline NodeType GetType() const { return metadata.type; }
+    NO_ASAN inline NodeType GetType()   { return metadata.type; }
 
     /*
-     * GetNodeMetaData() - Returns a const reference to node metadata
+     * GetNodeMetaData() - Returns a   reference to node metadata
      *
      * Please do not override this method
      */
-    NO_ASAN inline const NodeMetaData &GetNodeMetaData() const { return metadata; }
+    NO_ASAN inline   NodeMetaData &GetNodeMetaData()   { return metadata; }
 
     /*
      * IsDeltaNode() - Return whether a node is delta node
@@ -1032,7 +1032,7 @@ class BwTree : public BwTreeBase {
      * All nodes that are neither inner nor leaf type are of
      * delta node type
      */
-    NO_ASAN inline bool IsDeltaNode() const {
+    NO_ASAN inline bool IsDeltaNode()   {
       return !(GetType() == NodeType::InnerType || GetType() == NodeType::LeafType);
     }
 
@@ -1043,14 +1043,14 @@ class BwTree : public BwTreeBase {
      * If the top of delta chain is an inner node then just do not collect
      * and use the node directly
      */
-    NO_ASAN inline bool IsInnerNode() const { return GetType() == NodeType::InnerType; }
+    NO_ASAN inline bool IsInnerNode()   { return GetType() == NodeType::InnerType; }
 
     /*
      * IsRemoveNode() - Returns true if the node is of inner/leaf remove type
      *
      * This is used in JumpToLeftSibling() as an assertion
      */
-    NO_ASAN inline bool IsRemoveNode() const {
+    NO_ASAN inline bool IsRemoveNode()   {
       return (GetType() == NodeType::InnerRemoveType) || (GetType() == NodeType::LeafRemoveType);
     }
 
@@ -1070,7 +1070,7 @@ class BwTree : public BwTreeBase {
      * the identity of leaf or Inner using only one comparison
      *
      */
-    NO_ASAN inline bool IsOnLeafDeltaChain() const { return GetType() >= NodeType::LeafStart; }
+    NO_ASAN inline bool IsOnLeafDeltaChain()   { return GetType() >= NodeType::LeafStart; }
 
     /*
      * GetLowKey() - Returns the low key of the current base node
@@ -1079,7 +1079,7 @@ class BwTree : public BwTreeBase {
      * and pointers should be set to nullptr, accessing the low key of
      * a leaf node would result in Segmentation Fault
      */
-    NO_ASAN inline const KeyType &GetLowKey() const { return metadata.low_key_p->first; }
+    NO_ASAN inline   KeyType &GetLowKey()   { return metadata.low_key_p->first; }
 
     /*
      * GetHighKey() - Returns a reference to the high key of current node
@@ -1087,24 +1087,24 @@ class BwTree : public BwTreeBase {
      * This function could be called for all node types including leaf nodes
      * and inner nodes.
      */
-    NO_ASAN inline const KeyType &GetHighKey() const { return metadata.high_key_p->first; }
+    NO_ASAN inline   KeyType &GetHighKey()   { return metadata.high_key_p->first; }
 
     /*
      * GetHighKeyPair() - Returns the pointer to high key node id pair
      */
-    NO_ASAN inline const KeyNodeIDPair &GetHighKeyPair() const { return *metadata.high_key_p; }
+    NO_ASAN inline   KeyNodeIDPair &GetHighKeyPair()   { return *metadata.high_key_p; }
 
     /*
      * GetLowKeyPair() - Returns the pointer to low key node id pair
      *
      * The return value is nullptr for LeafNode and its delta chain
      */
-    NO_ASAN inline const KeyNodeIDPair &GetLowKeyPair() const { return *metadata.low_key_p; }
+    NO_ASAN inline   KeyNodeIDPair &GetLowKeyPair()   { return *metadata.low_key_p; }
 
     /*
      * GetNextNodeID() - Returns the next NodeID of the current node
      */
-    NO_ASAN inline NodeID GetNextNodeID() const { return metadata.high_key_p->second; }
+    NO_ASAN inline NodeID GetNextNodeID()   { return metadata.high_key_p->second; }
 
     /*
      * GetLowKeyNodeID() - Returns the NodeID for low key
@@ -1112,7 +1112,7 @@ class BwTree : public BwTreeBase {
      * NOTE: This function should not be called for leaf nodes
      * since the low key node ID for leaf node is not defined
      */
-    NO_ASAN inline NodeID GetLowKeyNodeID() const {
+    NO_ASAN inline NodeID GetLowKeyNodeID()   {
       NOISEPAGE_ASSERT(!IsOnLeafDeltaChain(), "This should not be called on leaf nodes.");
 
       return metadata.low_key_p->second;
@@ -1121,12 +1121,12 @@ class BwTree : public BwTreeBase {
     /*
      * GetDepth() - Returns the depth of the current node
      */
-    NO_ASAN inline int GetDepth() const { return metadata.depth; }
+    NO_ASAN inline int GetDepth()   { return metadata.depth; }
 
     /*
      * GetDepth_with_snapshot() - Returns the depth of the current node
      */
-    NO_ASAN int GetDepth_with_snapshot(NodeSnapshot *snapshot_p ,std::atomic<uint64_t> * leaf_base_depth) const{
+    NO_ASAN int GetDepth_with_snapshot(NodeSnapshot *snapshot_p ,std::atomic<uint64_t> * leaf_base_depth)  {
         if(snapshot_p->IsLeaf()){
             NodeID current_node_id = snapshot_p->node_id;
             int depth = metadata.depth;
@@ -1141,17 +1141,17 @@ class BwTree : public BwTreeBase {
     /*
      * GetItemCount() - Returns the item count of the current node
      */
-    NO_ASAN inline int GetItemCount() const { return metadata.item_count; }
+    NO_ASAN inline int GetItemCount()   { return metadata.item_count; }
 
     /*
      * SetLowKeyPair() - Sets the low key pair of metadata
      */
-    NO_ASAN inline void SetLowKeyPair(const KeyNodeIDPair *p_low_key_p) { metadata.low_key_p = p_low_key_p; }
+    NO_ASAN inline void SetLowKeyPair(  KeyNodeIDPair *p_low_key_p) { metadata.low_key_p = p_low_key_p; }
 
     /*
      * SetHighKeyPair() - Sets the high key pair of metdtata
      */
-    NO_ASAN inline void SetHighKeyPair(const KeyNodeIDPair *p_high_key_p) { metadata.high_key_p = p_high_key_p; }
+    NO_ASAN inline void SetHighKeyPair(  KeyNodeIDPair *p_high_key_p) { metadata.high_key_p = p_high_key_p; }
   };
 
   /*
@@ -1163,13 +1163,13 @@ class BwTree : public BwTreeBase {
   class DeltaNode : public BaseNode {
    public:
     // 2022-11-26 modify type of child_node_p to atomic
-    std::atomic<const BaseNode *> child_node_p;
+    std::atomic<  BaseNode *> child_node_p;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN DeltaNode(NodeType p_type, const BaseNode *p_child_node_p, const KeyNodeIDPair *p_low_key_p,
-                      const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
+    NO_ASAN DeltaNode(NodeType p_type,   BaseNode *p_child_node_p,   KeyNodeIDPair *p_low_key_p,
+                        KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
         : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p} {}
   };
 
@@ -1188,9 +1188,9 @@ class BwTree : public BwTreeBase {
     // the item into the base leaf node
     std::pair<int, bool> index_pair;
 
-    NO_ASAN LeafDataNode(const KeyValuePair &p_item, NodeType p_type, const BaseNode *p_child_node_p,
-                         std::pair<int, bool> p_index_pair, const KeyNodeIDPair *p_low_key_p,
-                         const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
+    NO_ASAN LeafDataNode(  KeyValuePair &p_item, NodeType p_type,   BaseNode *p_child_node_p,
+                         std::pair<int, bool> p_index_pair,   KeyNodeIDPair *p_low_key_p,
+                           KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
         : DeltaNode{p_type, p_child_node_p, p_low_key_p, p_high_key_p, p_depth, p_item_count},
           item{p_item},
           index_pair{p_index_pair} {}
@@ -1201,7 +1201,7 @@ class BwTree : public BwTreeBase {
      * Note that this function does not return reference which means
      * that there is no way to modify the index pair
      */
-    NO_ASAN std::pair<int, bool> GetIndexPair() const { return index_pair; }
+    NO_ASAN std::pair<int, bool> GetIndexPair()   { return index_pair; }
   };
 
   /*
@@ -1210,9 +1210,9 @@ class BwTree : public BwTreeBase {
   class LeafInsertNode : public LeafDataNode {
    public:
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN LeafInsertNode(const KeyType &p_insert_key, const ValueType &p_value, const BaseNode *p_child_node_p,
+    NO_ASAN LeafInsertNode(  KeyType &p_insert_key,   ValueType &p_value,   BaseNode *p_child_node_p,
                            std::pair<int, bool> p_index_pair)
         : LeafDataNode{std::make_pair(p_insert_key, p_value), NodeType::LeafInsertType, p_child_node_p, p_index_pair,
                        &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
@@ -1232,9 +1232,9 @@ class BwTree : public BwTreeBase {
   class LeafDeleteNode : public LeafDataNode {
    public:
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN LeafDeleteNode(const KeyType &p_delete_key, const ValueType &p_value, const BaseNode *p_child_node_p,
+    NO_ASAN LeafDeleteNode(  KeyType &p_delete_key,   ValueType &p_value,   BaseNode *p_child_node_p,
                            std::pair<int, bool> p_index_pair)
         : LeafDataNode{std::make_pair(p_delete_key, p_value), NodeType::LeafDeleteType, p_child_node_p, p_index_pair,
                        &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
@@ -1259,15 +1259,15 @@ class BwTree : public BwTreeBase {
     KeyNodeIDPair insert_item;
 
     /*
-     * Constructor
+     *  ructor
      *
-     * NOTE: The constructor requires that the physical pointer to the split
+     * NOTE: The  ructor requires that the physical pointer to the split
      * sibling being passed as an argument. It will not be stored inside the
      * split delta, but it will be used to compute the new item count for
      * the current node
      */
-    NO_ASAN LeafSplitNode(const KeyNodeIDPair &p_insert_item, const BaseNode *p_child_node_p,
-                          const BaseNode *p_split_node_p)
+    NO_ASAN LeafSplitNode(  KeyNodeIDPair &p_insert_item,   BaseNode *p_child_node_p,
+                            BaseNode *p_split_node_p)
         : DeltaNode{NodeType::LeafSplitType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     // High key is redirected to the split item inside the node
                     &insert_item,
@@ -1296,9 +1296,9 @@ class BwTree : public BwTreeBase {
     NodeID removed_id;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN LeafRemoveNode(NodeID p_removed_id, const BaseNode *p_child_node_p)
+    NO_ASAN LeafRemoveNode(NodeID p_removed_id,   BaseNode *p_child_node_p)
         : DeltaNode{NodeType::LeafRemoveType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     &p_child_node_p->GetHighKeyPair(),
                     // REMOVE node is an SMO and does not introduce data
@@ -1324,13 +1324,13 @@ class BwTree : public BwTreeBase {
     // For merge nodes we use actual physical pointer
     // to indicate that the right half is already part
     // of the logical node
-    const BaseNode *right_merge_p;
+      BaseNode *right_merge_p;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN LeafMergeNode(const KeyType &p_merge_key, const BaseNode *p_right_merge_p, NodeID p_deleted_node_id,
-                          const BaseNode *p_child_node_p)
+    NO_ASAN LeafMergeNode(  KeyType &p_merge_key,   BaseNode *p_right_merge_p, NodeID p_deleted_node_id,
+                            BaseNode *p_child_node_p)
         : DeltaNode{NodeType::LeafMergeType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     // The high key of the merge node is inherited
                     // from the right sibling
@@ -1368,11 +1368,11 @@ class BwTree : public BwTreeBase {
     // search could start at this pointer's location; Similarly, if the
     // search key is smaller than this key then binary search could end before
     // this pointer
-    const KeyNodeIDPair *location;
+      KeyNodeIDPair *location;
 
-    NO_ASAN InnerDataNode(const KeyNodeIDPair &p_item, NodeType p_type, const BaseNode *p_child_node_p,
-                          const KeyNodeIDPair *p_location, const KeyNodeIDPair *p_low_key_p,
-                          const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
+    NO_ASAN InnerDataNode(  KeyNodeIDPair &p_item, NodeType p_type,   BaseNode *p_child_node_p,
+                            KeyNodeIDPair *p_location,   KeyNodeIDPair *p_low_key_p,
+                            KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
         : DeltaNode{p_type, p_child_node_p, p_low_key_p, p_high_key_p, p_depth, p_item_count},
           item{p_item},
           location{p_location} {}
@@ -1394,10 +1394,10 @@ class BwTree : public BwTreeBase {
     KeyNodeIDPair next_item;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN InnerInsertNode(const KeyNodeIDPair &p_insert_item, const KeyNodeIDPair &p_next_item,
-                            const BaseNode *p_child_node_p, const KeyNodeIDPair *p_location)
+    NO_ASAN InnerInsertNode(  KeyNodeIDPair &p_insert_item,   KeyNodeIDPair &p_next_item,
+                              BaseNode *p_child_node_p,   KeyNodeIDPair *p_location)
         : InnerDataNode{p_insert_item,
                         NodeType::InnerInsertType,
                         p_child_node_p,
@@ -1424,7 +1424,7 @@ class BwTree : public BwTreeBase {
    public:
     // This holds the previous key-NodeID item in the inner node
     // if the NodeID matches the low key of the inner node (which
-    // should be a constant and kept inside each node on the delta chain)
+    // should be a  ant and kept inside each node on the delta chain)
     // then do not need to compare to it since the search key must >= low key
     // But if the prev_item.second != low key node id then need to compare key
     KeyNodeIDPair prev_item;
@@ -1435,7 +1435,7 @@ class BwTree : public BwTreeBase {
     KeyNodeIDPair next_item;
 
     /*
-     * Constructor
+     *  ructor
      *
      * NOTE: We need to provide three keys, two for defining a new
      * range, and one for removing the index term from base node
@@ -1445,9 +1445,9 @@ class BwTree : public BwTreeBase {
      * runs it needs the deleted NodeID information in order to avoid
      * traversing to a node that has already been deleted and been recycled
      */
-    NO_ASAN InnerDeleteNode(const KeyNodeIDPair &p_delete_item, const KeyNodeIDPair &p_prev_item,
-                            const KeyNodeIDPair &p_next_item, const BaseNode *p_child_node_p,
-                            const KeyNodeIDPair *p_location)
+    NO_ASAN InnerDeleteNode(  KeyNodeIDPair &p_delete_item,   KeyNodeIDPair &p_prev_item,
+                              KeyNodeIDPair &p_next_item,   BaseNode *p_child_node_p,
+                              KeyNodeIDPair *p_location)
         : InnerDataNode{p_delete_item,
                         NodeType::InnerDeleteType,
                         p_child_node_p,
@@ -1472,10 +1472,10 @@ class BwTree : public BwTreeBase {
     KeyNodeIDPair insert_item;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN InnerSplitNode(const KeyNodeIDPair &p_insert_item, const BaseNode *p_child_node_p,
-                           const BaseNode *p_split_node_p)
+    NO_ASAN InnerSplitNode(  KeyNodeIDPair &p_insert_item,   BaseNode *p_child_node_p,
+                             BaseNode *p_split_node_p)
         : DeltaNode{NodeType::InnerSplitType, p_child_node_p,
                     &p_child_node_p->GetLowKeyPair(),  // Low key does not change
                     &insert_item,                      // High key are defined by this
@@ -1497,9 +1497,9 @@ class BwTree : public BwTreeBase {
     NodeID removed_id;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN InnerRemoveNode(NodeID p_removed_id, const BaseNode *p_child_node_p)
+    NO_ASAN InnerRemoveNode(NodeID p_removed_id,   BaseNode *p_child_node_p)
         : DeltaNode{NodeType::InnerRemoveType,        p_child_node_p,
                     &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
                     p_child_node_p->GetDepth(),       p_child_node_p->GetItemCount()},
@@ -1514,13 +1514,13 @@ class BwTree : public BwTreeBase {
     // This is exactly the item being deleted in the parent node
     KeyNodeIDPair delete_item;
 
-    const BaseNode *right_merge_p;
+      BaseNode *right_merge_p;
 
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN InnerMergeNode(const KeyType &p_merge_key, const BaseNode *p_right_merge_p, NodeID p_deleted_node_id,
-                           const BaseNode *p_child_node_p)
+    NO_ASAN InnerMergeNode(  KeyType &p_merge_key,   BaseNode *p_right_merge_p, NodeID p_deleted_node_id,
+                             BaseNode *p_child_node_p)
         : DeltaNode{NodeType::InnerMergeType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     &p_right_merge_p->GetHighKeyPair(),
                     // Note: Since both children under merge node is considered
@@ -1542,9 +1542,9 @@ class BwTree : public BwTreeBase {
   class InnerAbortNode : public DeltaNode {
    public:
     /*
-     * Constructor
+     *  ructor
      */
-    NO_ASAN InnerAbortNode(const BaseNode *p_child_node_p)
+    NO_ASAN InnerAbortNode(  BaseNode *p_child_node_p)
         : DeltaNode{NodeType::InnerAbortType,         p_child_node_p,
                     &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
                     p_child_node_p->GetDepth(),       p_child_node_p->GetItemCount()} {}
@@ -1559,20 +1559,20 @@ class BwTree : public BwTreeBase {
   class NodeSnapshot {
    public:
     NodeID node_id;
-    const BaseNode *node_p;
+      BaseNode *node_p;
 
     /*
-     * Constructor - Initialize every member to invalid state
+     *  ructor - Initialize every member to invalid state
      *
-     * Identity of leaf or inner needs to be provided as constructor
+     * Identity of leaf or inner needs to be provided as  ructor
      * argument.
      *
      * NOTE: We do not allocate any logical node structure here
      */
-    NO_ASAN NodeSnapshot(NodeID p_node_id, const BaseNode *p_node_p) : node_id{p_node_id}, node_p{p_node_p} {}
+    NO_ASAN NodeSnapshot(NodeID p_node_id,   BaseNode *p_node_p) : node_id{p_node_id}, node_p{p_node_p} {}
 
     /*
-     * Default Constructor - Fast path
+     * Default  ructor - Fast path
      */
     NO_ASAN NodeSnapshot() = default;
 
@@ -1581,7 +1581,7 @@ class BwTree : public BwTreeBase {
      *
      * This function is just a wrapper of IsOnLeafDeltaChain() in BaseNode
      */
-    NO_ASAN inline bool IsLeaf() const { return node_p->IsOnLeafDeltaChain(); }
+    NO_ASAN inline bool IsLeaf()   { return node_p->IsOnLeafDeltaChain(); }
   };
 
   /*
@@ -1610,21 +1610,21 @@ class BwTree : public BwTreeBase {
    public:
     // One reasonable amount of memory for each chunk is
     // delta chain len * struct len + sizeof this struct
-    static constexpr size_t CHUNK_SIZE() { return sizeof(DeltaNodeUnion) * 8 + sizeof(AllocationMeta); }
+    static  expr size_t CHUNK_SIZE() { return sizeof(DeltaNodeUnion) * 8 + sizeof(AllocationMeta); }
 
    private:
     // This points to the higher address end of the chunk we are
     // allocating from
     std::atomic<char *> tail;
     // This points to the lower limit of the memory region we could use
-    char *const limit;
+    char *  limit;
     // This forms a linked list which needs to be traversed in order to
     // free chunks of memory
     std::atomic<AllocationMeta *> next;
 
    public:
     /*
-     * Constructor
+     *  ructor
      */
     NO_ASAN AllocationMeta(char *p_tail, char *p_limit) : tail{p_tail}, limit{p_limit}, next{nullptr} {}
 
@@ -1772,7 +1772,7 @@ class BwTree : public BwTreeBase {
    *                     and LeafNode
    *
    * Since for InnerNode and LeafNode, the number of elements is not a compile
-   * time known constant. However, for efficient tree traversal we must inline
+   * time known  ant. However, for efficient tree traversal we must inline
    * all elements to reduce cache misses with workload that's less predictable
    */
   template <typename ElementType>
@@ -1794,22 +1794,22 @@ class BwTree : public BwTreeBase {
 
    public:
     /*
-     * Constructor
+     *  ructor
      *
-     * Note that this constructor uses the low key and high key stored as
+     * Note that this  ructor uses the low key and high key stored as
      * members to initialize the NodeMetadata object in class BaseNode
      */
-    NO_ASAN ElasticNode(NodeType p_type, int p_depth, int p_item_count, const KeyNodeIDPair &p_low_key,
-                        const KeyNodeIDPair &p_high_key)
+    NO_ASAN ElasticNode(NodeType p_type, int p_depth, int p_item_count,   KeyNodeIDPair &p_low_key,
+                          KeyNodeIDPair &p_high_key)
         : BaseNode{p_type, &low_key, &high_key, p_depth, p_item_count},
           low_key{p_low_key},
           high_key{p_high_key},
           end{start} {}
 
     /*
-     * Copy() - Copy constructs another instance
+     * Copy() - Copy  ructs another instance
      */
-    NO_ASAN static ElasticNode *Copy(const ElasticNode &other) {
+    NO_ASAN static ElasticNode *Copy(  ElasticNode &other) {
       ElasticNode *node_p = ElasticNode::Get(other.GetItemCount(), other.GetType(), other.GetDepth(),
                                              other.GetItemCount(), other.GetLowKeyPair(), other.GetHighKeyPair());
 
@@ -1849,7 +1849,7 @@ class BwTree : public BwTreeBase {
      * for each individual type outside of this class, and only frees memory
      * when Destroy() is called.
      */
-    NO_ASAN void Destroy() const {
+    NO_ASAN void Destroy()   {
       // This finds the allocation header for this base node, and then
       // traverses the linked list
       ElasticNode::GetAllocationHeader(this)->Destroy();
@@ -1860,24 +1860,24 @@ class BwTree : public BwTreeBase {
      */
     NO_ASAN inline ElementType *Begin() { return start; }
 
-    NO_ASAN inline const ElementType *Begin() const { return start; }
+    NO_ASAN inline   ElementType *Begin()   { return start; }
 
     /*
      * End() - Returns an end iterator that is similar to the one for vector
      */
     NO_ASAN inline ElementType *End() { return end; }
 
-    NO_ASAN inline const ElementType *End() const { return end; }
+    NO_ASAN inline   ElementType *End()   { return end; }
 
     /*
      * REnd() - Returns the element before the first element
      *
      * Note that since we returned an invalid pointer into the array, the
-     * return value should not be modified and is therefore of const type
+     * return value should not be modified and is therefore of   type
      */
-    NO_ASAN inline const ElementType *REnd() { return start - 1; }
+    NO_ASAN inline   ElementType *REnd() { return start - 1; }
 
-    NO_ASAN inline const ElementType *REnd() const { return start - 1; }
+    NO_ASAN inline   ElementType *REnd()   { return start - 1; }
 
     /*
      * GetSize() - Returns the size of the embedded list
@@ -1885,17 +1885,17 @@ class BwTree : public BwTreeBase {
      * Note that the return type is integer since we use integer to represent
      * the size of a node
      */
-    NO_ASAN inline int GetSize() const { return static_cast<int>(End() - Begin()); }
+    NO_ASAN inline int GetSize()   { return static_cast<int>(End() - Begin()); }
 
     /*
      * PushBack() - Push back an element
      *
-     * This function takes an element type and copy-construct it on the array
+     * This function takes an element type and copy- ruct it on the array
      * which is invisible to the compiler. Therefore we must call placement
      * operator new to do the job
      */
-    NO_ASAN inline void PushBack(const ElementType &element) {
-      // Placement new + copy constructor using end pointer
+    NO_ASAN inline void PushBack(  ElementType &element) {
+      // Placement new + copy  ructor using end pointer
       new (end) ElementType{element};
 
       // Move it pointing to the enxt available slot, if not reached the end
@@ -1907,7 +1907,7 @@ class BwTree : public BwTreeBase {
      *
      * The overloaded PushBack() could also push an array of elements
      */
-    NO_ASAN inline void PushBack(const ElementType *copy_start_p, const ElementType *copy_end_p) {
+    NO_ASAN inline void PushBack(  ElementType *copy_start_p,   ElementType *copy_end_p) {
       // Make sure the loop will come to an end
       NOISEPAGE_ASSERT(copy_start_p <= copy_end_p, "Loop will not come to an end.");
 
@@ -1919,7 +1919,7 @@ class BwTree : public BwTreeBase {
 
    public:
     /*
-     * Get() - Static helper function that constructs a elastic node of
+     * Get() - Static helper function that  ructs a elastic node of
      *         a certain size
      *
      * Note that since operator new is only capable of allocating a fixed
@@ -1931,7 +1931,7 @@ class BwTree : public BwTreeBase {
     NO_ASAN inline static ElasticNode *Get(int size,  // Number of elements
                                            NodeType p_type, int p_depth,
                                            int p_item_count,  // Usually equal to size
-                                           const KeyNodeIDPair &p_low_key, const KeyNodeIDPair &p_high_key) {
+                                             KeyNodeIDPair &p_low_key,   KeyNodeIDPair &p_high_key) {
       // Currently this is always true - if we want a larger array then
       // just remove this line
       NOISEPAGE_ASSERT(size == p_item_count, "Remove this if you want a larger array.");
@@ -1941,7 +1941,7 @@ class BwTree : public BwTreeBase {
       //   2. node meta
       //   3. ElementType array
       // basic template + ElementType element size * (node size) + CHUNK_SIZE()
-      // Note: do not make it constant since it is going to be modified
+      // Note: do not make it  ant since it is going to be modified
       // after being returned
       auto *alloc_base = new char[sizeof(ElasticNode) + size * sizeof(ElementType) + AllocationMeta::CHUNK_SIZE()];
       NOISEPAGE_ASSERT(alloc_base != nullptr, "Allocation failed.");
@@ -1968,8 +1968,8 @@ class BwTree : public BwTreeBase {
      * This is useful since only the low key pointer is available from any
      * type of node
      */
-    NO_ASAN static ElasticNode *GetNodeHeader(const KeyNodeIDPair *low_key_p) {
-      static constexpr size_t low_key_offset = offsetof(ElasticNode, low_key);
+    NO_ASAN static ElasticNode *GetNodeHeader(  KeyNodeIDPair *low_key_p) {
+      static  expr size_t low_key_offset = offsetof(ElasticNode, low_key);
 
       return reinterpret_cast<ElasticNode *>(reinterpret_cast<uint64_t>(low_key_p) - low_key_offset);
     }
@@ -1978,7 +1978,7 @@ class BwTree : public BwTreeBase {
      * GetAllocationHeader() - Returns the address of class AllocationHeader
      *                         embedded inside the ElasticNode object
      */
-    NO_ASAN static AllocationMeta *GetAllocationHeader(const ElasticNode *node_p) {
+    NO_ASAN static AllocationMeta *GetAllocationHeader(  ElasticNode *node_p) {
       return reinterpret_cast<AllocationMeta *>(reinterpret_cast<uint64_t>(node_p) - AllocationMeta::CHUNK_SIZE());
     }
 
@@ -1996,8 +1996,8 @@ class BwTree : public BwTreeBase {
      * so (1) it is static, and (2) it takes low key p which is universally
      * available for all node type (stored in NodeMetadata)
      */
-    NO_ASAN static void *InlineAllocate(const KeyNodeIDPair *low_key_p, size_t size) {
-      const ElasticNode *node_p = GetNodeHeader(low_key_p);
+    NO_ASAN static void *InlineAllocate(  KeyNodeIDPair *low_key_p, size_t size) {
+        ElasticNode *node_p = GetNodeHeader(low_key_p);
       NOISEPAGE_ASSERT(&node_p->low_key == low_key_p, "low_key is not low_key_p.");
 
       // Jump over chunk content
@@ -2012,14 +2012,14 @@ class BwTree : public BwTreeBase {
     /*
      * At() - Access element with bounds checking under debug mode
      */
-    NO_ASAN inline ElementType &At(const int index) {
+    NO_ASAN inline ElementType &At(  int index) {
       // The index must be inside the valid range
       NOISEPAGE_ASSERT(index < GetSize(), "Index out of range.");
 
       return *(Begin() + index);
     }
 
-    NO_ASAN inline const ElementType &At(const int index) const {
+    NO_ASAN inline   ElementType &At(  int index)   {
       // The index must be inside the valid range
       NOISEPAGE_ASSERT(index < GetSize(), "Index out of range.");
 
@@ -2033,14 +2033,14 @@ class BwTree : public BwTreeBase {
   class InnerNode : public ElasticNode<KeyNodeIDPair> {
    public:
     /*
-     * Constructor - Deleted
+     *  ructor - Deleted
      *
-     * All construction of InnerNode should be through ElasticNode interface
+     * All  ruction of InnerNode should be through ElasticNode interface
      */
     InnerNode() = delete;
-    InnerNode(const InnerNode &) = delete;
+    InnerNode(  InnerNode &) = delete;
     InnerNode(InnerNode &&) = delete;
-    InnerNode &operator=(const InnerNode &) = delete;
+    InnerNode &operator=(  InnerNode &) = delete;
     InnerNode &operator=(InnerNode &&) = delete;
 
     /*
@@ -2055,7 +2055,7 @@ class BwTree : public BwTreeBase {
      * should be read-only to avoid data race. It copies half of the inner node
      * into the split sibling, and return the sibling node.
      */
-    NO_ASAN InnerNode *GetSplitSibling() const {
+    NO_ASAN InnerNode *GetSplitSibling()   {
       // Call function in class ElasticNode to determine the size of the
       // inner node
       int key_num = this->GetSize();
@@ -2077,7 +2077,7 @@ class BwTree : public BwTreeBase {
       auto sibling_size = static_cast<int>(std::distance(copy_start_it, this->End()));
 
       // This sets metadata inside BaseNode by calling SetMetaData()
-      // inside inner node constructor
+      // inside inner node  ructor
       auto *inner_node_p = reinterpret_cast<InnerNode *>(ElasticNode<KeyNodeIDPair>::Get(
           sibling_size, NodeType::InnerType, 0, sibling_size, this->At(split_item_index), this->GetHighKeyPair()));
 
@@ -2101,9 +2101,9 @@ class BwTree : public BwTreeBase {
   class LeafNode : public ElasticNode<KeyValuePair> {
    public:
     LeafNode() = delete;
-    LeafNode(const LeafNode &) = delete;
+    LeafNode(  LeafNode &) = delete;
     LeafNode(LeafNode &&) = delete;
-    LeafNode &operator=(const LeafNode &) = delete;
+    LeafNode &operator=(  LeafNode &) = delete;
     LeafNode &operator=(LeafNode &&) = delete;
 
     /*
@@ -2129,12 +2129,12 @@ class BwTree : public BwTreeBase {
      * and return -1 instead. Otherwise the index of the spliting point
      * is returned
      */
-    NO_ASAN int FindSplitPoint(const BwTree *t) const {
+    NO_ASAN int FindSplitPoint(  BwTree *t)   {
       int central_index = this->GetSize() / 2;
       NOISEPAGE_ASSERT(central_index > 1, "Index out of range.");
 
       // This will used as upper_bound and lower_bound key
-      const KeyValuePair &central_kvp = this->At(central_index);
+        KeyValuePair &central_kvp = this->At(central_index);
 
       // Move it to the element before data_list
       auto it = this->Begin() + central_index - 1;
@@ -2200,7 +2200,7 @@ class BwTree : public BwTreeBase {
      * or almost evenly divide the leaf node) then the return value of this
      * function is nullptr
      */
-    NO_ASAN LeafNode *GetSplitSibling(const BwTree *t) const {
+    NO_ASAN LeafNode *GetSplitSibling(  BwTree *t)   {
       // When we split a leaf node, it is certain that there is no delta
       // chain on top of it. As a result, the number of items must equal
       // the actual size of the data list
@@ -2231,11 +2231,11 @@ class BwTree : public BwTreeBase {
       // This is the key part of the key-value pair, also the low key
       // of the new node and new high key of the current node (will be
       // reflected in split delta later in its caller)
-      const KeyType &split_key = copy_start_it->first;
+        KeyType &split_key = copy_start_it->first;
 
       auto sibling_size = static_cast<int>(std::distance(copy_start_it, copy_end_it));
 
-      // This will call SetMetaData inside its constructor
+      // This will call SetMetaData inside its  ructor
       auto *leaf_node_p = reinterpret_cast<LeafNode *>(
           ElasticNode<KeyValuePair>::Get(sibling_size, NodeType::LeafType, 0, sibling_size,
                                          std::make_pair(split_key, ~INVALID_NODE_ID), this->GetHighKeyPair()));
@@ -2256,7 +2256,7 @@ class BwTree : public BwTreeBase {
 
  public:
   /*
-   * Constructor - Set up initial environment for BwTree
+   *  ructor - Set up initial environment for BwTree
    *
    * Any tree instance must start with an intermediate node as root, together
    * with an empty leaf node as child
@@ -2310,7 +2310,7 @@ class BwTree : public BwTreeBase {
         // Epoch Manager that does garbage collection
         epoch_manager{this} {
     INDEX_LOG_TRACE(
-        "Bw-Tree Constructor called. "
+        "Bw-Tree  ructor called. "
         "Setting up execution environment...");
 
     InitMappingTable();
@@ -2411,7 +2411,7 @@ class BwTree : public BwTreeBase {
    * The return value represents the number of nodes recycled
    */
   NO_ASAN size_t FreeNodeByNodeID(NodeID node_id) {
-    const BaseNode *node_p = GetNode(node_id);
+      BaseNode *node_p = GetNode(node_id);
     if (node_p == nullptr) {
       return 0UL;
     }
@@ -2481,8 +2481,8 @@ class BwTree : public BwTreeBase {
    * This node calls destructor according to the type of the node, considering
    * that there is not virtual destructor defined for sake of running speed.
    */
-  NO_ASAN size_t FreeNodeByPointer(const BaseNode *node_p) {
-    const BaseNode *next_node_p = node_p;
+  NO_ASAN size_t FreeNodeByPointer(  BaseNode *node_p) {
+      BaseNode *next_node_p = node_p;
     size_t freed_count = 0;
 
     while (1) {
@@ -2576,7 +2576,7 @@ class BwTree : public BwTreeBase {
 
           return freed_count;
         case NodeType::InnerType: {
-          const auto *inner_node_p = static_cast<const InnerNode *>(node_p);
+            auto *inner_node_p = static_cast<  InnerNode *>(node_p);
 
           // Free NodeID one by one stored in its separator list
           // Even if they are already freed (e.g. a split delta has not
@@ -2666,7 +2666,7 @@ class BwTree : public BwTreeBase {
    * the mapping table rather than CAS with nullptr
    */
   NO_ASAN void InitMappingTable() {
-    mapping_table = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
+    mapping_table = (std::atomic<  BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     // If allocation fails, we throw an error because this is uncoverable
     // The upper level functions should either catch this exception
@@ -2764,7 +2764,7 @@ class BwTree : public BwTreeBase {
    * If installation fails because CAS returned false, then return false
    * This function does not retry
    */
-  NO_ASAN inline bool InstallNodeToReplace(NodeID node_id, const BaseNode *node_p, const BaseNode *prev_p) {
+  NO_ASAN inline bool InstallNodeToReplace(NodeID node_id,   BaseNode *node_p,   BaseNode *prev_p) {
     // Make sure node id is valid and does not exceed maximum
     NOISEPAGE_ASSERT(node_id != INVALID_NODE_ID, "Node count exceeded maximum.");
     NOISEPAGE_ASSERT(node_id < MAPPING_TABLE_SIZE, "Node count exceeded maximum.");
@@ -2795,7 +2795,7 @@ class BwTree : public BwTreeBase {
    * This function does not return any value since we assume new node
    * installation would always succeed
    */
-  NO_ASAN inline void InstallNewNode(NodeID node_id, const BaseNode *node_p) { mapping_table[node_id] = node_p; }
+  NO_ASAN inline void InstallNewNode(NodeID node_id,   BaseNode *node_p) { mapping_table[node_id] = node_p; }
 
   /*
    * GetNode() - Return the pointer mapped by a node ID
@@ -2810,7 +2810,7 @@ class BwTree : public BwTreeBase {
    * If we want to keep the same snapshot then we should only
    * call GetNode() once and stick to that physical pointer
    */
-  NO_ASAN inline const BaseNode *GetNode(const NodeID node_id) {
+  NO_ASAN inline   BaseNode *GetNode(  NodeID node_id) {
     NOISEPAGE_ASSERT(node_id != INVALID_NODE_ID, "Node id out of range.");
     NOISEPAGE_ASSERT(node_id < MAPPING_TABLE_SIZE, "Node id out of range.");
 
@@ -2844,10 +2844,10 @@ class BwTree : public BwTreeBase {
    * For value_p and value_list_p, at most one of them could be non-nullptr
    * If both are nullptr then we just traverse and do not do anything
    */
-  NO_ASAN const KeyValuePair *Traverse(Context *context_p, const ValueType *value_p, std::pair<int, bool> *index_pair_p,
+  NO_ASAN   KeyValuePair *Traverse(Context *context_p,   ValueType *value_p, std::pair<int, bool> *index_pair_p,
                                        bool unique_key = false) {
     // For value collection it always returns nullptr
-    const KeyValuePair *found_pair_p = nullptr;
+      KeyValuePair *found_pair_p = nullptr;
 
   retry_traverse:
     NOISEPAGE_ASSERT(!context_p->abort_flag, "Must retry traverse.");
@@ -3002,7 +3002,7 @@ class BwTree : public BwTreeBase {
       // These two will be updated everytime we switch to
       // a new node
       NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
-      const BaseNode *node_p = snapshot_p->node_p;
+        BaseNode *node_p = snapshot_p->node_p;
 
       // Before node navigation, the first thing to do is to verify
       // that we are on the correct node according to the current
@@ -3044,7 +3044,7 @@ class BwTree : public BwTreeBase {
   NO_ASAN void NavigateSiblingChainBI(Context *context_p) {
     while (1) {
       NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
-      const BaseNode *node_p = snapshot_p->node_p;
+        BaseNode *node_p = snapshot_p->node_p;
       if ((node_p->GetNextNodeID() != INVALID_NODE_ID) &&
           (KeyCmpGreater(context_p->search_key, node_p->GetHighKey()))) {
         INDEX_LOG_TRACE("Bounds checking for BI failed (id = %" PRIu64
@@ -3072,8 +3072,8 @@ class BwTree : public BwTreeBase {
    * NOTE: This function ignores the first element in the sep list
    * since even if we know the low key of the first element
    */
-  NO_ASAN inline NodeID LocateSeparatorByKey(const KeyType &search_key, const InnerNode *inner_node_p,
-                                             const KeyNodeIDPair *start_p, const KeyNodeIDPair *end_p) {
+  NO_ASAN inline NodeID LocateSeparatorByKey(  KeyType &search_key,   InnerNode *inner_node_p,
+                                               KeyNodeIDPair *start_p,   KeyNodeIDPair *end_p) {
     // Inner node could not be empty
     NOISEPAGE_ASSERT(inner_node_p->GetSize() != 0UL, "Inner node is empty.");
     (void)inner_node_p;
@@ -3106,7 +3106,7 @@ class BwTree : public BwTreeBase {
    * we must have come down from a node where the search key is its separator
    * key (remember that the separator key is the low key of ots child node)
    */
-  NO_ASAN inline NodeID LocateSeparatorByKeyBI(const KeyType &search_key, const InnerNode *inner_node_p) {
+  NO_ASAN inline NodeID LocateSeparatorByKeyBI(  KeyType &search_key,   InnerNode *inner_node_p) {
     NOISEPAGE_ASSERT(inner_node_p->GetSize() != 0UL, "Inner node is empty.");
     auto it = std::upper_bound(inner_node_p->Begin() + 1, inner_node_p->End(),
                                std::make_pair(search_key, INVALID_NODE_ID), key_node_id_pair_cmp_obj) -
@@ -3166,13 +3166,13 @@ class BwTree : public BwTreeBase {
     /////////////////////////////////////////////////////////////////
 
     // This search key will not be changed during navigation
-    const KeyType &search_key = context_p->search_key;
+      KeyType &search_key = context_p->search_key;
 
     // First get the snapshot from context
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
 
     // Save some keystrokes
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // Make sure the structure is valid
     NOISEPAGE_ASSERT(!snapshot_p->IsLeaf(), "Structure not valid.");
@@ -3186,17 +3186,17 @@ class BwTree : public BwTreeBase {
     INDEX_LOG_TRACE("Navigating inner node delta chain...");
 
     // Always start with the first element
-    const KeyNodeIDPair *start_p = InnerNode::GetNodeHeader(&node_p->GetLowKeyPair())->Begin() + 1;
+      KeyNodeIDPair *start_p = InnerNode::GetNodeHeader(&node_p->GetLowKeyPair())->Begin() + 1;
     // Use low key pair to find base node and then use base node pointer to find
     // total number of elements in the array. We search in this array later
-    const KeyNodeIDPair *end_p = InnerNode::GetNodeHeader(&node_p->GetLowKeyPair())->End();
+      KeyNodeIDPair *end_p = InnerNode::GetNodeHeader(&node_p->GetLowKeyPair())->End();
 
     while (1) {
       NodeType type = node_p->GetType();
 
       switch (type) {
         case NodeType::InnerType: {
-          const auto *inner_node_p = static_cast<const InnerNode *>(node_p);
+            auto *inner_node_p = static_cast<  InnerNode *>(node_p);
 
           // We always use the ubound recorded inside the top of the
           // delta chain
@@ -3207,10 +3207,10 @@ class BwTree : public BwTreeBase {
           return target_id;
         }  // case InnerType
         case NodeType::InnerInsertType: {
-          const auto *insert_node_p = static_cast<const InnerInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  InnerInsertNode *>(node_p);
 
-          const KeyNodeIDPair &insert_item = insert_node_p->item;
-          const KeyNodeIDPair &next_item = insert_node_p->next_item;
+            KeyNodeIDPair &insert_item = insert_node_p->item;
+            KeyNodeIDPair &next_item = insert_node_p->next_item;
 
           // This comparison servers two purposes:
           //   1. Check whether we could use it to do a quick jump
@@ -3231,10 +3231,10 @@ class BwTree : public BwTreeBase {
           break;
         }  // InnerInsertType
         case NodeType::InnerDeleteType: {
-          const auto *delete_node_p = static_cast<const InnerDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  InnerDeleteNode *>(node_p);
 
-          const KeyNodeIDPair &prev_item = delete_node_p->prev_item;
-          const KeyNodeIDPair &next_item = delete_node_p->next_item;
+            KeyNodeIDPair &prev_item = delete_node_p->prev_item;
+            KeyNodeIDPair &next_item = delete_node_p->next_item;
 
           // NOTE: Low key ID will not be changed (i.e. being deleted or
           // being preceded by other key-NodeID pair)
@@ -3273,9 +3273,9 @@ class BwTree : public BwTreeBase {
           break;
         }  // case InnerSplitType
         case NodeType::InnerMergeType: {
-          const auto *merge_node_p = static_cast<const InnerMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  InnerMergeNode *>(node_p);
 
-          const KeyType &merge_key = merge_node_p->delete_item.first;
+            KeyType &merge_key = merge_node_p->delete_item.first;
 
           // Here since we will only take one branch, so
           // high key does not need to be updated
@@ -3308,7 +3308,7 @@ class BwTree : public BwTreeBase {
         }
       }  // switch type
 
-      node_p = static_cast<const DeltaNode *>(node_p)->child_node_p;
+      node_p = static_cast<  DeltaNode *>(node_p)->child_node_p;
     }  // while 1
 
     // Should not reach here
@@ -3334,9 +3334,9 @@ class BwTree : public BwTreeBase {
       return INVALID_NODE_ID;
     }
 
-    const KeyType &search_key = context_p->search_key;
+      KeyType &search_key = context_p->search_key;
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     NOISEPAGE_ASSERT(!snapshot_p->IsLeaf(), "Invalid node structure.");
     NOISEPAGE_ASSERT(snapshot_p->node_p != nullptr, "Invalid node structure.");
@@ -3347,17 +3347,17 @@ class BwTree : public BwTreeBase {
 
       switch (type) {
         case NodeType::InnerType: {
-          NodeID target_id = LocateSeparatorByKeyBI(search_key, static_cast<const InnerNode *>(node_p));
+          NodeID target_id = LocateSeparatorByKeyBI(search_key, static_cast<  InnerNode *>(node_p));
 
           INDEX_LOG_TRACE("Found child in inner node (BI); child ID = %" PRIu64 "", target_id);
 
           return target_id;
         }
         case NodeType::InnerInsertType: {
-          const auto *insert_node_p = static_cast<const InnerInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  InnerInsertNode *>(node_p);
 
-          const KeyNodeIDPair &insert_item = insert_node_p->item;
-          const KeyNodeIDPair &next_item = insert_node_p->next_item;
+            KeyNodeIDPair &insert_item = insert_node_p->item;
+            KeyNodeIDPair &next_item = insert_node_p->next_item;
           if ((next_item.second == INVALID_NODE_ID) || (KeyCmpLess(search_key, next_item.first))) {
             // *********************************************
             // * NOTE: DO NOT PROCEED IF IT IS "==" RELATION
@@ -3375,10 +3375,10 @@ class BwTree : public BwTreeBase {
           break;
         }  // InnerInsertType
         case NodeType::InnerDeleteType: {
-          const auto *delete_node_p = static_cast<const InnerDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  InnerDeleteNode *>(node_p);
 
-          const KeyNodeIDPair &prev_item = delete_node_p->prev_item;
-          const KeyNodeIDPair &next_item = delete_node_p->next_item;
+            KeyNodeIDPair &prev_item = delete_node_p->prev_item;
+            KeyNodeIDPair &next_item = delete_node_p->next_item;
 
           // *********************************************
           // * NOTE: DO NOT PROCEED IF IT IS "==" RELATION
@@ -3397,13 +3397,13 @@ class BwTree : public BwTreeBase {
           break;
         }  // InnerDeleteType
         case NodeType::InnerSplitType: {
-          node_p = static_cast<const InnerSplitNode *>(node_p)->child_node_p;
+          node_p = static_cast<  InnerSplitNode *>(node_p)->child_node_p;
           break;
         }  // case InnerSplitType
         case NodeType::InnerMergeType: {
-          const auto *merge_node_p = static_cast<const InnerMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  InnerMergeNode *>(node_p);
 
-          const KeyType &merge_key = merge_node_p->delete_item.first;
+            KeyType &merge_key = merge_node_p->delete_item.first;
 
           // ************************************************
           // * NOTE: GO TO LEFT BRANCH IF IT IS "==" RELATION
@@ -3446,14 +3446,14 @@ class BwTree : public BwTreeBase {
    * sorted by the key order
    *
    * NOTE: This function could take an optional depth argument indicating the
-   * depth of the newly constructed InnerNode. This is majorly used by other
+   * depth of the newly  ructed InnerNode. This is majorly used by other
    * proceures where parent node is consolidated and scanned in order to find
    * a certain key.
    */
   NO_ASAN InnerNode *CollectAllSepsOnInner(NodeSnapshot *snapshot_p, int p_depth = 0) {
     // Note that in the recursive call node_p might change
     // but we should not change the metadata
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // This is the number of insert + delete records which contributes
     // to the size of the bloom filter
@@ -3461,18 +3461,18 @@ class BwTree : public BwTreeBase {
 
     // This array will hold sorted InnerDataNode pointers in order to
     // perform a log merging
-    const InnerDataNode *data_node_list[delta_record_num];
+      InnerDataNode *data_node_list[delta_record_num];
 
     // These two are used to compare InnerDataNode for < and == relation
-    auto f1 = [this](const InnerDataNode *idn_1, const InnerDataNode *idn_2) {
+    auto f1 = [this](  InnerDataNode *idn_1,   InnerDataNode *idn_2) {
       return this->key_cmp_obj(idn_1->item.first, idn_2->item.first);
     };
 
-    auto f2 = [this](const InnerDataNode *idn_1, const InnerDataNode *idn_2) {
+    auto f2 = [this](  InnerDataNode *idn_1,   InnerDataNode *idn_2) {
       return this->key_eq_obj(idn_1->item.first, idn_2->item.first);
     };
 
-    bwtree::SortedSmallSet<const InnerDataNode *, decltype(f1), decltype(f2)> sss{data_node_list, f1, f2};
+    bwtree::SortedSmallSet<  InnerDataNode *, decltype(f1), decltype(f2)> sss{data_node_list, f1, f2};
 
     // The effect of this function is a consolidation into inner node
     auto *inner_node_p = reinterpret_cast<InnerNode *>(
@@ -3492,7 +3492,7 @@ class BwTree : public BwTreeBase {
 
     // Since consolidation would not change item count they must be equal
     // Also allocated space should be used exactly as described in the
-    // construction function
+    //  ruction function
     NOISEPAGE_ASSERT(inner_node_p->GetSize() == node_p->GetItemCount(), "Invalid node structure.");
     NOISEPAGE_ASSERT(inner_node_p->GetSize() == inner_node_p->GetItemCount(), "Invalid node structure.");
 
@@ -3507,26 +3507,26 @@ class BwTree : public BwTreeBase {
    */
   template <typename T>  // To make the f**king compiler
   // to deduce SortedSmallSet template type
-  NO_ASAN void CollectAllSepsOnInnerRecursive(const BaseNode *node_p, NodeID low_key_node_id, T &sss,
-                                              InnerNode *new_inner_node_p) const {
+  NO_ASAN void CollectAllSepsOnInnerRecursive(  BaseNode *node_p, NodeID low_key_node_id, T &sss,
+                                              InnerNode *new_inner_node_p)   {
     // High key should be the high key of the branch (if there is a merge
     // then the high key of the branch may not always equal the high key
     // of the merged node)
     // Even if there is no merge, we still need the high key to rule out
     // keys that has already been splited
-    const KeyNodeIDPair &high_key_pair = node_p->GetHighKeyPair();
+      KeyNodeIDPair &high_key_pair = node_p->GetHighKeyPair();
 
     while (true) {
       NodeType type = node_p->GetType();
 
       switch (type) {
         case NodeType::InnerType: {
-          const auto *inner_node_p = static_cast<const InnerNode *>(node_p);
+            auto *inner_node_p = static_cast<  InnerNode *>(node_p);
 
           // These two will be set according to the high key and
           // low key
-          const KeyNodeIDPair *copy_end_it;
-          const KeyNodeIDPair *copy_start_it;
+            KeyNodeIDPair *copy_end_it;
+            KeyNodeIDPair *copy_start_it;
 
           if (high_key_pair.second == INVALID_NODE_ID) {
             copy_end_it = inner_node_p->End();
@@ -3672,7 +3672,7 @@ class BwTree : public BwTreeBase {
           return;
         }  // case InnerRemoveType
         case NodeType::InnerInsertType: {
-          const auto *insert_node_p = static_cast<const InnerInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  InnerInsertNode *>(node_p);
 
           // delta nodes must be consistent with the most up-to-date
           // node high key
@@ -3680,7 +3680,7 @@ class BwTree : public BwTreeBase {
               (high_key_pair.second == INVALID_NODE_ID) || (KeyCmpLess(insert_node_p->item.first, high_key_pair.first)),
               "delta nodes must be consistent with the most up-to-date node high key.");
 
-          sss.Insert(static_cast<const InnerDataNode *>(node_p));
+          sss.Insert(static_cast<  InnerDataNode *>(node_p));
 
           // Go to next node
           node_p = insert_node_p->child_node_p;
@@ -3688,7 +3688,7 @@ class BwTree : public BwTreeBase {
           break;
         }  // case InnerInsertType
         case NodeType::InnerDeleteType: {
-          const auto *delete_node_p = static_cast<const InnerDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  InnerDeleteNode *>(node_p);
 
           // Since we do not allow any delta node under split node
           // this must be true
@@ -3698,24 +3698,24 @@ class BwTree : public BwTreeBase {
               (high_key_pair.second == INVALID_NODE_ID) || (KeyCmpLess(delete_node_p->item.first, high_key_pair.first)),
               "delta nodes must be consistent with the most up-to-date node high key.");
 
-          sss.Insert(static_cast<const InnerDataNode *>(node_p));
+          sss.Insert(static_cast<  InnerDataNode *>(node_p));
 
           node_p = delete_node_p->child_node_p;
 
           break;
         }  // case InnerDeleteType
         case NodeType::InnerSplitType: {
-          node_p = (static_cast<const DeltaNode *>(node_p))->child_node_p;
+          node_p = (static_cast<  DeltaNode *>(node_p))->child_node_p;
 
           break;
         }  // case InnerSplitType
         case NodeType::InnerMergeType: {
-          const auto *merge_node_p = static_cast<const InnerMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  InnerMergeNode *>(node_p);
 
           // NOTE: We alaways use the same metadata object which is the
           // one passed by the wrapper. Though node_p changes for each
           // recursive call, metadata should not change and should remain
-          // constant
+          //  ant
 
           CollectAllSepsOnInnerRecursive(merge_node_p->child_node_p, low_key_node_id, sss, new_inner_node_p);
 
@@ -3785,26 +3785,26 @@ class BwTree : public BwTreeBase {
 
     // This contains information for current node
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     NOISEPAGE_ASSERT(snapshot_p->IsLeaf(), "Must be a leaf node.");
 
     // We only collect values for this key
-    const KeyType &search_key = context_p->search_key;
+      KeyType &search_key = context_p->search_key;
 
     // The maximum size of present set and deleted set is just
     // the length of the delta chain. Since when we reached the leaf node
     // we just probe and add to value set
-    const int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+      int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
 
     // 1. This works even if depth is 0
-    // 2. We choose to store const ValueType * because we want to bound the
+    // 2. We choose to store   ValueType * because we want to bound the
     // size of stack array. It should be upper bounded by max delta chain
     // length * pointer size. On the contrary, if the size of
     // ValueType is huge, and we store ValueType, then we might cause
     // a stack overflow
-    const ValueType *present_set_data_p[set_max_size];
-    const ValueType *deleted_set_data_p[set_max_size];
+      ValueType *present_set_data_p[set_max_size];
+      ValueType *deleted_set_data_p[set_max_size];
 
     bwtree::BloomFilter<ValueType, ValueEqualityChecker, ValueHashFunc> present_set{present_set_data_p, value_eq_obj,
                                                                                     value_hash_obj};
@@ -3820,7 +3820,7 @@ class BwTree : public BwTreeBase {
 
       switch (type) {
         case NodeType::LeafType: {
-          const auto *leaf_node_p = static_cast<const LeafNode *>(node_p);
+            auto *leaf_node_p = static_cast<  LeafNode *>(node_p);
 
           auto start_it = leaf_node_p->Begin() + start_index;
 
@@ -3856,7 +3856,7 @@ class BwTree : public BwTreeBase {
           return;
         }
         case NodeType::LeafInsertType: {
-          const auto *insert_node_p = static_cast<const LeafInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  LeafInsertNode *>(node_p);
 
           if (KeyCmpEqual(search_key, insert_node_p->item.first)) {
             if (!deleted_set.Exists(insert_node_p->item.second)) {
@@ -3880,7 +3880,7 @@ class BwTree : public BwTreeBase {
           break;
         }  // case LeafInsertType
         case NodeType::LeafDeleteType: {
-          const auto *delete_node_p = static_cast<const LeafDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  LeafDeleteNode *>(node_p);
 
           if (KeyCmpEqual(search_key, delete_node_p->item.first)) {
             if (!present_set.Exists(delete_node_p->item.second)) {
@@ -3905,7 +3905,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafMergeType: {
           INDEX_LOG_TRACE("Observed a merge node on leaf delta chain");
 
-          const auto *merge_node_p = static_cast<const LeafMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  LeafMergeNode *>(node_p);
 
           // Decide which side we should choose
           // Using >= for separator key
@@ -3924,7 +3924,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafSplitType: {
           INDEX_LOG_TRACE("Observed a split node on leaf delta chain");
 
-          const auto *split_node_p = static_cast<const LeafSplitNode *>(node_p);
+            auto *split_node_p = static_cast<  LeafSplitNode *>(node_p);
 
           // Do not need to go right here since we have already
           // done that on the top level
@@ -3964,7 +3964,7 @@ class BwTree : public BwTreeBase {
    * There are possibility that the switch aborts, and in this case this
    * function returns with value false.
    */
-  NO_ASAN const KeyValuePair *NavigateLeafNode(Context *context_p, const ValueType &search_value,
+  NO_ASAN   KeyValuePair *NavigateLeafNode(Context *context_p,   ValueType &search_value,
                                                std::pair<int, bool> *index_pair_p, bool unique_key = false) {
     // This will go to the right sibling until we have seen
     // a node whose range match the search key
@@ -3984,17 +3984,17 @@ class BwTree : public BwTreeBase {
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
     NOISEPAGE_ASSERT(snapshot_p->IsLeaf(), "Must be a leaf node.");
 
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // Save some typing
-    const KeyType &search_key = context_p->search_key;
+      KeyType &search_key = context_p->search_key;
 
     while (1) {
       NodeType type = node_p->GetType();
 
       switch (type) {
         case NodeType::LeafType: {
-          const auto *leaf_node_p = static_cast<const LeafNode *>(node_p);
+            auto *leaf_node_p = static_cast<  LeafNode *>(node_p);
 
           // Here we know the search key < high key of current node
           // NOTE: We only compare keys here, so it will get to the first
@@ -4032,7 +4032,7 @@ class BwTree : public BwTreeBase {
           return nullptr;
         }  // case LeafType
         case NodeType::LeafInsertType: {
-          const auto *insert_node_p = static_cast<const LeafInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  LeafInsertNode *>(node_p);
 
           if (KeyCmpEqual(search_key, insert_node_p->item.first)) {
             if (unique_key || ValueCmpEqual(insert_node_p->item.second, search_value)) {
@@ -4049,7 +4049,7 @@ class BwTree : public BwTreeBase {
           break;
         }  // case LeafInsertType
         case NodeType::LeafDeleteType: {
-          const auto *delete_node_p = static_cast<const LeafDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  LeafDeleteNode *>(node_p);
 
           // If the value was deleted then return false
           if (KeyCmpEqual(search_key, delete_node_p->item.first)) {
@@ -4075,7 +4075,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafMergeType: {
           INDEX_LOG_TRACE("Observed a merge node on leaf delta chain");
 
-          const auto *merge_node_p = static_cast<const LeafMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  LeafMergeNode *>(node_p);
 
           // Decide which side we should choose
           // Using >= for separator key
@@ -4094,7 +4094,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafSplitType: {
           INDEX_LOG_TRACE("Observed a split node on leaf delta chain");
 
-          const auto *split_node_p = static_cast<const LeafSplitNode *>(node_p);
+            auto *split_node_p = static_cast<  LeafSplitNode *>(node_p);
 
           node_p = split_node_p->child_node_p;
 
@@ -4137,9 +4137,9 @@ class BwTree : public BwTreeBase {
    * traverse the delta chain and leaf data node, and could not be
    * guaranteed a specific order
    */
-  NO_ASAN const KeyValuePair *NavigateLeafNode(Context *context_p, const ValueType &value,
+  NO_ASAN   KeyValuePair *NavigateLeafNode(Context *context_p,   ValueType &value,
                                                std::pair<int, bool> *index_pair_p,
-                                               std::function<bool(const ValueType)> predicate,
+                                               std::function<bool(  ValueType)> predicate,
                                                bool *predicate_satisfied) {
     // NOTE: We do not have to traverse to the right sibling here
     // since Traverse() already traverses to the right sibling
@@ -4148,16 +4148,16 @@ class BwTree : public BwTreeBase {
     // page delta chain on entry of this function
 
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     NOISEPAGE_ASSERT(snapshot_p->IsLeaf(), "Must be a leaf node.");
 
-    const KeyType &search_key = context_p->search_key;
+      KeyType &search_key = context_p->search_key;
 
-    const int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+      int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
 
-    const ValueType *present_set_data_p[set_max_size];
-    const ValueType *deleted_set_data_p[set_max_size];
+      ValueType *present_set_data_p[set_max_size];
+      ValueType *deleted_set_data_p[set_max_size];
 
     bwtree::BloomFilter<ValueType, ValueEqualityChecker, ValueHashFunc> present_set{present_set_data_p, value_eq_obj,
                                                                                     value_hash_obj};
@@ -4170,7 +4170,7 @@ class BwTree : public BwTreeBase {
 
       switch (type) {
         case NodeType::LeafType: {
-          const auto *leaf_node_p = static_cast<const LeafNode *>(node_p);
+            auto *leaf_node_p = static_cast<  LeafNode *>(node_p);
 
           auto copy_start_it = std::lower_bound(leaf_node_p->Begin(), leaf_node_p->End(),
                                                 std::make_pair(search_key, ValueType{}), key_value_pair_cmp_obj);
@@ -4208,7 +4208,7 @@ class BwTree : public BwTreeBase {
           return nullptr;
         }
         case NodeType::LeafInsertType: {
-          const auto *insert_node_p = static_cast<const LeafInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  LeafInsertNode *>(node_p);
 
           if (KeyCmpEqual(search_key, insert_node_p->item.first)) {
             if (!deleted_set.Exists(insert_node_p->item.second)) {
@@ -4236,7 +4236,7 @@ class BwTree : public BwTreeBase {
           break;
         }  // case LeafInsertType
         case NodeType::LeafDeleteType: {
-          const auto *delete_node_p = static_cast<const LeafDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  LeafDeleteNode *>(node_p);
 
           if (KeyCmpEqual(search_key, delete_node_p->item.first)) {
             if (!present_set.Exists(delete_node_p->item.second)) {
@@ -4259,7 +4259,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafMergeType: {
           INDEX_LOG_TRACE("Observed a merge node on leaf delta chain");
 
-          const auto *merge_node_p = static_cast<const LeafMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  LeafMergeNode *>(node_p);
 
           if (KeyCmpGreaterEqual(search_key, merge_node_p->delete_item.first)) {
             INDEX_LOG_TRACE("Take leaf merge right branch");
@@ -4276,7 +4276,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafSplitType: {
           INDEX_LOG_TRACE("Observed a split node on leaf delta chain");
 
-          const auto *split_node_p = static_cast<const LeafSplitNode *>(node_p);
+            auto *split_node_p = static_cast<  LeafSplitNode *>(node_p);
 
           node_p = split_node_p->child_node_p;
 
@@ -4311,9 +4311,9 @@ class BwTree : public BwTreeBase {
   NO_ASAN LeafNode *CollectAllValuesOnLeaf(NodeSnapshot *snapshot_p, LeafNode *leaf_node_p = nullptr) {
     NOISEPAGE_ASSERT(snapshot_p->IsLeaf(), "Must be a leaf node.");
 
-    //const BaseNode *node_p = snapshot_p->node_p;
+    //  BaseNode *node_p = snapshot_p->node_p;
     // 2022-11-26 node_p should be previous delta
-    const BaseNode *node_p = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
+      BaseNode *node_p = (static_cast<  DeltaNode *>(snapshot_p->node_p))->child_node_p;
 
 
     /////////////////////////////////////////////////////////////////
@@ -4340,7 +4340,7 @@ class BwTree : public BwTreeBase {
     // and those in the data list of leaf page do not need to be
     // put in the set
     // This is used to dedup already seen key-value pairs
-    const KeyValuePair *delta_set_data_p[delta_change_num];
+      KeyValuePair *delta_set_data_p[delta_change_num];
 
     // This set is used as the set for deduplicating already seen
     // key value pairs
@@ -4350,9 +4350,9 @@ class BwTree : public BwTreeBase {
     // Prepare Small Sorted Set
     /////////////////////////////////////////////////////////////////
 
-    const LeafDataNode *sss_data_p[delta_change_num];
+      LeafDataNode *sss_data_p[delta_change_num];
 
-    auto f1 = [this](const LeafDataNode *ldn1, const LeafDataNode *ldn2) {
+    auto f1 = [this](  LeafDataNode *ldn1,   LeafDataNode *ldn2) {
       // Compare using key first; if keys are equal then compare using
       // index (since we must pop those nodes in a key-order given the index)
       // NOTE: Since in leaf node keys are sorted, if keys are sorted then
@@ -4369,7 +4369,7 @@ class BwTree : public BwTreeBase {
 
     // This is not used since in this case we do not need to compare
     // for equal relation
-    auto f2 = [](const LeafDataNode *ldn1, const LeafDataNode *ldn2) {
+    auto f2 = [](  LeafDataNode *ldn1,   LeafDataNode *ldn2) {
       (void)ldn1;
       (void)ldn2;
 
@@ -4379,7 +4379,7 @@ class BwTree : public BwTreeBase {
 
     // Declare an sss object with the previously declared comparators and
     // null equality checkers (not used)
-    bwtree::SortedSmallSet<const LeafDataNode *, decltype(f1), decltype(f2)> sss{sss_data_p, f1, f2};
+    bwtree::SortedSmallSet<  LeafDataNode *, decltype(f1), decltype(f2)> sss{sss_data_p, f1, f2};
 
     /////////////////////////////////////////////////////////////////
     // Start collecting values!
@@ -4416,11 +4416,11 @@ class BwTree : public BwTreeBase {
    * "Recursive" suffix)
    */
   template <typename T>  // To let the compiler deduce type of sss
-  NO_ASAN void CollectAllValuesOnLeafRecursive(const BaseNode *node_p, T &sss, KeyValuePairBloomFilter &delta_set,
-                                               LeafNode *new_leaf_node_p) const {
+  NO_ASAN void CollectAllValuesOnLeafRecursive(  BaseNode *node_p, T &sss, KeyValuePairBloomFilter &delta_set,
+                                               LeafNode *new_leaf_node_p)   {
     // The top node is used to derive high key
     // NOTE: Low key for Leaf node and its delta chain is nullptr
-    const KeyNodeIDPair &high_key_pair = node_p->GetHighKeyPair();
+      KeyNodeIDPair &high_key_pair = node_p->GetHighKeyPair();
 
     while (true) {
       NodeType type = node_p->GetType();
@@ -4429,10 +4429,10 @@ class BwTree : public BwTreeBase {
         // When we see a leaf node, just copy all keys together with
         // all values into the value set
         case NodeType::LeafType: {
-          const auto *leaf_node_p = static_cast<const LeafNode *>(node_p);
+            auto *leaf_node_p = static_cast<  LeafNode *>(node_p);
 
           // We compute end iterator based on the high key
-          const KeyValuePair *copy_end_it;
+            KeyValuePair *copy_end_it;
 
           // If the high key is +Inf then all items could be copied
           if ((high_key_pair.second == INVALID_NODE_ID)) {
@@ -4535,7 +4535,7 @@ class BwTree : public BwTreeBase {
           return;
         }  // case LeafType
         case NodeType::LeafInsertType: {
-          const auto *insert_node_p = static_cast<const LeafInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  LeafInsertNode *>(node_p);
 
           if (!delta_set.Exists(insert_node_p->item)) {
             delta_set.Insert(insert_node_p->item);
@@ -4548,7 +4548,7 @@ class BwTree : public BwTreeBase {
           break;
         }  // case LeafInsertType
         case NodeType::LeafDeleteType: {
-          const auto *delete_node_p = static_cast<const LeafDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  LeafDeleteNode *>(node_p);
 
           if (!delta_set.Exists(delete_node_p->item)) {
             delta_set.Insert(delete_node_p->item);
@@ -4567,14 +4567,14 @@ class BwTree : public BwTreeBase {
           [[fallthrough]];
         }  // case LeafRemoveType
         case NodeType::LeafSplitType: {
-          const auto *split_node_p = static_cast<const LeafSplitNode *>(node_p);
+            auto *split_node_p = static_cast<  LeafSplitNode *>(node_p);
 
           node_p = split_node_p->child_node_p;
 
           break;
         }  // case LeafSplitType
         case NodeType::LeafMergeType: {
-          const auto *merge_node_p = static_cast<const LeafMergeNode *>(node_p);
+            auto *merge_node_p = static_cast<  LeafMergeNode *>(node_p);
 
           /**** RECURSIVE CALL ON LEFT AND RIGHT SUB-TREE ****/
           CollectAllValuesOnLeafRecursive(merge_node_p->child_node_p, sss, delta_set, new_leaf_node_p);
@@ -4703,7 +4703,7 @@ class BwTree : public BwTreeBase {
 
     // We use this to test whether we have found the real
     // left sibling whose next node id equals this one
-    const NodeID removed_node_id = snapshot_p->node_id;
+      NodeID removed_node_id = snapshot_p->node_id;
 
     // After this point snapshot_p could be overwritten
 
@@ -4767,11 +4767,11 @@ class BwTree : public BwTreeBase {
    *
    * This function simply copies NodeID, and physical pointer into
    * the snapshot object. Node that the snapshot object itself is directly
-   * constructed on the path list which is a vector. This avoids copying the
+   *  ructed on the path list which is a vector. This avoids copying the
    * NodeSnapshot object from the stack to vector
    */
   NO_ASAN void TakeNodeSnapshot(NodeID node_id, Context *context_p) {
-    const BaseNode *node_p = GetNode(node_id);
+      BaseNode *node_p = GetNode(node_id);
 
     INDEX_LOG_TRACE("Is leaf node? - %d", node_p->IsOnLeafDeltaChain());
 
@@ -4816,7 +4816,7 @@ class BwTree : public BwTreeBase {
    * Call SwitchPhysicalPointer() instead
    */
   NO_ASAN void UpdateNodeSnapshot(NodeID node_id, Context *context_p) {
-    const BaseNode *node_p = GetNode(node_id);
+      BaseNode *node_p = GetNode(node_id);
 
     // We operate on the latest snapshot instead of creating a new one
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
@@ -4922,7 +4922,7 @@ class BwTree : public BwTreeBase {
       case NodeType::InnerAbortType: {
         INDEX_LOG_TRACE("Observed Inner Abort Node; Continue");
 
-        snapshot_p->node_p = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
+        snapshot_p->node_p = (static_cast<  DeltaNode *>(snapshot_p->node_p))->child_node_p;
 
         goto before_switch;
       }
@@ -4955,7 +4955,7 @@ class BwTree : public BwTreeBase {
    * posting the remove delta finally proceeds to finish its job
    */
   NO_ASAN inline void TakeNodeSnapshotReadOptimized(NodeID node_id, Context *context_p) {
-    const BaseNode *node_p = GetNode(node_id);
+      BaseNode *node_p = GetNode(node_id);
 
     INDEX_LOG_TRACE("Is leaf node (RO)? - %d", node_p->IsOnLeafDeltaChain());
 
@@ -5175,8 +5175,8 @@ class BwTree : public BwTreeBase {
    *
    * NOTE: This function may abort
    */
-  NO_ASAN inline bool PostInnerInsertNode(Context *context_p, const KeyNodeIDPair &insert_item,
-                                          const KeyNodeIDPair &next_item, const KeyNodeIDPair *location) {
+  NO_ASAN inline bool PostInnerInsertNode(Context *context_p,   KeyNodeIDPair &insert_item,
+                                            KeyNodeIDPair &next_item,   KeyNodeIDPair *location) {
     // We post on the parent node, after which we check for size and decide
     // whether
     // to consolidate and/or split the node
@@ -5185,7 +5185,7 @@ class BwTree : public BwTreeBase {
     // Three arguments are: inserted key-node id pair
     //                      next key-node id pair
     //                      child node in delta chain
-    const InnerInsertNode *insert_node_p = InnerInlineAllocateOfType(
+      InnerInsertNode *insert_node_p = InnerInlineAllocateOfType(
         InnerInsertNode, parent_snapshot_p->node_p, insert_item, next_item, parent_snapshot_p->node_p, location);
 
     // CAS Index Term Insert Delta onto the parent node
@@ -5233,15 +5233,15 @@ class BwTree : public BwTreeBase {
    *
    * NOTE: This function may abort
    */
-  NO_ASAN inline bool PostInnerDeleteNode(Context *context_p, const KeyNodeIDPair &delete_item,
-                                          const KeyNodeIDPair &prev_item, const KeyNodeIDPair &next_item,
-                                          const KeyNodeIDPair *location) {
+  NO_ASAN inline bool PostInnerDeleteNode(Context *context_p,   KeyNodeIDPair &delete_item,
+                                            KeyNodeIDPair &prev_item,   KeyNodeIDPair &next_item,
+                                            KeyNodeIDPair *location) {
     NodeSnapshot *parent_snapshot_p = GetLatestParentNodeSnapshot(context_p);
 
     // Arguments are:
     // Deleted item; Prev item; next item (NodeID not used for next item)
     // and delta chail child node
-    const InnerDeleteNode *delete_node_p =
+      InnerDeleteNode *delete_node_p =
         InnerInlineAllocateOfType(InnerDeleteNode, parent_snapshot_p->node_p, delete_item, prev_item, next_item,
                                   parent_snapshot_p->node_p, location);
 
@@ -5259,7 +5259,7 @@ class BwTree : public BwTreeBase {
 
       // The deleted node ID must resolve to a RemoveNode of either
       // Inner or Leaf category
-      const BaseNode *garbage_node_p = GetNode(delete_item.second);
+        BaseNode *garbage_node_p = GetNode(delete_item.second);
       NOISEPAGE_ASSERT(garbage_node_p->IsRemoveNode(), "Garbage node must be remove node.");
 
       // Put the remove node into garbage chain
@@ -5334,7 +5334,7 @@ class BwTree : public BwTreeBase {
         // node, we continue but set the physical pointer to be ABORT's
         // child, to make CAS always fail on this node to avoid
         // posting on ABORT, especially posting split node
-        snapshot_p->node_p = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
+        snapshot_p->node_p = (static_cast<  DeltaNode *>(snapshot_p->node_p))->child_node_p;
 
         goto before_switch;
       }
@@ -5343,7 +5343,7 @@ class BwTree : public BwTreeBase {
         INDEX_LOG_TRACE("Helping along remove node...");
 
         // The right branch for merging is the child node under remove node
-        const BaseNode *merge_right_branch = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
+          BaseNode *merge_right_branch = (static_cast<  DeltaNode *>(snapshot_p->node_p))->child_node_p;
 
         // This will also be recorded in merge delta such that when
         // we finish merge delta we could recycle the node id as well
@@ -5371,11 +5371,11 @@ class BwTree : public BwTreeBase {
 
         // This serves as the merge key
         // Note that the left sibling node must have a valid high key
-        const KeyType &merge_key = snapshot_p->node_p->GetHighKey();
+          KeyType &merge_key = snapshot_p->node_p->GetHighKey();
 
         // This holds the merge node if installation is successful
         // Not changed (i.e.undefined) if CAS fails
-        const BaseNode *merge_node_p = nullptr;
+          BaseNode *merge_node_p = nullptr;
 
         bool ret;
 
@@ -5430,8 +5430,8 @@ class BwTree : public BwTreeBase {
         }
 
         // This is the item being deleted inside parent node
-        const KeyNodeIDPair *delete_item_p = nullptr;
-        const BaseNode *right_merge_p = nullptr;
+          KeyNodeIDPair *delete_item_p = nullptr;
+          BaseNode *right_merge_p = nullptr;
 
         // Type of the merge delta
         // This is important since we might fall through
@@ -5439,12 +5439,12 @@ class BwTree : public BwTreeBase {
         NodeType type = snapshot_p->node_p->GetType();
 
         if (type == NodeType::InnerMergeType) {
-          const auto *merge_node_p = static_cast<const InnerMergeNode *>(snapshot_p->node_p);
+            auto *merge_node_p = static_cast<  InnerMergeNode *>(snapshot_p->node_p);
 
           delete_item_p = &merge_node_p->delete_item;
           right_merge_p = merge_node_p->right_merge_p;
         } else if (type == NodeType::LeafMergeType) {
-          const auto *merge_node_p = static_cast<const LeafMergeNode *>(snapshot_p->node_p);
+            auto *merge_node_p = static_cast<  LeafMergeNode *>(snapshot_p->node_p);
 
           delete_item_p = &merge_node_p->delete_item;
           right_merge_p = merge_node_p->right_merge_p;
@@ -5454,11 +5454,11 @@ class BwTree : public BwTreeBase {
           NOISEPAGE_ASSERT(false, "Cannot reach here.");
         }  // If on type of merge node
 
-        const KeyNodeIDPair *location;
+          KeyNodeIDPair *location;
 
         // Find the deleted item
         // NOLINTNEXTLINE
-        const KeyNodeIDPair *found_pair_p = NavigateInnerNode(parent_snapshot_p, delete_item_p->first, &location);
+          KeyNodeIDPair *found_pair_p = NavigateInnerNode(parent_snapshot_p, delete_item_p->first, &location);
 
         // If the item is found then next we post InnerDeleteNode
         if (found_pair_p != nullptr) {
@@ -5493,23 +5493,23 @@ class BwTree : public BwTreeBase {
         // These two will be stored inside InnerInsertNode
         // The insert item is just the split item inside InnerSplitNode
         // but next item needs to be read from the parent node
-        const KeyNodeIDPair *insert_item_p;
+          KeyNodeIDPair *insert_item_p;
 
         // This is set to use the high key pair of the node under
         // split delta
-        const KeyNodeIDPair *next_item_p;
+          KeyNodeIDPair *next_item_p;
 
         NodeType type = snapshot_p->node_p->GetType();
 
         // NOTE: depth should not be read here, since we
         // need to know the depth on its parent node
         if (type == NodeType::InnerSplitType) {
-          const auto *split_node_p = static_cast<const InnerSplitNode *>(snapshot_p->node_p);
+            auto *split_node_p = static_cast<  InnerSplitNode *>(snapshot_p->node_p);
 
           insert_item_p = &split_node_p->insert_item;
           next_item_p = &split_node_p->child_node_p.load()->GetHighKeyPair();
         } else {
-          const auto *split_node_p = static_cast<const LeafSplitNode *>(snapshot_p->node_p);
+            auto *split_node_p = static_cast<  LeafSplitNode *>(snapshot_p->node_p);
 
           insert_item_p = &split_node_p->insert_item;
           next_item_p = &split_node_p->child_node_p.load()->GetHighKeyPair();
@@ -5532,14 +5532,14 @@ class BwTree : public BwTreeBase {
           NodeID new_root_id = GetNextNodeID();
 
           // InnerNode requires high key pair which is +Inf, INVALID NODE ID
-          // low key pair will be set inside the constructor to be pointing
+          // low key pair will be set inside the  ructor to be pointing
           // to the first element in the sep list
           // NOTE: Storage will be automatically reserved inside the
-          // constructor
+          //  ructor
 
           // This is the first item of the newly created InnerNode
           // and also the low key for the InnerNode
-          const KeyNodeIDPair first_item = std::make_pair(KeyType{}, snapshot_p->node_id);
+            KeyNodeIDPair first_item = std::make_pair(KeyType{}, snapshot_p->node_id);
 
           // Allocate an InnerNode with KeyNodeIDPair embedded
           InnerNode *inner_node_p = reinterpret_cast<InnerNode *>(ElasticNode<KeyNodeIDPair>::Get(
@@ -5572,7 +5572,7 @@ class BwTree : public BwTreeBase {
           // Note that the remove node must not be created on inner_node_p
           // since inner_node_p might be destroyed before remove node is
           // destroyed since they are both put into the GC chain
-          const InnerRemoveNode *fake_remove_node_p = new InnerRemoveNode{new_root_id, inner_node_p};
+            InnerRemoveNode *fake_remove_node_p = new InnerRemoveNode{new_root_id, inner_node_p};
 
           // Put the remove node into garbage chain, because
           // we cannot call InvalidateNodeID() here
@@ -5616,12 +5616,12 @@ class BwTree : public BwTreeBase {
           }
 
           // This is used to hold index information for InnerInsertNode
-          const KeyNodeIDPair *location;
+            KeyNodeIDPair *location;
 
           // Find the split item that we intend to insert in the parent node
           // This function returns a pointer to the item if found, or
           // nullptr if not found
-          const KeyNodeIDPair *found_item_p = NavigateInnerNode(parent_snapshot_p, insert_item_p->first, &location);
+            KeyNodeIDPair *found_item_p = NavigateInnerNode(parent_snapshot_p, insert_item_p->first, &location);
 
           // If the item has been found then we do not post
           // InnerInsertNode onto the parent
@@ -5639,7 +5639,7 @@ class BwTree : public BwTreeBase {
               // We are now on the way of completing the second split SMO
               // but since the parent has changed (we must have missed an
               // InnerInsertNode) we need to abort and restart traversing
-              const BaseNode *node_p = GetNode(found_item_p->second);
+                BaseNode *node_p = GetNode(found_item_p->second);
 
               NOISEPAGE_ASSERT(
                   node_p->GetType() == NodeType::InnerRemoveType || node_p->GetType() == NodeType::LeafRemoveType,
@@ -5686,19 +5686,19 @@ class BwTree : public BwTreeBase {
     
     //2022-11-20
     //NodeID current_node_id = snapshot_p->node_id;
-    const BaseNode *node_p = snapshot_p->node_p;
-    const BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.load();
-    const NodeID current_node_id = snapshot_p->node_id;
+      BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_child = (static_cast<  DeltaNode *>(snapshot_p->node_p))->child_node_p.load();
+      NodeID current_node_id = snapshot_p->node_id;
 
     bool expected = false;
     bool ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
     if(!ret_flag){
         return;
     }
-    const BaseNode *newest_node =  snapshot_p->node_p;
-    const uint64_t real_depth = newest_node->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
-    const uint64_t used_depth = real_depth -1;
-    const BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
+      BaseNode *newest_node =  snapshot_p->node_p;
+      uint64_t real_depth = newest_node->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+      uint64_t used_depth = real_depth -1;
+      BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
 
     
 
@@ -5708,11 +5708,11 @@ class BwTree : public BwTreeBase {
 
     // we have to modify InstallNodeToReplace logic
     //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-    const BaseNode *expected_node = node_child;
+      BaseNode *expected_node = node_child;
     BaseNode *node_q = &(*node_p);
     auto ret = (static_cast<DeltaNode *> (node_q))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
 
-    //const BaseNode *node_p, const BaseNode *prev_p
+    //  BaseNode *node_p,   BaseNode *prev_p
     //mapping_table[node_id].compare_exchange_strong(prev_p, node_p);
 
 
@@ -5804,7 +5804,7 @@ class BwTree : public BwTreeBase {
 
     // Do not overwrite this pointer since we will use this
     // to locate garbage delta chain
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // 2022-11-20 get node_id
     NodeID current_node_id = snapshot_p->node_id;
@@ -5879,7 +5879,7 @@ class BwTree : public BwTreeBase {
 
         // Note: This function takes this as argument since it will
         // do key comparison
-        const LeafNode *new_leaf_node_p = leaf_node_p->GetSplitSibling(this);
+          LeafNode *new_leaf_node_p = leaf_node_p->GetSplitSibling(this);
 
         // If the new leaf node pointer is nullptr then it means the
         // although the size of the leaf node exceeds split threshold
@@ -5905,14 +5905,14 @@ class BwTree : public BwTreeBase {
         // Note that the lowkey for leaf node is not defined, so in the
         // case that it is required we must manually goto its data list
         // and find the low key in its leftmost element
-        const KeyType &split_key = new_leaf_node_p->At(0).first;
+          KeyType &split_key = new_leaf_node_p->At(0).first;
 
         // If leaf split fails this should be recyced using a fake remove node
         NodeID new_node_id = GetNextNodeID();
 
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
-        const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
+          LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
             LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p);
 
         //  First install the NodeID -> split sibling mapping
@@ -5941,7 +5941,7 @@ class BwTree : public BwTreeBase {
         // since they are both put into the GC chain, it is possible
         // for new_leaf_node_p to be deleted first and then remove node
         // is deleted
-        const LeafRemoveNode *fake_remove_node_p = new LeafRemoveNode{new_node_id, new_leaf_node_p};
+          LeafRemoveNode *fake_remove_node_p = new LeafRemoveNode{new_node_id, new_leaf_node_p};
 
         // Must put both of them into GC chain since RemoveNode
         // will not be followed by GC thread
@@ -5967,8 +5967,8 @@ class BwTree : public BwTreeBase {
         INDEX_LOG_TRACE("Node size <= leaf lower threshold. Remove");
 
         // Install an abort node on parent
-        const BaseNode *abort_node_p;
-        const BaseNode *abort_child_node_p;
+          BaseNode *abort_node_p;
+          BaseNode *abort_child_node_p;
         NodeID parent_node_id;
 
         bool abort_node_ret = PostAbortOnParent(context_p, &parent_node_id, &abort_node_p, &abort_child_node_p);
@@ -5988,7 +5988,7 @@ class BwTree : public BwTreeBase {
             return;
         }
 
-        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
+          LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
 
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         if (ret) {
@@ -6017,7 +6017,7 @@ class BwTree : public BwTreeBase {
 
   NO_ASAN void AdjustNodeSize(Context *context_p) {
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // We do not adjust size for delta nodes
     if (node_p->IsDeltaNode()) {
@@ -6032,7 +6032,7 @@ class BwTree : public BwTreeBase {
     NodeID node_id = snapshot_p->node_id;
 
     if (snapshot_p->IsLeaf()) {
-      const auto *leaf_node_p = static_cast<const LeafNode *>(node_p);
+        auto *leaf_node_p = static_cast<  LeafNode *>(node_p);
 
       // NOTE: We use key number as the size of the node
       // because using item count might result in a very unstable
@@ -6048,7 +6048,7 @@ class BwTree : public BwTreeBase {
 
         // Note: This function takes this as argument since it will
         // do key comparison
-        const LeafNode *new_leaf_node_p = leaf_node_p->GetSplitSibling(this);
+          LeafNode *new_leaf_node_p = leaf_node_p->GetSplitSibling(this);
 
         // If the new leaf node pointer is nullptr then it means the
         // although the size of the leaf node exceeds split threshold
@@ -6074,14 +6074,14 @@ class BwTree : public BwTreeBase {
         // Note that the lowkey for leaf node is not defined, so in the
         // case that it is required we must manually goto its data list
         // and find the low key in its leftmost element
-        const KeyType &split_key = new_leaf_node_p->At(0).first;
+          KeyType &split_key = new_leaf_node_p->At(0).first;
 
         // If leaf split fails this should be recyced using a fake remove node
         NodeID new_node_id = GetNextNodeID();
 
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
-        const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
+          LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
             LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p);
 
         //  First install the NodeID -> split sibling mapping
@@ -6110,7 +6110,7 @@ class BwTree : public BwTreeBase {
         // since they are both put into the GC chain, it is possible
         // for new_leaf_node_p to be deleted first and then remove node
         // is deleted
-        const LeafRemoveNode *fake_remove_node_p = new LeafRemoveNode{new_node_id, new_leaf_node_p};
+          LeafRemoveNode *fake_remove_node_p = new LeafRemoveNode{new_node_id, new_leaf_node_p};
 
         // Must put both of them into GC chain since RemoveNode
         // will not be followed by GC thread
@@ -6136,8 +6136,8 @@ class BwTree : public BwTreeBase {
         INDEX_LOG_TRACE("Node size <= leaf lower threshold. Remove");
 
         // Install an abort node on parent
-        const BaseNode *abort_node_p;
-        const BaseNode *abort_child_node_p;
+          BaseNode *abort_node_p;
+          BaseNode *abort_child_node_p;
         NodeID parent_node_id;
 
         bool abort_node_ret = PostAbortOnParent(context_p, &parent_node_id, &abort_node_p, &abort_child_node_p);
@@ -6157,7 +6157,7 @@ class BwTree : public BwTreeBase {
           return;
         }
 
-        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
+          LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
 
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         if (ret) {
@@ -6181,23 +6181,23 @@ class BwTree : public BwTreeBase {
         return;
       }
     } else {  // If this is an inner node
-      const auto *inner_node_p = static_cast<const InnerNode *>(node_p);
+        auto *inner_node_p = static_cast<  InnerNode *>(node_p);
 
       size_t node_size = inner_node_p->GetSize();
 
       if (node_size >= GetInnerNodeSizeUpperThreshold()) {
         INDEX_LOG_TRACE("Node size >= inner upper threshold. Split");
 
-        const InnerNode *new_inner_node_p = inner_node_p->GetSplitSibling();
+          InnerNode *new_inner_node_p = inner_node_p->GetSplitSibling();
 
         // Since this is a split sibling, the low key must be a valid key
         // NOTE: Only for InnerNodes could we call GetLowKey()
-        const KeyType &split_key = new_inner_node_p->GetLowKey();
+          KeyType &split_key = new_inner_node_p->GetLowKey();
 
         // New node has at least one item (this is the basic requirement)
         NOISEPAGE_ASSERT(new_inner_node_p->GetSize() > 0, "Invalid node size.");
 
-        const KeyNodeIDPair &first_item = new_inner_node_p->At(0);
+          KeyNodeIDPair &first_item = new_inner_node_p->At(0);
 
         // This points to the left most node on the right split sibling
         // If this node is being removed then we abort
@@ -6208,7 +6208,7 @@ class BwTree : public BwTreeBase {
 
         // NOTE: WE FETCH THE POINTER WITHOUT HELP ALONG SINCE WE ARE
         // NOW ON ITS PARENT
-        const BaseNode *split_key_child_node_p = GetNode(split_key_child_node_id);
+          BaseNode *split_key_child_node_p = GetNode(split_key_child_node_id);
 
         // If the type is remove then we just continue without abort
         // If we abort then it might introduce deadlock
@@ -6225,7 +6225,7 @@ class BwTree : public BwTreeBase {
 
         NodeID new_node_id = GetNextNodeID();
 
-        const InnerSplitNode *split_node_p = InnerInlineAllocateOfType(
+          InnerSplitNode *split_node_p = InnerInlineAllocateOfType(
             InnerSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_inner_node_p);
 
         //  First install the NodeID -> split sibling mapping
@@ -6253,7 +6253,7 @@ class BwTree : public BwTreeBase {
         // Note that this remove node should be created on existing node
         // rather than on new_inner_node_p, since new_inner_node_p may
         // be destroyed before fake_remove_node_p is destroyed
-        const InnerRemoveNode *fake_remove_node_p = new InnerRemoveNode{new_node_id, new_inner_node_p};
+          InnerRemoveNode *fake_remove_node_p = new InnerRemoveNode{new_node_id, new_inner_node_p};
 
         epoch_manager.AddGarbageNode(fake_remove_node_p);
         epoch_manager.AddGarbageNode(new_inner_node_p);
@@ -6288,8 +6288,8 @@ class BwTree : public BwTreeBase {
 
         // Then we abort its parent node
         // These two are used to hold abort node and its previous child
-        const BaseNode *abort_node_p;
-        const BaseNode *abort_child_node_p;
+          BaseNode *abort_node_p;
+          BaseNode *abort_child_node_p;
         NodeID parent_node_id;
 
         bool abort_node_ret = PostAbortOnParent(context_p, &parent_node_id, &abort_node_p, &abort_child_node_p);
@@ -6309,7 +6309,7 @@ class BwTree : public BwTreeBase {
           return;
         }
 
-        const InnerRemoveNode *remove_node_p = new InnerRemoveNode{node_id, node_p};
+          InnerRemoveNode *remove_node_p = new InnerRemoveNode{node_id, node_p};
 
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         if (ret) {
@@ -6348,8 +6348,8 @@ class BwTree : public BwTreeBase {
    * This operation must succeeds since only the thread that installed
    * the abort node could remove it
    */
-  NO_ASAN void RemoveAbortOnParent(NodeID parent_node_id, const BaseNode *abort_node_p,
-                                   const BaseNode *abort_child_node_p) {
+  NO_ASAN void RemoveAbortOnParent(NodeID parent_node_id,   BaseNode *abort_node_p,
+                                     BaseNode *abort_child_node_p) {
     INDEX_LOG_TRACE("Remove abort on parent node");
 
     // We switch back to the child node (so it is the target)
@@ -6391,12 +6391,12 @@ class BwTree : public BwTreeBase {
    * if CAS fails then returns false, and caller needs to abort after
    * checking the return value.
    */
-  NO_ASAN bool PostAbortOnParent(Context *context_p, NodeID *parent_node_id_p, const BaseNode **abort_node_p_p,
-                                 const BaseNode **abort_child_node_p_p) {
+  NO_ASAN bool PostAbortOnParent(Context *context_p, NodeID *parent_node_id_p,   BaseNode **abort_node_p_p,
+                                   BaseNode **abort_child_node_p_p) {
     // This will make sure the path list has length >= 2
     NodeSnapshot *parent_snapshot_p = GetLatestParentNodeSnapshot(context_p);
 
-    const BaseNode *parent_node_p = parent_snapshot_p->node_p;
+      BaseNode *parent_node_p = parent_snapshot_p->node_p;
     NodeID parent_node_id = parent_snapshot_p->node_id;
 
     // Save original node pointer
@@ -6444,14 +6444,14 @@ class BwTree : public BwTreeBase {
    * >= the search key. Currently the secong component is not set and not
    * used
    */
-  NO_ASAN const KeyNodeIDPair *NavigateInnerNode(NodeSnapshot *snapshot_p, const KeyType &search_key,
-                                                 const KeyNodeIDPair **location) {
+  NO_ASAN   KeyNodeIDPair *NavigateInnerNode(NodeSnapshot *snapshot_p,   KeyType &search_key,
+                                                   KeyNodeIDPair **location) {
     // Save some keystrokes
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // This is used to recognize the leftmost branch if there is
     // a merge node
-    const KeyNodeIDPair &low_key_pair = node_p->GetLowKeyPair();
+      KeyNodeIDPair &low_key_pair = node_p->GetLowKeyPair();
 
     // The caller must make sure this is true
     NOISEPAGE_ASSERT(node_p->GetNextNodeID() == INVALID_NODE_ID || KeyCmpLess(search_key, node_p->GetHighKey()),
@@ -6460,40 +6460,40 @@ class BwTree : public BwTreeBase {
     while (1) {
       switch (node_p->GetType()) {
         case NodeType::InnerInsertType: {
-          const KeyNodeIDPair &insert_item = static_cast<const InnerInsertNode *>(node_p)->item;
+            KeyNodeIDPair &insert_item = static_cast<  InnerInsertNode *>(node_p)->item;
 
           if (KeyCmpEqual(insert_item.first, search_key)) {
             // Same key, same index
-            *location = static_cast<const InnerInsertNode *>(node_p)->location;
+            *location = static_cast<  InnerInsertNode *>(node_p)->location;
 
             return &insert_item;
           }
 
-          node_p = static_cast<const InnerInsertNode *>(node_p)->child_node_p;
+          node_p = static_cast<  InnerInsertNode *>(node_p)->child_node_p;
 
           break;
         }  // InnerInsertNode
         case NodeType::InnerDeleteType: {
-          const KeyNodeIDPair &delete_item = static_cast<const InnerDeleteNode *>(node_p)->item;
+            KeyNodeIDPair &delete_item = static_cast<  InnerDeleteNode *>(node_p)->item;
 
           if (KeyCmpEqual(delete_item.first, search_key)) {
-            *location = static_cast<const InnerDeleteNode *>(node_p)->location;
+            *location = static_cast<  InnerDeleteNode *>(node_p)->location;
 
             return nullptr;
           }
 
-          node_p = static_cast<const InnerDeleteNode *>(node_p)->child_node_p;
+          node_p = static_cast<  InnerDeleteNode *>(node_p)->child_node_p;
 
           break;
         }  // InnerDeleteNode
         case NodeType::InnerType: {
-          const auto *inner_node_p = static_cast<const InnerNode *>(node_p);
+            auto *inner_node_p = static_cast<  InnerNode *>(node_p);
 
           // DO NOT REMOVE THIS!!!!!!
           // Unlike a NavigateInnerNode(Context *) which searches for child
           // node ID, this function needs to cover all possible separators
           // in the merged InnerNode (right branch)
-          const KeyNodeIDPair *start_it = inner_node_p->Begin();
+            KeyNodeIDPair *start_it = inner_node_p->Begin();
 
           // If we are on the leftmost branch of the inner node delta chain
           // if there is a merge delta, then we should start searching from
@@ -6503,7 +6503,7 @@ class BwTree : public BwTreeBase {
             start_it++;
           }
 
-          const KeyNodeIDPair *it = std::lower_bound(
+            KeyNodeIDPair *it = std::lower_bound(
               start_it, inner_node_p->End(), std::make_pair(search_key, INVALID_NODE_ID), key_node_id_pair_cmp_obj);
 
           // Just give the location information by assigning to location
@@ -6533,18 +6533,18 @@ class BwTree : public BwTreeBase {
           // For split SMO this is true by extra checking
           // For merge SMO this is implicitly true sunce the merge key
           // should not be in another node, o.w. the high key has changed
-          node_p = static_cast<const InnerSplitNode *>(node_p)->child_node_p;
+          node_p = static_cast<  InnerSplitNode *>(node_p)->child_node_p;
 
           break;
         }  // InnerSplitType
         case NodeType::InnerMergeType: {
-          const KeyNodeIDPair &delete_item = static_cast<const InnerMergeNode *>(node_p)->delete_item;
+            KeyNodeIDPair &delete_item = static_cast<  InnerMergeNode *>(node_p)->delete_item;
 
           // If the split key >= merge key then just go to the right branch
           if (KeyCmpGreaterEqual(search_key, delete_item.first)) {
-            node_p = static_cast<const InnerMergeNode *>(node_p)->right_merge_p;
+            node_p = static_cast<  InnerMergeNode *>(node_p)->right_merge_p;
           } else {
-            node_p = static_cast<const InnerMergeNode *>(node_p)->child_node_p;
+            node_p = static_cast<  InnerMergeNode *>(node_p)->child_node_p;
           }
 
           break;
@@ -6582,9 +6582,9 @@ class BwTree : public BwTreeBase {
    * the node will be consolidated and we use the plain InnerNode to
    * continue searching
    */
-  NO_ASAN inline NodeID FindLeftSibling(const KeyType &search_key, NodeSnapshot *snapshot_p) {
+  NO_ASAN inline NodeID FindLeftSibling(  KeyType &search_key, NodeSnapshot *snapshot_p) {
     // This will be changed during the traversal
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
 
     // First check that the node is always in the range of the inner node
     NOISEPAGE_ASSERT(node_p->GetNextNodeID() == INVALID_NODE_ID || KeyCmpLess(search_key, node_p->GetHighKey()),
@@ -6593,36 +6593,36 @@ class BwTree : public BwTreeBase {
     // We can only search for left sibling on inner delta chain
     NOISEPAGE_ASSERT(!node_p->IsOnLeafDeltaChain(), "We can only search for left sibling on inner delta chain.");
 
-    const InnerDataNode *data_node_list[node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth)];
+      InnerDataNode *data_node_list[node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth)];
 
     // These two are used to compare InnerDataNode for < and == relation
 
     // NOTE: For this function we reverse the direction of comparison,
     // i.e. the order is big-to-small to make iteration a little bit easier
-    auto f1 = [this](const InnerDataNode *idn_1, const InnerDataNode *idn_2) {
+    auto f1 = [this](  InnerDataNode *idn_1,   InnerDataNode *idn_2) {
       return this->KeyCmpLess(idn_2->item.first, idn_1->item.first);
       //                          ^ <-------------> ^
     };
 
-    auto f2 = [this](const InnerDataNode *idn_1, const InnerDataNode *idn_2) {
+    auto f2 = [this](  InnerDataNode *idn_1,   InnerDataNode *idn_2) {
       return this->KeyCmpEqual(idn_1->item.first, idn_2->item.first);
     };
 
-    bwtree::SortedSmallSet<const InnerDataNode *, decltype(f1), decltype(f2)> sss{data_node_list, f1, f2};
+    bwtree::SortedSmallSet<  InnerDataNode *, decltype(f1), decltype(f2)> sss{data_node_list, f1, f2};
 
     while (1) {
       NodeType type = node_p->GetType();
 
       switch (type) {
         case NodeType::InnerType: {
-          const auto *inner_node_p = static_cast<const InnerNode *>(node_p);
+            auto *inner_node_p = static_cast<  InnerNode *>(node_p);
 
           ///////////////////////////////////////////////////////////
           // First find the nearest sep key <= search key on InnerNode
           ///////////////////////////////////////////////////////////
 
           // This is the logical end of the array
-          const KeyNodeIDPair *end_it = inner_node_p->End();
+            KeyNodeIDPair *end_it = inner_node_p->End();
 
           // Since we know the search key must be one of the key inside
           // the inner node, lower bound is sufficient
@@ -6643,7 +6643,7 @@ class BwTree : public BwTreeBase {
           ///////////////////////////////////////////////////////////
 
           // We need to pop out 2 items
-          const KeyNodeIDPair *left_item_p = nullptr;
+            KeyNodeIDPair *left_item_p = nullptr;
 
           int counter = 0;
 
@@ -6715,9 +6715,9 @@ class BwTree : public BwTreeBase {
           return left_item_p->second;
         }
         case NodeType::InnerInsertType: {
-          const auto *insert_node_p = static_cast<const InnerInsertNode *>(node_p);
+            auto *insert_node_p = static_cast<  InnerInsertNode *>(node_p);
 
-          const KeyNodeIDPair &insert_item = insert_node_p->item;
+            KeyNodeIDPair &insert_item = insert_node_p->item;
 
           if (KeyCmpLessEqual(insert_item.first, search_key)) {
             sss.Insert(insert_node_p);
@@ -6728,9 +6728,9 @@ class BwTree : public BwTreeBase {
           break;
         }  // InnerInsertType
         case NodeType::InnerDeleteType: {
-          const auto *delete_node_p = static_cast<const InnerDeleteNode *>(node_p);
+            auto *delete_node_p = static_cast<  InnerDeleteNode *>(node_p);
 
-          const KeyNodeIDPair &delete_item = delete_node_p->item;
+            KeyNodeIDPair &delete_item = delete_node_p->item;
 
           if (KeyCmpLessEqual(delete_item.first, search_key)) {
             sss.Insert(delete_node_p);
@@ -6741,7 +6741,7 @@ class BwTree : public BwTreeBase {
           break;
         }  // InnerDeleteType
         case NodeType::InnerSplitType: {
-          const auto *split_node_p = static_cast<const InnerSplitNode *>(node_p);
+            auto *split_node_p = static_cast<  InnerSplitNode *>(node_p);
 
           node_p = split_node_p->child_node_p;
 
@@ -6803,16 +6803,16 @@ class BwTree : public BwTreeBase {
   /*
    * PostInnerMergeNode() - Post an inner merge node
    */
-  NO_ASAN bool PostInnerMergeNode(const NodeSnapshot *snapshot_p, const KeyType *merge_key_p,
-                                  const BaseNode *merge_branch_p, NodeID deleted_node_id, const BaseNode **node_p_p) {
+  NO_ASAN bool PostInnerMergeNode(  NodeSnapshot *snapshot_p,   KeyType *merge_key_p,
+                                    BaseNode *merge_branch_p, NodeID deleted_node_id,   BaseNode **node_p_p) {
     // This is the child node of merge delta
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
     NodeID node_id = snapshot_p->node_id;
 
     // Note that we allocate from merge_banch_p since node_p is deallocated
     // first and then merge_branch_p, so if we allocate the merge node
     // on node_p's base node it will be invalid for the second recursive call
-    const InnerMergeNode *merge_node_p = InnerInlineAllocateOfType(InnerMergeNode, merge_branch_p, *merge_key_p,
+      InnerMergeNode *merge_node_p = InnerInlineAllocateOfType(InnerMergeNode, merge_branch_p, *merge_key_p,
                                                                    merge_branch_p, deleted_node_id, node_p);
 
     // Compare and Swap!
@@ -6831,17 +6831,17 @@ class BwTree : public BwTreeBase {
   /*
    * PostLeafMergeNode() - Post an inner merge node
    */
-  NO_ASAN bool PostLeafMergeNode(const NodeSnapshot *snapshot_p, const KeyType *merge_key_p,
-                                 const BaseNode *merge_branch_p, NodeID deleted_node_id, const BaseNode **node_p_p) {
+  NO_ASAN bool PostLeafMergeNode(  NodeSnapshot *snapshot_p,   KeyType *merge_key_p,
+                                   BaseNode *merge_branch_p, NodeID deleted_node_id,   BaseNode **node_p_p) {
     // This is the child node of merge delta
-    const BaseNode *node_p = snapshot_p->node_p;
+      BaseNode *node_p = snapshot_p->node_p;
     NodeID node_id = snapshot_p->node_id;
 
     // Must allocate on merge_branch_p, otherwise when recycle this
     // delta chain, node_p is reclaimed first and then merge_branch_p,
     // so if we allocate it on node_p, we will get an invalid reference
     // for the second recursive call
-    const LeafMergeNode *merge_node_p =
+      LeafMergeNode *merge_node_p =
         InnerInlineAllocateOfType(LeafMergeNode, merge_branch_p, *merge_key_p, merge_branch_p, deleted_node_id, node_p);
 
     // Compare and Swap!
@@ -6867,7 +6867,7 @@ class BwTree : public BwTreeBase {
    * we allow the same key with different values. For a primary key index this
    * should be set true. By default we allow non-unique key
    */
-  NO_ASAN bool Insert(const KeyType &key, const ValueType &value, bool unique_key = false) {
+  NO_ASAN bool Insert(  KeyType &key,   ValueType &value, bool unique_key = false) {
     INDEX_LOG_TRACE("Insert called");
 
 #ifdef BWTREE_DEBUG
@@ -6884,7 +6884,7 @@ class BwTree : public BwTreeBase {
       // Also if the key previously exists in the delta chain
       // then return the position of the node using next_key_p
       // if there is none then return nullptr
-      const KeyValuePair *item_p = Traverse(&context, &value, &index_pair, unique_key);
+        KeyValuePair *item_p = Traverse(&context, &value, &index_pair, unique_key);
 
       // If the key-value pair already exists then return false
       if (item_p != nullptr) {
@@ -6896,10 +6896,10 @@ class BwTree : public BwTreeBase {
       NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(&context);
 
       // We will CAS on top of this
-      const BaseNode *node_p = snapshot_p->node_p;
+        BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
-      const LeafInsertNode *insert_node_p =
+        LeafInsertNode *insert_node_p =
           LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
 
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
@@ -6955,8 +6955,8 @@ class BwTree : public BwTreeBase {
    * NOTE: We first test the predicate, and then test for duplicated values
    * so predicate test result is always available
    */
-  NO_ASAN bool ConditionalInsert(const KeyType &key, const ValueType &value,
-                                 std::function<bool(const ValueType)> predicate, bool *predicate_satisfied) {
+  NO_ASAN bool ConditionalInsert(  KeyType &key,   ValueType &value,
+                                 std::function<bool(  ValueType)> predicate, bool *predicate_satisfied) {
     INDEX_LOG_TRACE("Insert (cond.) called");
 
 #ifdef BWTREE_DEBUG
@@ -6979,7 +6979,7 @@ class BwTree : public BwTreeBase {
       std::pair<int, bool> index_pair;
 
       // Call navigate leaf node to test predicate and to test duplicates
-      const KeyValuePair *item_p = NavigateLeafNode(&context, value, &index_pair, predicate, predicate_satisfied);
+        KeyValuePair *item_p = NavigateLeafNode(&context, value, &index_pair, predicate, predicate_satisfied);
 
       // We do not insert anything if predicate is satisfied
       if (*predicate_satisfied) {
@@ -6997,12 +6997,12 @@ class BwTree : public BwTreeBase {
       NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(&context);
 
       // We will CAS on top of this
-      const BaseNode *node_p = snapshot_p->node_p;
+        BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
       // Here since we could not know which is the next key node
       // just use child node as a cpnservative way of inserting
-      const LeafInsertNode *insert_node_p =
+        LeafInsertNode *insert_node_p =
           LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
 
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
@@ -7047,7 +7047,7 @@ class BwTree : public BwTreeBase {
    *
    * This functions shares a same structure with the Insert() one
    */
-  NO_ASAN bool Delete(const KeyType &key, const ValueType &value) {
+  NO_ASAN bool Delete(  KeyType &key,   ValueType &value) {
     INDEX_LOG_TRACE("Delete called");
 
 #ifdef BWTREE_DEBUG
@@ -7062,7 +7062,7 @@ class BwTree : public BwTreeBase {
 
       // Navigate leaf nodes to check whether the key-value
       // pair exists
-      const KeyValuePair *item_p = Traverse(&context, &value, &index_pair);
+        KeyValuePair *item_p = Traverse(&context, &value, &index_pair);
 
       if (item_p == nullptr) {
         epoch_manager.LeaveEpoch(epoch_node_p);
@@ -7073,10 +7073,10 @@ class BwTree : public BwTreeBase {
       NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(&context);
 
       // We will CAS on top of this
-      const BaseNode *node_p = snapshot_p->node_p;
+        BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
-      const LeafDeleteNode *delete_node_p =
+        LeafDeleteNode *delete_node_p =
           LeafInlineAllocateOfType(LeafDeleteNode, node_p, key, value, node_p, index_pair);
 
       bool ret = InstallNodeToReplace(node_id, delete_node_p, node_p);
@@ -7115,7 +7115,7 @@ class BwTree : public BwTreeBase {
   }
 
   /** GetSize() - Return the size of the BwTree. */
-  NO_ASAN uint64_t GetSize() const { return index_size.load(); }
+  NO_ASAN uint64_t GetSize()   { return index_size.load(); }
 
   /*
    * GetValue() - Fill a value list with values stored
@@ -7126,7 +7126,7 @@ class BwTree : public BwTreeBase {
    * The return value is used to indicate whether the value set
    * is empty or not
    */
-  NO_ASAN void GetValue(const KeyType &search_key, std::vector<ValueType> &value_list) {
+  NO_ASAN void GetValue(  KeyType &search_key, std::vector<ValueType> &value_list) {
     INDEX_LOG_TRACE("GetValue()");
 
     EpochNode *epoch_node_p = epoch_manager.JoinEpoch();
@@ -7144,7 +7144,7 @@ class BwTree : public BwTreeBase {
    * This is used for verification in the benchmark test suite. Do not
    * remove this method
    */
-  NO_ASAN ValueSet GetValue(const KeyType &search_key) {
+  NO_ASAN ValueSet GetValue(  KeyType &search_key) {
     INDEX_LOG_TRACE("GetValue()");
 
     EpochNode *epoch_node_p = epoch_manager.JoinEpoch();
@@ -7195,38 +7195,38 @@ class BwTree : public BwTreeBase {
 
  public:
   // Key comparator
-  const KeyComparator key_cmp_obj;
+    KeyComparator key_cmp_obj;
 
   // Raw key eq checker
-  const KeyEqualityChecker key_eq_obj;
+    KeyEqualityChecker key_eq_obj;
 
   // Raw key hasher
-  const KeyHashFunc key_hash_obj;
+    KeyHashFunc key_hash_obj;
 
   // Check whether values are equivalent
-  const ValueEqualityChecker value_eq_obj;
+    ValueEqualityChecker value_eq_obj;
 
   // Hash ValueType into a size_t
-  const ValueHashFunc value_hash_obj;
+    ValueHashFunc value_hash_obj;
 
   // The following three are used for std::pair<KeyType, NodeID>
-  const KeyNodeIDPairComparator key_node_id_pair_cmp_obj;
-  const KeyNodeIDPairEqualityChecker key_node_id_pair_eq_obj;
-  const KeyNodeIDPairHashFunc key_node_id_pair_hash_obj;
+    KeyNodeIDPairComparator key_node_id_pair_cmp_obj;
+    KeyNodeIDPairEqualityChecker key_node_id_pair_eq_obj;
+    KeyNodeIDPairHashFunc key_node_id_pair_hash_obj;
 
   // The following two are used for hashing KeyValuePair
-  const KeyValuePairComparator key_value_pair_cmp_obj;
-  const KeyValuePairEqualityChecker key_value_pair_eq_obj;
-  const KeyValuePairHashFunc key_value_pair_hash_obj;
+    KeyValuePairComparator key_value_pair_cmp_obj;
+    KeyValuePairEqualityChecker key_value_pair_eq_obj;
+    KeyValuePairHashFunc key_value_pair_hash_obj;
 
   // This value is atomic and will change
   std::atomic<NodeID> root_id;
 
-  // This value is non-atomic, but it remains constant after constructor
+  // This value is non-atomic, but it remains  ant after  ructor
   NodeID first_leaf_id;
 
   std::atomic<NodeID> next_unused_node_id;
-  std::atomic<const BaseNode *> *mapping_table;
+  std::atomic<  BaseNode *> *mapping_table;
 
   //2022-11-20 to implement new algorithm about consolidation for leaf_node
   // Two new members are needed.
@@ -7274,13 +7274,13 @@ class BwTree : public BwTreeBase {
     BwTree *tree_p;
 
     // Garbage collection interval (milliseconds)
-    constexpr static int GC_INTERVAL = 50;
+     expr static int GC_INTERVAL = 50;
 
     /*
      * struct GarbageNode - A linked list of garbages
      */
     struct GarbageNode {
-      const BaseNode *node_p;
+        BaseNode *node_p;
 
       // This does not have to be atomic, since we only
       // insert at the head of garbage list
@@ -7350,7 +7350,7 @@ class BwTree : public BwTreeBase {
 #endif
 
     /*
-     * Constructor - Initialize the epoch list to be a single node
+     *  ructor - Initialize the epoch list to be a single node
      *
      * NOTE: We do not start thread here since the init of bw-tree itself
      * might take a long time
@@ -7526,7 +7526,7 @@ class BwTree : public BwTreeBase {
      * NOTE: This function is called by worker threads so it has
      * to consider race conditions
      */
-    NO_ASAN void AddGarbageNode(const BaseNode *node_p) {
+    NO_ASAN void AddGarbageNode(  BaseNode *node_p) {
       // We need to keep a copy of current epoch node
       // in case that this pointer is increased during
       // the execution of this function
@@ -7631,7 +7631,7 @@ class BwTree : public BwTreeBase {
     /*
      * AddGarbageNode() - This encapsulates BwTree::AddGarbageNode()
      */
-    NO_ASAN inline void AddGarbageNode(const BaseNode *node_p) {
+    NO_ASAN inline void AddGarbageNode(  BaseNode *node_p) {
       tree_p->AddGarbageNode(node_p);
 
       return;
@@ -7672,8 +7672,8 @@ class BwTree : public BwTreeBase {
      * here. So we need to make sure all accessing threads have exited before
      * recycling NodeID
      */
-    NO_ASAN void FreeEpochDeltaChain(const BaseNode *node_p) {
-      const BaseNode *next_node_p = node_p;
+    NO_ASAN void FreeEpochDeltaChain(  BaseNode *node_p) {
+        BaseNode *next_node_p = node_p;
 
       while (1) {
         node_p = next_node_p;
@@ -7897,10 +7897,10 @@ class BwTree : public BwTreeBase {
         // If the epoch has cleared we just loop through its garbage chain
         // and then free each delta chain
 
-        const GarbageNode *next_garbage_node_p = nullptr;
+          GarbageNode *next_garbage_node_p = nullptr;
 
         // Walk through its garbage chain
-        for (const GarbageNode *garbage_node_p = head_epoch_p->garbage_list_p.load(); garbage_node_p != nullptr;
+        for (  GarbageNode *garbage_node_p = head_epoch_p->garbage_list_p.load(); garbage_node_p != nullptr;
              garbage_node_p = next_garbage_node_p) {
           FreeEpochDeltaChain(garbage_node_p->node_p);
 
@@ -7957,7 +7957,7 @@ class BwTree : public BwTreeBase {
     /*
      * StartThread() - Start cleaner thread for garbage collection
      *
-     * NOTE: This is not called in the constructor, and needs to be
+     * NOTE: This is not called in the  ructor, and needs to be
      * called manually
      */
     NO_ASAN void StartThread() {
@@ -7986,7 +7986,7 @@ class BwTree : public BwTreeBase {
    * or equal to the given start key. If such key does not exist then it will
    * be the smallest key that is greater than start_key
    */
-  NO_ASAN ForwardIterator Begin(const KeyType &start_key) { return ForwardIterator{this, start_key}; }
+  NO_ASAN ForwardIterator Begin(  KeyType &start_key) { return ForwardIterator{this, start_key}; }
 
   /*
    * NullIterator() - Returns an empty iterator that cannot do anything
@@ -8035,7 +8035,7 @@ class BwTree : public BwTreeBase {
     LeafNode leaf_node_p[0];
 
     /*
-     * Constructor - Initialize class IteratorContext part
+     *  ructor - Initialize class IteratorContext part
      *
      * Note that the LeafNode instance is initialized outside of this class
      */
@@ -8069,7 +8069,7 @@ class BwTree : public BwTreeBase {
     /*
      * InnRef() - Increase reference counter
      *
-     * This must be called when an object is newly constructed or is referecne
+     * This must be called when an object is newly  ructed or is referecne
      * copied to another iterator instance
      */
     NO_ASAN inline void IncRef() {
@@ -8118,7 +8118,7 @@ class BwTree : public BwTreeBase {
     NO_ASAN inline size_t GetRefCount() { return ref_count; }
 
     /*
-     * Get() - Static function that constructs an iterator context object
+     * Get() - Static function that  ructs an iterator context object
      *
      * Note that node_p is passed as the head node of a delta chain, and we
      * only need its high key and item count field. Low key, depth and node type
@@ -8129,7 +8129,7 @@ class BwTree : public BwTreeBase {
      * this function returns. CollectAllValuesOnLeaf() does not einitialize
      * the leaf node if it is provided in the argument list.
      */
-    NO_ASAN inline static IteratorContext *Get(BwTree *p_tree_p, const BaseNode *node_p) {
+    NO_ASAN inline static IteratorContext *Get(BwTree *p_tree_p,   BaseNode *node_p) {
       // This is the size of the memory chunk we allocate for the leaf node
       size_t size = sizeof(IteratorContext) + sizeof(LeafNode) + sizeof(KeyValuePair) * node_p->GetItemCount();
 
@@ -8190,7 +8190,7 @@ class BwTree : public BwTreeBase {
 
    public:
     /*
-     * Default Constructor - This acts as a place holder for some functions
+     * Default  ructor - This acts as a place holder for some functions
      *                       that require a type and an object but we do not
      *                       want to afford the overhead of loading a page into
      *                       the iterator
@@ -8201,7 +8201,7 @@ class BwTree : public BwTreeBase {
     NO_ASAN ForwardIterator() : ic_p{nullptr}, kv_p{nullptr} {}
 
     /*
-     * Constructor
+     *  ructor
      *
      * NOTE: We load the first leaf page using FIRST_LEAF_NODE_ID since we
      * know it is there
@@ -8212,7 +8212,7 @@ class BwTree : public BwTreeBase {
       EpochNode *epoch_node_p = p_tree_p->epoch_manager.JoinEpoch();
 
       // Load the first leaf page
-      const BaseNode *node_p = p_tree_p->GetNode(FIRST_LEAF_NODE_ID);
+        BaseNode *node_p = p_tree_p->GetNode(FIRST_LEAF_NODE_ID);
       NOISEPAGE_ASSERT(node_p != nullptr, "leaf node cannot be nullptr.");
       NOISEPAGE_ASSERT(node_p->IsOnLeafDeltaChain(), "leaf node must be on the delta chain.");
 
@@ -8234,26 +8234,26 @@ class BwTree : public BwTreeBase {
     }
 
     /*
-     * Constructor - Construct an iterator given a key
+     *  ructor -  ruct an iterator given a key
      *
      * The given key would locate the iterator on an data item whose
      * key is >= the given key. This is useful in range query if
      * a starting key could be derived according to conditions
      */
-    NO_ASAN ForwardIterator(BwTree *p_tree_p, const KeyType &start_key) : ic_p{nullptr}, kv_p{nullptr} {
+    NO_ASAN ForwardIterator(BwTree *p_tree_p,   KeyType &start_key) : ic_p{nullptr}, kv_p{nullptr} {
       // Load the corresponding page using the given key and store all its
       // data into the iterator's embedded leaf page
       LowerBound(p_tree_p, &start_key);
     }
 
     /*
-     * Copy Constructor - Constructs a new iterator instance from existing one
+     * Copy  ructor -  ructs a new iterator instance from existing one
      *
-     * During copy construction we need to take care that the iterator is
-     * invalidated after copy constructing LeafNode from the other iterator
+     * During copy  ruction we need to take care that the iterator is
+     * invalidated after copy  ructing LeafNode from the other iterator
      * to this. So we should move the iterator manually
      */
-    NO_ASAN ForwardIterator(const ForwardIterator &other) : ic_p{other.ic_p}, kv_p{other.kv_p} {
+    NO_ASAN ForwardIterator(  ForwardIterator &other) : ic_p{other.ic_p}, kv_p{other.kv_p} {
       // Increase its reference count since now two iterators
       // share one IteratorContext object
       other.ic_p->IncRef();
@@ -8265,7 +8265,7 @@ class BwTree : public BwTreeBase {
      * Note: For self-assignment special care must be taken to avoid
      * operating on an object itself
      */
-    NO_ASAN ForwardIterator &operator=(const ForwardIterator &other) {
+    NO_ASAN ForwardIterator &operator=(  ForwardIterator &other) {
       // It is crucial to prevent self assignment since we do pointer
       // operation here
       if (this == &other) {
@@ -8338,10 +8338,10 @@ class BwTree : public BwTreeBase {
      * detect end of iteration.
      *
      * Note also that for empty iterators we always declare them as end iterator
-     * because this simplifies the construction of an End() iterator without
+     * because this simplifies the  ruction of an End() iterator without
      * actually traversing the tree
      */
-    NO_ASAN bool IsEnd() const {
+    NO_ASAN bool IsEnd()   {
       // Empty iterator is naturally end iterator
       if (ic_p == nullptr) {
         NOISEPAGE_ASSERT(kv_p == nullptr, "Iterator and kv must both be nullptr.");
@@ -8362,7 +8362,7 @@ class BwTree : public BwTreeBase {
      *   (2) Otherwise either low key node ID is invalid node ID * and *
      *       kv_p points to Begin() of the underlying leaf node
      */
-    NO_ASAN bool IsBegin() const {
+    NO_ASAN bool IsBegin()   {
       // This is both Begin() and End()
       if (ic_p == nullptr) {
         NOISEPAGE_ASSERT(kv_p == nullptr, "Iterator and kv must both be nullptr.");
@@ -8382,7 +8382,7 @@ class BwTree : public BwTreeBase {
      *       first leaf page of the tree, and also the kv_p pointer should
      *       point to the REnd() of the underlying leaf page
      */
-    NO_ASAN bool IsREnd() const {
+    NO_ASAN bool IsREnd()   {
       if (ic_p == nullptr) {
         NOISEPAGE_ASSERT(kv_p == nullptr, "Iterator and kv must both be nullptr.");
 
@@ -8398,10 +8398,10 @@ class BwTree : public BwTreeBase {
      * operator*() - Return the value reference currently pointed to by this
      *               iterator
      *
-     * NOTE: We need to return a constant reference to both save a value copy
+     * NOTE: We need to return a  ant reference to both save a value copy
      * and also to prevent caller modifying value using the reference
      */
-    NO_ASAN inline const KeyValuePair &operator*() {
+    NO_ASAN inline   KeyValuePair &operator*() {
       // This itself is a ValueType reference
       return *kv_p;
     }
@@ -8412,7 +8412,7 @@ class BwTree : public BwTreeBase {
      * Note that this function returns a contsnat pointer which can be used
      * to access members of the value, but cannot modify
      */
-    NO_ASAN inline const KeyValuePair *operator->() { return &*kv_p; }
+    NO_ASAN inline   KeyValuePair *operator->() { return &*kv_p; }
 
     /*
      * operator< - Compares two iterators by comparing their current key
@@ -8435,7 +8435,7 @@ class BwTree : public BwTreeBase {
      *      currently pointed to by kv_p
      *   3. Values are never compared
      */
-    NO_ASAN inline bool operator<(const ForwardIterator &other) const {
+    NO_ASAN inline bool operator<(  ForwardIterator &other)   {
       if (other.IsEnd()) {
         return !IsEnd();
       }
@@ -8461,7 +8461,7 @@ class BwTree : public BwTreeBase {
      *   3. For all other cases, compare their key being currently pointed
      *      to by kv_p
      */
-    NO_ASAN inline bool operator==(const ForwardIterator &other) const {
+    NO_ASAN inline bool operator==(  ForwardIterator &other)   {
       if (other.IsEnd()) {
         return IsEnd();
       } else if (IsEnd()) {
@@ -8578,7 +8578,7 @@ class BwTree : public BwTreeBase {
      * called with ic_p being nullptr, such that we need a reference to the tree
      * instance
      */
-    NO_ASAN void LowerBound(BwTree *p_tree_p, const KeyType *start_key_p) {
+    NO_ASAN void LowerBound(BwTree *p_tree_p,   KeyType *start_key_p) {
       NOISEPAGE_ASSERT(start_key_p != nullptr, "start key must not be nullptr.");
       // This is required since start_key_p might be pointing inside the
       // currently buffered IteratorContext which will be destroyed
@@ -8597,7 +8597,7 @@ class BwTree : public BwTreeBase {
         p_tree_p->Traverse(&context, nullptr, nullptr);
 
         NodeSnapshot *snapshot_p = BwTree::GetLatestNodeSnapshot(&context);
-        const BaseNode *node_p = snapshot_p->node_p;
+          BaseNode *node_p = snapshot_p->node_p;
         NOISEPAGE_ASSERT(node_p->IsOnLeafDeltaChain(), "node must be on the delta chain.");
 
         // After this point, start_key_p from the last page becomes invalid
@@ -8697,7 +8697,7 @@ class BwTree : public BwTreeBase {
         // itself by traversing sibling chain
         tree_p->TraverseBI(&context);
         NodeSnapshot *snapshot_p = tree_p->GetLatestNodeSnapshot(&context);
-        const BaseNode *node_p = snapshot_p->node_p;
+          BaseNode *node_p = snapshot_p->node_p;
 
         // We must have reached a node whose low key is less than the
         // low key we used as the search key
@@ -8790,7 +8790,7 @@ class BwTree : public BwTreeBase {
    * This is always called by the thread owning thread local data, so we
    * do not have to worry about thread identity issues
    */
-  NO_ASAN void AddGarbageNode(const BaseNode *node_p) {
+  NO_ASAN void AddGarbageNode(  BaseNode *node_p) {
     auto *garbage_node_p = new GarbageNode{GetGlobalEpoch(), (void *)(node_p)};
     NOISEPAGE_ASSERT(garbage_node_p != nullptr, "Allocation failed.");
 
@@ -8804,7 +8804,7 @@ class BwTree : public BwTreeBase {
 
     // It is possible that we could not free enough number of nodes to
     // make it less than this threshold
-    // So it is important to let the epoch counter be constantly increased
+    // So it is important to let the epoch counter be  antly increased
     // to guarantee progress
     if (GetCurrentGCMetaData()->node_count > GC_NODE_COUNT_THREADHOLD) {
       // Use current thread's gc id to perform GC
@@ -8841,7 +8841,7 @@ class BwTree : public BwTreeBase {
       header_p->next_p = first_p->next_p;
 
       // Then free memory
-      epoch_manager.FreeEpochDeltaChain((const BaseNode *)first_p->node_p);
+      epoch_manager.FreeEpochDeltaChain((  BaseNode *)first_p->node_p);
 
       delete first_p;
       NOISEPAGE_ASSERT(GetGCMetaData(thread_id)->node_count != 0UL, "Node count cannot be 0.");
