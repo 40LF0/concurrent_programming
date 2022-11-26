@@ -5805,10 +5805,10 @@ class BwTree : public BwTreeBase {
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
 
     // we have to modify InstallNodeToReplace logic
-    bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
+    //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
     //const BaseNode *expected_node = node_child;
     //auto ret = (static_cast<DeltaNode *> (node_p))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
-
+    bool ret = InstallleafdeltaToReplace((static_cast<const DeltaNode *>(node_p))->leaf_delta_id, leaf_node_p, snapshot_p->node_p);
     if (ret) {
       //epoch_manager.AddGarbageNode(snapshot_p->node_p);
       epoch_manager.AddGarbageNode(node_child);
