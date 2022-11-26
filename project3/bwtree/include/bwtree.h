@@ -5687,7 +5687,7 @@ class BwTree : public BwTreeBase {
     //2022-11-20
     //NodeID current_node_id = snapshot_p->node_id;
     const BaseNode *node_p = snapshot_p->node_p;
-    BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.load();
+    const BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.load();
     const NodeID current_node_id = snapshot_p->node_id;
 
     bool expected = false;
@@ -5708,7 +5708,7 @@ class BwTree : public BwTreeBase {
 
     // we have to modify InstallNodeToReplace logic
     //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-    bool ret = &node_p->child_node_p.compare_exchange_strong(node_child, leaf_node_p);
+    bool ret = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p.compare_exchange_strong(node_child, leaf_node_p);
 
 
     if (ret) {
