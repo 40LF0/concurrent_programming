@@ -69,6 +69,7 @@ class BwtreeTest_db_init : public ::testing::Test {
     test::BwTreeTestUtil::TreeType *const tree = test::BwTreeTestUtil::GetEmptyTree();
 
 };
+
 TEST_F(BwtreeTest_db_init, db_init) {
     template_test();
 }
@@ -392,6 +393,7 @@ TEST_F(BwtreeTest_density_with_exist_db_with_split_logic, pow_2_19) {
 }
 TEST_F(BwtreeTest_density_with_exist_db_with_split_logic, pow_2_20) {
     template_test(20);
+}
 
 class BwtreeTest_density_with_thead_num : public ::testing::Test {
   protected:
