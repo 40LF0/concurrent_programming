@@ -5820,8 +5820,6 @@ class BwTree : public BwTreeBase {
                   }
                   
               }
-              success_count[node_id].fetch_sub(op_su);
-              op_count[node_id].fetch_sub(op_c);
 
           }
           if(node_flag[node_id].load() == true){
