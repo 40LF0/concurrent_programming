@@ -2645,7 +2645,7 @@ class BwTree : public BwTreeBase {
     INDEX_LOG_TRACE("Initializing mapping table.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
 
-    success_count = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
+    success_count =  (std::atomic<uint64_t> *)mmap(nullptr, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     if (success_count == (void *)-1) {
       INDEX_LOG_ERROR("Failed to initialize success_count");
@@ -2658,19 +2658,50 @@ class BwTree : public BwTreeBase {
     INDEX_LOG_TRACE("Initializing success_count.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
 
-    success_base = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
+    op_base = (std::atomic<uint64_t> *)mmap(nullptr, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
-    if (success_base == (void *)-1) {
-      INDEX_LOG_ERROR("Failed to initialize success_base");
-      //      throw IndexException("mmap() failed to initialize success_base for Bw-Tree");
+    if (op_base == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize op_base");
+      //      throw IndexException("mmap() failed to initialize op_base for Bw-Tree");
       // TODO(Matt): fix this
     }
 
-    INDEX_LOG_TRACE("success_base allocated via mmap()");
+    INDEX_LOG_TRACE("op_base allocated via mmap()");
 
-    INDEX_LOG_TRACE("Initializing success_base.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Initializing op_base.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+
+    op_count = (std::atomic<uint64_t> *)mmap(nullptr, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
+                                                          PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+    if (op_count == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize op_count");
+      //      throw IndexException("mmap() failed to initialize op_count for Bw-Tree");
+      // TODO(Matt): fix this
+    }
+
+    INDEX_LOG_TRACE("op_count allocated via mmap()");
+
+    INDEX_LOG_TRACE("Initializing op_count.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+
+
+    node_flag = (std::atomic<bool> *)mmap(nullptr, sizeof(bool) * MAPPING_TABLE_SIZE,
+                                                          PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+    if (node_flag == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize node_flag");
+      //      throw IndexException("mmap() failed to initialize node_flag for Bw-Tree");
+      // TODO(Matt): fix this
+    }
+
+    INDEX_LOG_TRACE("node_flag allocated via mmap()");
+
+    INDEX_LOG_TRACE("Initializing node_flag.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+
+
 
   }
 
@@ -5766,8 +5797,36 @@ class BwTree : public BwTreeBase {
       // item count
       size_t node_size = leaf_node_p->GetItemCount();
 
+      bool should_split = false;
+      bool should_not_merged = false;
+
+      if(congestion_control){
+          uint64_t insert_op_c = insert_op_count.load();
+          uint64_t delete_op_c = delete_op_count.load();
+          uint64_t expected = op_base[node_id].load();
+          if(expected < ((insert_op_c + elete_op_c) /10000)){
+              uint64_t op_su = success_count[node_id].load();
+              uint64_t op_c = op_count[node_id].load();
+              bool result = op_base[node_id].compare_exchange_strong(expected, ((insert_op_c + elete_op_c) /10000));
+              if(result){
+                  bool expected_bool = true;
+                  node_flag[node_id].compare_exchange_strong(expected_bool, false);
+
+                  if(op_su*2 < op_c){
+                      should_split = true;
+                  }
+
+              }
+          }
+          if(node_flag[node_id].load() == true){
+              should_not_merged = true;
+          }
+
+      }
+
+
       // Perform corresponding action based on node size
-      if (node_size >= GetLeafNodeSizeUpperThreshold()) {
+      if (node_size >= GetLeafNodeSizeUpperThreshold() || should_split) {
         INDEX_LOG_TRACE("Node size >= leaf upper threshold. Split");
 
         // Note: This function takes this as argument since it will
@@ -5802,6 +5861,14 @@ class BwTree : public BwTreeBase {
 
         // If leaf split fails this should be recyced using a fake remove node
         NodeID new_node_id = GetNextNodeID();
+
+        if(should_split){
+            bool expected_bool_ = false;
+            node_flag[new_node_id].compare_exchange_strong(expected_bool_, true);
+            uint64_t expected_ = 0;
+            bool result = op_base[new_node_id].compare_exchange_strong(expected_,expected+1);
+        }
+
 
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
@@ -5847,6 +5914,11 @@ class BwTree : public BwTreeBase {
         return;
 
       } else if (node_size <= LEAF_NODE_SIZE_LOWER_THRESHOLD) {
+
+        if(should_not_merged){
+            return;
+        }
+
         // This might yield a false positive of left child
         // but correctness is not affected - sometimes the merge is delayed
         if (IsOnLeftMostChild(context_p)) {
@@ -6629,14 +6701,21 @@ class BwTree : public BwTreeBase {
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
       if (ret) {
         INDEX_LOG_TRACE("Leaf Insert delta CAS succeed");
-
+        if(congestion_control){
+          success_count[node_id].fetch_add(1);
+          op_count[node_id].fetch_add(1);
+        }
+        
         // If install is a success then just break from the loop
         // and return
         break;
       }
 
       INDEX_LOG_TRACE("Leaf insert delta CAS failed");
-
+      if(congestion_control){
+        op_count[node_id].fetch_add(1);
+      }
+      
 #ifdef BWTREE_DEBUG
 
       context.abort_counter++;
@@ -6732,12 +6811,17 @@ class BwTree : public BwTreeBase {
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
       if (ret) {
         INDEX_LOG_TRACE("Leaf Insert (cond.) delta CAS succeed");
-
+        if(congestion_control){
+          success_count[node_id].fetch_add(1);
+          op_count[node_id].fetch_add(1);
+        }
         // If install is a success then just break from the loop
         // and return
         break;
       }
-
+      if(congestion_control){
+          op_count[node_id].fetch_add(1);
+      }
       INDEX_LOG_TRACE("Leaf insert (cond.) delta CAS failed");
 
 #ifdef BWTREE_DEBUG
@@ -6806,14 +6890,19 @@ class BwTree : public BwTreeBase {
       bool ret = InstallNodeToReplace(node_id, delete_node_p, node_p);
       if (ret) {
         INDEX_LOG_TRACE("Leaf Delete delta CAS succeed");
-
+        if(congestion_control){
+          success_count[node_id].fetch_add(1);
+          op_count[node_id].fetch_add(1);
+        }
         // If install is a success then just break from the loop
         // and return
         break;
       }
 
       INDEX_LOG_TRACE("Leaf Delete delta CAS failed");
-
+      if(congestion_control){
+          op_count[node_id].fetch_add(1);
+      }
       delete_node_p->~LeafDeleteNode();
 
 #ifdef BWTREE_DEBUG
@@ -6952,7 +7041,11 @@ class BwTree : public BwTreeBase {
   std::atomic<NodeID> next_unused_node_id;
   std::atomic<const BaseNode *> *mapping_table;
   std::atomic<uint64_t> *success_count;
-  std::atomic<uint64_t> *success_base;
+  std::atomic<uint64_t> *op_count;
+  std::atomic<uint64_t> *op_base;
+  std::atomic<bool> *node_flag;
+
+  bool congestion_control = false;
   // This list holds free NodeID which was removed by remove delta
   // We recycle NodeID in epoch manager
 
@@ -7189,7 +7282,7 @@ class BwTree : public BwTreeBase {
         INDEX_LOG_TRACE("success_count is unmapped for Bw-Tree");
       }
 
-      int munmap_ret_2 = munmap(tree_p->success_base, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+      int munmap_ret_2 = munmap(tree_p->op_count, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
 
       // Although failure of munmap is not fatal, we still print out
       // an error log entry
@@ -7197,8 +7290,31 @@ class BwTree : public BwTreeBase {
       if (munmap_ret_2 != 0) {
         INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret_2);
       } else {
-        INDEX_LOG_TRACE("success_base is unmapped for Bw-Tree");
+        INDEX_LOG_TRACE("op_count is unmapped for Bw-Tree");
       }
+
+      int munmap_ret_3 = munmap(tree_p->op_base, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+
+      // Although failure of munmap is not fatal, we still print out
+      // an error log entry
+      // Otherwise just trace log
+      if (munmap_ret_3 != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret_3);
+      } else {
+        INDEX_LOG_TRACE("op_base is unmapped for Bw-Tree");
+      }
+
+      int munmap_ret_4 = munmap(tree_p->node_flag, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+
+      // Although failure of munmap is not fatal, we still print out
+      // an error log entry
+      // Otherwise just trace log
+      if (munmap_ret_4 != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret_4);
+      } else {
+        INDEX_LOG_TRACE("node_flag is unmapped for Bw-Tree");
+      }
+
     }
 
     /*
