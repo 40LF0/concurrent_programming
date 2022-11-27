@@ -5799,12 +5799,12 @@ class BwTree : public BwTreeBase {
 
       bool should_split = false;
       bool should_not_merged = false;
-
+      uint64_t expected = 0;
       if(congestion_control){
           uint64_t insert_op_c = insert_op_count.load();
           uint64_t delete_op_c = delete_op_count.load();
-          uint64_t expected = op_base[node_id].load();
-          if(expected < ((insert_op_c + elete_op_c) /10000)){
+          expected = op_base[node_id].load();
+          if(expected < ((insert_op_c + delete_op_c) /10000)){
               uint64_t op_su = success_count[node_id].load();
               uint64_t op_c = op_count[node_id].load();
               bool result = op_base[node_id].compare_exchange_strong(expected, ((insert_op_c + elete_op_c) /10000));
