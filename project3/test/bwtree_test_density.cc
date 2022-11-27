@@ -150,10 +150,10 @@ class BwtreeTest_density_with_thead_num_new_logic : public ::testing::Test {
      * TearDown(). The official document says that the former is actually
      * perferred due to some reasons. Checkout the document for the difference.
      */
-    BwtreeTest_density_with_thead_num() {
+    BwtreeTest_density_with_thead_num_new_logic() {
     }
 
-    ~BwtreeTest_density_with_thead_num() {
+    ~BwtreeTest_density_with_thead_num_new_logic() {
     }
     
     const uint32_t num_threads_ =
