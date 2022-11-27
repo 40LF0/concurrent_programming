@@ -5809,14 +5809,20 @@ class BwTree : public BwTreeBase {
               uint64_t op_c = op_count[node_id].load();
               bool result = op_base[node_id].compare_exchange_strong(expected, ((insert_op_c + delete_op_c) /10000));
               if(result){
-                  bool expected_bool = true;
-                  node_flag[node_id].compare_exchange_strong(expected_bool, false);
-
                   if(op_su < op_c*0.9){
                       should_split = true;
+                      bool expected_bool = false;
+                      node_flag[node_id].compare_exchange_strong(expected_bool, true);
                   }
-
+                  else{
+                      bool expected_bool = true;
+                      node_flag[node_id].compare_exchange_strong(expected_bool, false);
+                  }
+                  
               }
+              success_count[node_id].fetch_sub(op_su);
+              op_count[node_id].fetch_sub(op_c);
+
           }
           if(node_flag[node_id].load() == true){
               should_not_merged = true;
