@@ -3,9 +3,6 @@
 // 2020-08-27: modified by Wan to track index_size, exposed via GetSize()
 // 2020-10-05: modified by Wan to disable ASAN per function, because apparently gcc refuses to add fsanitize-blacklist.
 
-// 2022-11-23: change GetDepth() function! to GetDepth_with_snapshot(snapshot_p,leaf_base_depth)
-
-
 // As we have learned from recent events, if we do not test for something, then it does not exist.
 #define NO_ASAN __attribute__((no_sanitize("address")))
 
@@ -73,10 +70,7 @@ namespace bwtree {
 
 // If the length of delta chain exceeds ( >= ) this then we consolidate the node
 #define INNER_DELTA_CHAIN_LENGTH_THRESHOLD ((int)8)
-
-// 2022-11-20 by changed policy about leaf_node Consolidation
-// change LEAF_DELTA_CHAIN_LENGTH_THRESHOLD from 8 to 9
-#define LEAF_DELTA_CHAIN_LENGTH_THRESHOLD ((int)9)
+#define LEAF_DELTA_CHAIN_LENGTH_THRESHOLD ((int)8)
 
 // If node size goes above this then we split it
 #define INNER_NODE_SIZE_UPPER_THRESHOLD ((int)128)
@@ -1124,21 +1118,6 @@ class BwTree : public BwTreeBase {
     NO_ASAN inline int GetDepth() const { return metadata.depth; }
 
     /*
-     * GetDepth_with_snapshot() - Returns the depth of the current node
-     */
-    NO_ASAN int GetDepth_with_snapshot(NodeSnapshot *snapshot_p ,std::atomic<uint64_t> * leaf_base_depth) const{
-        if(snapshot_p->IsLeaf()){
-            NodeID current_node_id = snapshot_p->node_id;
-            int depth = metadata.depth;
-            return depth -  leaf_base_depth[current_node_id].load();
-        }
-        else{
-            return metadata.depth;
-        }
-   }
-
-
-    /*
      * GetItemCount() - Returns the item count of the current node
      */
     NO_ASAN inline int GetItemCount() const { return metadata.item_count; }
@@ -1162,21 +1141,15 @@ class BwTree : public BwTreeBase {
    */
   class DeltaNode : public BaseNode {
    public:
-    // 2022-11-26 modify type of child_node_p to atomic
-    const BaseNode * child_node_p;
-    const NodeID leaf_delta_id;
+    const BaseNode *child_node_p;
+
     /*
      * Constructor
      */
     NO_ASAN DeltaNode(NodeType p_type, const BaseNode *p_child_node_p, const KeyNodeIDPair *p_low_key_p,
-                      const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count, NodeID leafdelta_id = -1)
-        : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p},
-        leaf_delta_id{leafdelta_id}{}
-
-
+                      const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
+        : BaseNode{p_type, p_low_key_p, p_high_key_p, p_depth, p_item_count}, child_node_p{p_child_node_p} {}
   };
-
-
 
   /*
    * class LeafDataNode - Holds LeafInsertNode and LeafDeleteNode's data
@@ -1195,8 +1168,8 @@ class BwTree : public BwTreeBase {
 
     NO_ASAN LeafDataNode(const KeyValuePair &p_item, NodeType p_type, const BaseNode *p_child_node_p,
                          std::pair<int, bool> p_index_pair, const KeyNodeIDPair *p_low_key_p,
-                         const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count, NodeID leafdelta_id = -1)
-        : DeltaNode{p_type, p_child_node_p, p_low_key_p, p_high_key_p, p_depth, p_item_count,leafdelta_id},
+                         const KeyNodeIDPair *p_high_key_p, int p_depth, int p_item_count)
+        : DeltaNode{p_type, p_child_node_p, p_low_key_p, p_high_key_p, p_depth, p_item_count},
           item{p_item},
           index_pair{p_index_pair} {}
 
@@ -1207,9 +1180,6 @@ class BwTree : public BwTreeBase {
      * that there is no way to modify the index pair
      */
     NO_ASAN std::pair<int, bool> GetIndexPair() const { return index_pair; }
-
-
-
   };
 
   /*
@@ -1221,14 +1191,13 @@ class BwTree : public BwTreeBase {
      * Constructor
      */
     NO_ASAN LeafInsertNode(const KeyType &p_insert_key, const ValueType &p_value, const BaseNode *p_child_node_p,
-                           std::pair<int, bool> p_index_pair,NodeID leafdelta_id = -1)
+                           std::pair<int, bool> p_index_pair)
         : LeafDataNode{std::make_pair(p_insert_key, p_value), NodeType::LeafInsertType, p_child_node_p, p_index_pair,
                        &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
                        p_child_node_p->GetDepth() + 1,
                        // For insert nodes, the item count is inheried from the child
                        // node + 1 since it inserts new item
-                       p_child_node_p->GetItemCount() + 1,
-                       leafdelta_id,} {}
+                       p_child_node_p->GetItemCount() + 1} {}
   };
 
   /*
@@ -1244,14 +1213,13 @@ class BwTree : public BwTreeBase {
      * Constructor
      */
     NO_ASAN LeafDeleteNode(const KeyType &p_delete_key, const ValueType &p_value, const BaseNode *p_child_node_p,
-                           std::pair<int, bool> p_index_pair,NodeID leafdelta_id = -1)
+                           std::pair<int, bool> p_index_pair)
         : LeafDataNode{std::make_pair(p_delete_key, p_value), NodeType::LeafDeleteType, p_child_node_p, p_index_pair,
                        &p_child_node_p->GetLowKeyPair(), &p_child_node_p->GetHighKeyPair(),
                        p_child_node_p->GetDepth() + 1,
                        // For delete node it inherits item count from its child
                        // and - 1 from it since one element was deleted
-                       p_child_node_p->GetItemCount() - 1,
-                       leafdelta_id,} {}
+                       p_child_node_p->GetItemCount() - 1} {}
   };
 
   /*
@@ -1277,7 +1245,7 @@ class BwTree : public BwTreeBase {
      * the current node
      */
     NO_ASAN LeafSplitNode(const KeyNodeIDPair &p_insert_item, const BaseNode *p_child_node_p,
-                          const BaseNode *p_split_node_p,NodeID leafdelta_id = -1)
+                          const BaseNode *p_split_node_p)
         : DeltaNode{NodeType::LeafSplitType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     // High key is redirected to the split item inside the node
                     &insert_item,
@@ -1288,8 +1256,7 @@ class BwTree : public BwTreeBase {
                     // For split node it is a little bit tricky - we must
                     // know the item count of its sibling to decide how many
                     // items were removed by the split delta
-                    p_child_node_p->GetItemCount() - p_split_node_p->GetItemCount(),
-                    leafdelta_id,},
+                    p_child_node_p->GetItemCount() - p_split_node_p->GetItemCount()},
           insert_item{p_insert_item} {}
   };
 
@@ -1309,13 +1276,11 @@ class BwTree : public BwTreeBase {
     /*
      * Constructor
      */
-    NO_ASAN LeafRemoveNode(NodeID p_removed_id, const BaseNode *p_child_node_p,NodeID leafdelta_id = -1)
+    NO_ASAN LeafRemoveNode(NodeID p_removed_id, const BaseNode *p_child_node_p)
         : DeltaNode{NodeType::LeafRemoveType, p_child_node_p, &p_child_node_p->GetLowKeyPair(),
                     &p_child_node_p->GetHighKeyPair(),
                     // REMOVE node is an SMO and does not introduce data
-                    p_child_node_p->GetDepth(), 
-                    p_child_node_p->GetItemCount(),
-                    leafdelta_id,},
+                    p_child_node_p->GetDepth(), p_child_node_p->GetItemCount()},
           removed_id{p_removed_id} {}
   };
 
@@ -2307,18 +2272,9 @@ class BwTree : public BwTreeBase {
         // NodeID counter
         next_unused_node_id{1},
 
-        next_unused_leaf_delta_id{1},
-
-
         // Initialize free NodeID stack
         node_id_list_lock{},
         node_id_list{},
-
-        leaf_delta_id_list_lock{},
-        leaf_delta_id_list{},
-
-
-
 
         // Statistical information
         insert_op_count{0},
@@ -2336,12 +2292,6 @@ class BwTree : public BwTreeBase {
         "Setting up execution environment...");
 
     InitMappingTable();
-    //2022-11-20 to implement new algorithm about consolidation for leaf_node
-    // Two new members are needed.
-    // Init leaf_consolidation_flag and leaf_base_depth
-    Init_leaf_consolidation_flag();
-    Init_leaf_base_depth();
-
     InitNodeLayout();
 
     INDEX_LOG_TRACE("sizeof(NodeMetaData) = %lu is the overhead for each node", sizeof(NodeMetaData));
@@ -2440,13 +2390,8 @@ class BwTree : public BwTreeBase {
 
     mapping_table[node_id] = nullptr;
 
-    //2022-11-20 init both leaf_consolidation_flag and leaf_base_depth
-    leaf_consolidation_flag[node_id] = false;
-    leaf_base_depth[node_id] = 0;
-
     return FreeNodeByPointer(node_p);
   }
-
 
   /*
    * InvalidateNodeID() - Recycle NodeID
@@ -2467,22 +2412,9 @@ class BwTree : public BwTreeBase {
   NO_ASAN inline void InvalidateNodeID(NodeID node_id) {
     node_id_list_lock.lock();
     mapping_table[node_id] = nullptr;
-
-    //2022-11-20 init both leaf_consolidation_flag and leaf_base_depth
-    leaf_consolidation_flag[node_id] = false;
-    leaf_base_depth[node_id] = 0;
-
     node_id_list.push_back(node_id);
     // free_node_id_list.SingleThreadPush(node_id);
     node_id_list_lock.unlock();
-  }
-
-  NO_ASAN inline void InvalidateleafdeltaID(NodeID leaf_delta_id) {
-    leaf_delta_id_list_lock.lock();
-    mapping_leaf_delta_table[leaf_delta_id] = nullptr;
-    leaf_delta_id_list.push_back(leaf_delta_id);
-    // free_node_id_list.SingleThreadPush(leaf_delta_id);
-    leaf_delta_id_list_lock.unlock();
   }
 
   /*
@@ -2521,35 +2453,24 @@ class BwTree : public BwTreeBase {
       NOISEPAGE_ASSERT(node_p != nullptr, "node_p cannot be a nullptr.");
 
       NodeType type = node_p->GetType();
-      NodeID leaf_delta = -1;
+
       switch (type) {
         case NodeType::LeafInsertType:
           next_node_p = ((LeafInsertNode *)node_p)->child_node_p;
-          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
-          if(leaf_delta > -1){
-              InvalidateleafdeltaID(leaf_delta);
-          }
 
           ((LeafInsertNode *)node_p)->~LeafInsertNode();
           freed_count++;
 
-
           break;
         case NodeType::LeafDeleteType:
           next_node_p = ((LeafDeleteNode *)node_p)->child_node_p;
-          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
-          if(leaf_delta > -1){
-              InvalidateleafdeltaID(leaf_delta);
-          }
+
           ((LeafDeleteNode *)node_p)->~LeafDeleteNode();
 
           break;
         case NodeType::LeafSplitType:
           next_node_p = ((LeafSplitNode *)node_p)->child_node_p;
-          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
-          if(leaf_delta > -1){
-              InvalidateleafdeltaID(leaf_delta);
-          }
+
           freed_count += FreeNodeByNodeID(((LeafSplitNode *)node_p)->insert_item.second);
 
           ((LeafSplitNode *)node_p)->~LeafSplitNode();
@@ -2559,10 +2480,7 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafMergeType:
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->child_node_p);
           freed_count += FreeNodeByPointer(((LeafMergeNode *)node_p)->right_merge_p);
-          leaf_delta = ((DeltaNode *)node_p)->leaf_delta_id;
-          if(leaf_delta > -1){
-              InvalidateleafdeltaID(leaf_delta);
-          }
+
           ((LeafMergeNode *)node_p)->~LeafMergeNode();
           freed_count++;
 
@@ -2571,7 +2489,6 @@ class BwTree : public BwTreeBase {
         case NodeType::LeafType:
           // Call destructor first, and then call Destroy() on its preallocated
           // linked list of chunks
-
           ((LeafNode *)node_p)->~LeafNode();
 
           // Free the memory
@@ -2728,76 +2645,34 @@ class BwTree : public BwTreeBase {
     INDEX_LOG_TRACE("Initializing mapping table.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
 
-    mapping_leaf_delta_table = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
+    success_count = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    // If allocation fails, we throw an error because this is uncoverable
-    // The upper level functions should either catch this exception
-    // and then use another index instead, or simply kill the system
-    if (mapping_leaf_delta_table == (void *)-1) {
-      INDEX_LOG_ERROR("Failed to initialize mapping table");
-      //      throw IndexException("mmap() failed to initialize mapping table for Bw-Tree");
+    if (success_count == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize success_count");
+      //      throw IndexException("mmap() failed to initialize success_count for Bw-Tree");
       // TODO(Matt): fix this
     }
 
-    INDEX_LOG_TRACE("Mapping leaf delta table allocated via mmap()");
+    INDEX_LOG_TRACE("success_count allocated via mmap()");
 
-    INDEX_LOG_TRACE("Initializing mapping leaf delta table.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Initializing success_count.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
 
-
-  }
-
-  //2022-11-20
-  /*
-   * Init_leaf_consolidation_flag() - Initialize the leaf_consolidation_flag
-   *
-   * It initialize all elements to false in order to make
-   * first CAS on the leaf_consolidation_flag would succeed
-   *
-   */
-  NO_ASAN void Init_leaf_consolidation_flag() {
-    leaf_consolidation_flag = (std::atomic<bool> *)mmap(nullptr, sizeof(bool) * MAPPING_TABLE_SIZE,
+    success_base = (std::atomic<const BaseNode *> *)mmap(nullptr, sizeof(BaseNode *) * MAPPING_TABLE_SIZE,
                                                           PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    // If allocation fails, we throw an error because this is uncoverable
-    // The upper level functions should either catch this exception
-    // and then use another index instead, or simply kill the system
-    if (leaf_consolidation_flag == (void *)-1) {
-      INDEX_LOG_ERROR("Failed to initialize leaf_consolidation_flag");
-      //      throw IndexException("mmap() failed to initialize leaf_consolidation_flag for Bw-Tree");
+
+    if (success_base == (void *)-1) {
+      INDEX_LOG_ERROR("Failed to initialize success_base");
+      //      throw IndexException("mmap() failed to initialize success_base for Bw-Tree");
       // TODO(Matt): fix this
     }
 
-    INDEX_LOG_TRACE("Leaf_consolidation_flag allocated via mmap()");
+    INDEX_LOG_TRACE("success_base allocated via mmap()");
 
-    INDEX_LOG_TRACE("Initializing leaf_consolidation_flag.... size = %lu", MAPPING_TABLE_SIZE);
-  }
-
-  //2022-11-20
-  /*
-   * Init_leaf_base_depth() - Initialize the leaf_base_depth
-   *
-   * It initialize all elements to 0.
-   *
-   */
-  NO_ASAN void Init_leaf_base_depth() {
-    leaf_base_depth = (std::atomic<uint64_t> *)mmap(nullptr, sizeof(uint64_t) * MAPPING_TABLE_SIZE,
-                                                          PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    // If allocation fails, we throw an error because this is uncoverable
-    // The upper level functions should either catch this exception
-    // and then use another index instead, or simply kill the system
-    if (leaf_base_depth == (void *)-1) {
-      INDEX_LOG_ERROR("Failed to initialize leaf_base_depth");
-      //      throw IndexException("mmap() failed to initialize leaf_base_depth for Bw-Tree");
-      // TODO(Matt): fix this
-    }
-
-    INDEX_LOG_TRACE("Leaf_base_depth allocated via mmap()");
-
-    INDEX_LOG_TRACE("Initializing leaf_base_depth.... size = %lu", MAPPING_TABLE_SIZE);
+    INDEX_LOG_TRACE("Initializing success_base.... size = %lu", MAPPING_TABLE_SIZE);
     INDEX_LOG_TRACE("Fast initialization: Do not set to zero");
+
   }
-
-
 
   /*
    * GetNextNodeID() - Thread-safe lock free method to get next node ID
@@ -2822,23 +2697,6 @@ class BwTree : public BwTreeBase {
     return ret;
   }
 
-
-  NO_ASAN inline NodeID GetNextleafdeltaID() {
-    // This is a std::pair<bool, NodeID>
-    // If the first element is true then the NodeID is a valid one
-    // If the first element is false then NodeID is invalid and the
-    // stack is either empty or being used (we cannot lock and wait)
-    NodeID ret;
-    leaf_delta_id_list_lock.lock();
-    if (leaf_delta_id_list.size() == 0) {
-      ret = next_unused_leaf_delta_id.fetch_add(1);
-    } else {
-      ret = leaf_delta_id_list.front();
-      leaf_delta_id_list.pop_front();
-    }
-    leaf_delta_id_list_lock.unlock();
-    return ret;
-  }
   /*
    * InstallNodeToReplace() - Install a node to replace a previous one
    *
@@ -2860,22 +2718,6 @@ class BwTree : public BwTreeBase {
     return mapping_table[node_id].compare_exchange_strong(prev_p, node_p);
   }
 
-
-  NO_ASAN inline bool InstallleafdeltaToReplace(NodeID node_id, const BaseNode *node_p, const BaseNode *prev_p) {
-    // Make sure node id is valid and does not exceed maximum
-    NOISEPAGE_ASSERT(node_id != INVALID_NODE_ID, "Node count exceeded maximum.");
-    NOISEPAGE_ASSERT(node_id < MAPPING_TABLE_SIZE, "Node count exceeded maximum.");
-
-// If idb is activated, then all operation will be blocked before
-// they could call CAS and change the key
-#ifdef INTERACTIVE_DEBUG
-    debug_stop_mutex.lock();
-    debug_stop_mutex.unlock();
-#endif
-
-    return mapping_leaf_delta_table[node_id].compare_exchange_strong(prev_p, node_p);
-  }
-
   /*
    * InstallRootNode() - Replace the old root with a new one
    *
@@ -2893,7 +2735,6 @@ class BwTree : public BwTreeBase {
    * installation would always succeed
    */
   NO_ASAN inline void InstallNewNode(NodeID node_id, const BaseNode *node_p) { mapping_table[node_id] = node_p; }
-  NO_ASAN inline void InstallNewleafdelta(NodeID node_id, const BaseNode *node_p) { mapping_leaf_delta_table[node_id] = node_p; }
 
   /*
    * GetNode() - Return the pointer mapped by a node ID
@@ -3555,7 +3396,7 @@ class BwTree : public BwTreeBase {
 
     // This is the number of insert + delete records which contributes
     // to the size of the bloom filter
-    int delta_record_num = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+    int delta_record_num = node_p->GetDepth();
 
     // This array will hold sorted InnerDataNode pointers in order to
     // perform a log merging
@@ -3893,7 +3734,7 @@ class BwTree : public BwTreeBase {
     // The maximum size of present set and deleted set is just
     // the length of the delta chain. Since when we reached the leaf node
     // we just probe and add to value set
-    const int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+    const int set_max_size = node_p->GetDepth();
 
     // 1. This works even if depth is 0
     // 2. We choose to store const ValueType * because we want to bound the
@@ -4252,7 +4093,7 @@ class BwTree : public BwTreeBase {
 
     const KeyType &search_key = context_p->search_key;
 
-    const int set_max_size = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+    const int set_max_size = node_p->GetDepth();
 
     const ValueType *present_set_data_p[set_max_size];
     const ValueType *deleted_set_data_p[set_max_size];
@@ -4409,10 +4250,7 @@ class BwTree : public BwTreeBase {
   NO_ASAN LeafNode *CollectAllValuesOnLeaf(NodeSnapshot *snapshot_p, LeafNode *leaf_node_p = nullptr) {
     NOISEPAGE_ASSERT(snapshot_p->IsLeaf(), "Must be a leaf node.");
 
-    //const BaseNode *node_p = snapshot_p->node_p;
-    // 2022-11-26 node_p should be previous delta
-    const BaseNode *node_p = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
-
+    const BaseNode *node_p = snapshot_p->node_p;
 
     /////////////////////////////////////////////////////////////////
     // Prepare new node
@@ -4432,7 +4270,7 @@ class BwTree : public BwTreeBase {
 
     // This is the number of delta records inside the logical node
     // including merged delta chains
-    int delta_change_num = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+    int delta_change_num = node_p->GetDepth();
 
     // We only need to keep those on the delta chian into a set
     // and those in the data list of leaf page do not need to be
@@ -4966,13 +4804,11 @@ class BwTree : public BwTreeBase {
     if (context_p->abort_flag) {
       return;
     }
-    // 2022-11-26
-    // This does not abort -> this can..
+
+    // This does not abort
     TryConsolidateNode(context_p);
-    if (context_p->abort_flag) {
-      return;
-    }
-    AdjustNodeSize(context_p);
+
+    AdjustNodeSize(context_p,node_id);
   }
 
   /*
@@ -5297,7 +5133,7 @@ class BwTree : public BwTreeBase {
       // updated
       parent_snapshot_p->node_p = insert_node_p;
 
-      ConsolidateNode(GetLatestNodeSnapshot(context_p),context_p);
+      ConsolidateNode(GetLatestNodeSnapshot(context_p));
 
       return true;
     }
@@ -5379,7 +5215,7 @@ class BwTree : public BwTreeBase {
 
       parent_snapshot_p->node_p = delete_node_p;
 
-      ConsolidateNode(GetLatestNodeSnapshot(context_p),context_p);
+      ConsolidateNode(GetLatestNodeSnapshot(context_p));
 
       return true;
     }
@@ -5778,58 +5614,20 @@ class BwTree : public BwTreeBase {
    *
    * This function does not check delta chain size
    */
-  NO_ASAN inline void ConsolidateLeafNode(NodeSnapshot *snapshot_p,Context *context_p) {
+  NO_ASAN inline void ConsolidateLeafNode(NodeSnapshot *snapshot_p) {
     NOISEPAGE_ASSERT(snapshot_p->node_p->IsOnLeafDeltaChain(), "Leaf node must be on delta chain.");
 
-    
-    //2022-11-20
-    //NodeID current_node_id = snapshot_p->node_id;
-    const BaseNode *node_p = snapshot_p->node_p;
-    const BaseNode *node_child = (static_cast<const DeltaNode *>(snapshot_p->node_p))->child_node_p;
-    const NodeID current_node_id = snapshot_p->node_id;
-
-    bool expected = false;
-    bool ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(expected, true);
-    if(!ret_flag){
-        return;
-    }
-    const BaseNode *newest_node =  snapshot_p->node_p;
-    const uint64_t real_depth = newest_node->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
-    const uint64_t used_depth = real_depth -1;
-    const BaseNode *first_element_for_delta_chain = ((DeltaNode*) newest_node)->child_node_p;
-
-    
-
-    // we have to modify CollectAllValuesOnLeaf logic
-    // logic changed 2022-11-26
     LeafNode *leaf_node_p = CollectAllValuesOnLeaf(snapshot_p);
 
-    // we have to modify InstallNodeToReplace logic
-    //bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
-    //const BaseNode *expected_node = node_child;
-    //auto ret = (static_cast<DeltaNode *> (node_p))->child_node_p.compare_exchange_strong(expected_node, leaf_node_p);
-    bool ret = InstallleafdeltaToReplace((static_cast<const DeltaNode *>(node_p))->leaf_delta_id, leaf_node_p, node_child);
-    if (ret) {
-      //epoch_manager.AddGarbageNode(snapshot_p->node_p);
-      epoch_manager.AddGarbageNode(node_child);
-      //2022-11-26
-      uint64_t old_base_value = leaf_base_depth[current_node_id].load();
-      bool ret_base = leaf_base_depth[current_node_id].compare_exchange_strong(old_base_value, old_base_value+used_depth);
-      NOISEPAGE_ASSERT(ret_base == true, "ret_base should be always true");
+    bool ret = InstallNodeToReplace(snapshot_p->node_id, leaf_node_p, snapshot_p->node_p);
 
+    if (ret) {
+      epoch_manager.AddGarbageNode(snapshot_p->node_p);
+
+      snapshot_p->node_p = leaf_node_p;
     } else {
       epoch_manager.AddGarbageNode(leaf_node_p);
     }
-
-    // we should do AdjustNodeSize(context_p) opreation and FinishPartialSMO(context_p) opreation!
-
-    //AdjustNodeSize_for_leaf(context_p,leaf_node_p);
-
-    //2022-11-26
-    bool new_expected = true;
-    bool new_ret_flag = leaf_consolidation_flag[current_node_id].compare_exchange_strong(new_expected, false);
-    NOISEPAGE_ASSERT(new_ret_flag == true, "new_ret_flag should be always true");
-
   }
 
   /*
@@ -5864,9 +5662,9 @@ class BwTree : public BwTreeBase {
    * of CAS operation, since consolidation is an optional operation, and it
    * would not have any effect even if it fails
    */
-  NO_ASAN void ConsolidateNode(NodeSnapshot *snapshot_p,Context *context_p) {
+  NO_ASAN void ConsolidateNode(NodeSnapshot *snapshot_p) {
     if (snapshot_p->node_p->IsOnLeafDeltaChain()) {
-      ConsolidateLeafNode(snapshot_p,context_p);
+      ConsolidateLeafNode(snapshot_p);
     } else {
       ConsolidateInnerNode(snapshot_p);
     }  // if on leaf/inner node
@@ -5890,17 +5688,12 @@ class BwTree : public BwTreeBase {
    * always abort and start from the beginning, to keep delta chain length
    * upper bound intact
    */
-
-
   NO_ASAN void TryConsolidateNode(Context *context_p) {
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
 
     // Do not overwrite this pointer since we will use this
     // to locate garbage delta chain
     const BaseNode *node_p = snapshot_p->node_p;
-
-    // 2022-11-20 get node_id
-    NodeID current_node_id = snapshot_p->node_id;
 
     // We could only perform consolidation on delta node
     // because we want to see depth field
@@ -5916,17 +5709,9 @@ class BwTree : public BwTreeBase {
     }
 
     // If depth does not exceed threshold then we check recommendation flag
-    int depth = node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth);
+    int depth = node_p->GetDepth();
 
     if (snapshot_p->IsLeaf()) {
-
-
-      // 2022-11-20 new policy for leafnode consolidation
-      if(leaf_consolidation_flag[current_node_id].load()){
-        return;
-      }
-
-
       if (depth < GetLeafDeltaChainLengthThreshold()) {
         return;
       }
@@ -5938,7 +5723,7 @@ class BwTree : public BwTreeBase {
 
     // After this point we decide to consolidate node
 
-    ConsolidateNode(snapshot_p,context_p);
+    ConsolidateNode(snapshot_p);
   }
 
   /*
@@ -5954,165 +5739,7 @@ class BwTree : public BwTreeBase {
    *
    * TODO: In the future we might want to change this
    */
-
-/*
- NO_ASAN void AdjustNodeSize_for_leaf(Context *context_p,LeafNode *leaf_node_p){
-
-    // NOTE: We use key number as the size of the node
-    // because using item count might result in a very unstable
-    // split, in a sense that we could not always split the node
-    // evenly, and in the worst case if there is one key in the
-    // node the node could not be splited while having a large
-    // item count
-    size_t node_size = leaf_node_p->GetItemCount();
-
-    // Perform corresponding action based on node size
-    if (node_size >= GetLeafNodeSizeUpperThreshold()) {
-        INDEX_LOG_TRACE("Node size >= leaf upper threshold. Split");
-
-        // Note: This function takes this as argument since it will
-        // do key comparison
-        const LeafNode *new_leaf_node_p = leaf_node_p->GetSplitSibling(this);
-
-        // If the new leaf node pointer is nullptr then it means the
-        // although the size of the leaf node exceeds split threshold
-        // but we could not find a spliting point that evenly or almost
-        // evenly divides the key space into two siblings whose sizes
-        // are both larger than the merge threshold (o.w. the node will
-        // be immediately merged)
-        // NOTE: This is a potential problem if a leaf becomes very unbalanced
-        // since all threads will try to split the leaf node when traversing
-        // to it (not for reader threads)
-        if (new_leaf_node_p == nullptr) {
-            INDEX_LOG_TRACE(
-                "LeafNode size exceeds overhead, "
-                "but could not find split point");
-
-            return;
-        }
-
-        // Since we would like to access its first element to get the low key
-        NOISEPAGE_ASSERT(new_leaf_node_p->GetSize() > 0, "Invalid node size.");
-
-        // The split key must be a valid key
-        // Note that the lowkey for leaf node is not defined, so in the
-        // case that it is required we must manually goto its data list
-        // and find the low key in its leftmost element
-        const KeyType &split_key = new_leaf_node_p->At(0).first;
-
-        // If leaf split fails this should be recyced using a fake remove node
-        NodeID new_node_id = GetNextNodeID();
-
-        // Note that although split node only stores the new node ID
-        // we still need its pointer to compute item_count
-
-        NodeID leaf_node_id = GetNextleafdeltaID();
-        mapping_leaf_delta_table[leaf_node_id] = node_p;
-        const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
-            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p,leaf_node_id);
-
-        //  First install the NodeID -> split sibling mapping
-        // If CAS fails we also need to recycle the node ID allocated here
-        InstallNewNode(new_node_id, new_leaf_node_p);
-
-        // Then CAS split delta into current node's NodeID
-        bool ret = InstallNodeToReplace(node_id, split_node_p, node_p);
-
-        if (ret) {
-            INDEX_LOG_TRACE("Leaf split delta (from %" PRIu64 " to %" PRIu64 ") CAS succeeds. ABORT", node_id,
-                            new_node_id);
-
-            // TODO(Ziqi): WE ABORT HERE TO AVOID THIS THREAD POSTING ANYTHING
-            // ON TOP OF IT WITHOUT HELPING ALONG AND ALSO BLOCKING OTHER
-            // THREAD TO HELP ALONG
-            context_p->abort_flag = true;
-
-            return;
-        }
-
-        INDEX_LOG_TRACE("Leaf split delta CAS fails");
-
-        // Need to use the epoch manager to recycle NodeID
-        // Note that this node must not be created on new_leaf_node_p
-        // since they are both put into the GC chain, it is possible
-        // for new_leaf_node_p to be deleted first and then remove node
-        // is deleted
-        const LeafRemoveNode *fake_remove_node_p = new LeafRemoveNode{new_node_id, new_leaf_node_p};
-
-        // Must put both of them into GC chain since RemoveNode
-        // will not be followed by GC thread
-        epoch_manager.AddGarbageNode(fake_remove_node_p);
-        epoch_manager.AddGarbageNode(new_leaf_node_p);
-
-        // We have two nodes to delete here
-        split_node_p->~LeafSplitNode();
-
-        return;
-
-    } else if (node_size <= LEAF_NODE_SIZE_LOWER_THRESHOLD) {
-        // This might yield a false positive of left child
-        // but correctness is not affected - sometimes the merge is delayed
-        if (IsOnLeftMostChild(context_p)) {
-            INDEX_LOG_TRACE("Left most leaf node cannot be removed");
-
-            return;
-        }
-
-        // After this point we decide to remove leaf node
-
-        INDEX_LOG_TRACE("Node size <= leaf lower threshold. Remove");
-
-        // Install an abort node on parent
-        const BaseNode *abort_node_p;
-        const BaseNode *abort_child_node_p;
-        NodeID parent_node_id;
-
-        bool abort_node_ret = PostAbortOnParent(context_p, &parent_node_id, &abort_node_p, &abort_child_node_p);
-
-        // If we could not block the parent then the parent has changed
-        // (splitted, etc.)
-        if (abort_node_ret) {
-            INDEX_LOG_TRACE("Blocked parent node (current node is leaf)");
-        } else {
-            INDEX_LOG_TRACE(
-                "Unable to block parent node "
-                "(current node is leaf). ABORT");
-
-            // ABORT and return
-            context_p->abort_flag = true;
-
-            return;
-        }
-
-        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
-
-        bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
-        bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
-        if (ret) {
-            INDEX_LOG_TRACE("LeafRemoveNode CAS succeeds. ABORT.");
-
-            context_p->abort_flag = true;
-
-            RemoveAbortOnParent(parent_node_id, abort_node_p, abort_child_node_p);
-
-            return;
-        }
-
-        INDEX_LOG_TRACE("LeafRemoveNode CAS failed");
-
-        delete remove_node_p;
-
-        context_p->abort_flag = true;
-
-        RemoveAbortOnParent(parent_node_id, abort_node_p, abort_child_node_p);
-
-        return;
-      
-}
-*/
-
-
-  NO_ASAN void AdjustNodeSize(Context *context_p) {
+  NO_ASAN void AdjustNodeSize(Context *context_p,NodeID node_id) {
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
     const BaseNode *node_p = snapshot_p->node_p;
 
@@ -6178,10 +5805,8 @@ class BwTree : public BwTreeBase {
 
         // Note that although split node only stores the new node ID
         // we still need its pointer to compute item_count
-        NodeID leaf_node_id = GetNextleafdeltaID();
-        mapping_leaf_delta_table[leaf_node_id] = node_p;
         const LeafSplitNode *split_node_p = LeafInlineAllocateOfType(
-            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p,leaf_node_id);
+            LeafSplitNode, node_p, std::make_pair(split_key, new_node_id), node_p, new_leaf_node_p);
 
         //  First install the NodeID -> split sibling mapping
         // If CAS fails we also need to recycle the node ID allocated here
@@ -6255,9 +5880,8 @@ class BwTree : public BwTreeBase {
 
           return;
         }
-        NodeID leaf_node_id = GetNextleafdeltaID();
-        mapping_leaf_delta_table[leaf_node_id] = node_p;
-        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p,leaf_node_id};
+
+        const LeafRemoveNode *remove_node_p = new LeafRemoveNode{node_id, node_p};
 
         bool ret = InstallNodeToReplace(node_id, remove_node_p, node_p);
         if (ret) {
@@ -6693,7 +6317,7 @@ class BwTree : public BwTreeBase {
     // We can only search for left sibling on inner delta chain
     NOISEPAGE_ASSERT(!node_p->IsOnLeafDeltaChain(), "We can only search for left sibling on inner delta chain.");
 
-    const InnerDataNode *data_node_list[node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth)];
+    const InnerDataNode *data_node_list[node_p->GetDepth()];
 
     // These two are used to compare InnerDataNode for < and == relation
 
@@ -6863,7 +6487,7 @@ class BwTree : public BwTreeBase {
           InnerNode *inner_node_p = CollectAllSepsOnInner(snapshot_p,
                                                           // Must +1 to avoid looping on the same depth
                                                           // without any consolidation
-                                                          snapshot_p->node_p->GetDepth_with_snapshot(snapshot_p,leaf_base_depth) + 1);
+                                                          snapshot_p->node_p->GetDepth() + 1);
 
           bool ret = InstallNodeToReplace(snapshot_p->node_id, inner_node_p, snapshot_p->node_p);
 
@@ -6975,7 +6599,7 @@ class BwTree : public BwTreeBase {
 #endif
 
     EpochNode *epoch_node_p = epoch_manager.JoinEpoch();
-    NodeID new_leaf_delta_id = GetNextNodeID();
+
     while (1) {
       Context context{key};
       std::pair<int, bool> index_pair;
@@ -6999,11 +6623,8 @@ class BwTree : public BwTreeBase {
       const BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
-
-      NodeID leaf_node_id = GetNextleafdeltaID();
-      mapping_leaf_delta_table[leaf_node_id] = node_p;
       const LeafInsertNode *insert_node_p =
-          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair,leaf_node_id);
+          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
 
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
       if (ret) {
@@ -7105,10 +6726,8 @@ class BwTree : public BwTreeBase {
 
       // Here since we could not know which is the next key node
       // just use child node as a cpnservative way of inserting
-      NodeID leaf_node_id = GetNextleafdeltaID();
-      mapping_leaf_delta_table[leaf_node_id] = node_p;
       const LeafInsertNode *insert_node_p =
-          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair,leaf_node_id);
+          LeafInlineAllocateOfType(LeafInsertNode, node_p, key, value, node_p, index_pair);
 
       bool ret = InstallNodeToReplace(node_id, insert_node_p, node_p);
       if (ret) {
@@ -7181,10 +6800,8 @@ class BwTree : public BwTreeBase {
       const BaseNode *node_p = snapshot_p->node_p;
       NodeID node_id = snapshot_p->node_id;
 
-      NodeID leaf_node_id = GetNextleafdeltaID();
-      mapping_leaf_delta_table[leaf_node_id] = node_p;
       const LeafDeleteNode *delete_node_p =
-          LeafInlineAllocateOfType(LeafDeleteNode, node_p, key, value, node_p, index_pair,leaf_node_id);
+          LeafInlineAllocateOfType(LeafDeleteNode, node_p, key, value, node_p, index_pair);
 
       bool ret = InstallNodeToReplace(node_id, delete_node_p, node_p);
       if (ret) {
@@ -7333,34 +6950,14 @@ class BwTree : public BwTreeBase {
   NodeID first_leaf_id;
 
   std::atomic<NodeID> next_unused_node_id;
-
-  std::atomic<NodeID> next_unused_leaf_delta_id;
-
   std::atomic<const BaseNode *> *mapping_table;
-
-  std::atomic<const BaseNode *> *mapping_leaf_delta_table;
-
-  //2022-11-20 to implement new algorithm about consolidation for leaf_node
-  // Two new members are needed.
-  // leaf_consolidation_flag & leaf_base_depth
-
-  // leaf_consolidation_flag tells if there is a thead doing consolidation about target leaf_node.
-  std::atomic<bool> *leaf_consolidation_flag;
-
-  // leaf_base_depth tells base_depth of target leaf_node.
-  // we can calculate actual depth of delta by this. `delta.GetDepth() - leaf_base_depth[node_id]`
-  std::atomic<uint64_t> *leaf_base_depth;
-
-
-
+  std::atomic<uint64_t> *success_count;
+  std::atomic<uint64_t> *success_base;
   // This list holds free NodeID which was removed by remove delta
   // We recycle NodeID in epoch manager
 
   std::mutex node_id_list_lock;
   std::deque<NodeID> node_id_list;
-
-  std::mutex leaf_delta_id_list_lock;
-  std::deque<NodeID> leaf_delta_id_list;
 
   std::atomic<uint64_t> insert_op_count;
   std::atomic<uint64_t> insert_abort_count;
@@ -7570,6 +7167,7 @@ class BwTree : public BwTreeBase {
       // table in the above routine. If it was unmapped in ~BwTree() then this
       // function will invoke illegal memory access
       int munmap_ret = munmap(tree_p->mapping_table, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+
       // Although failure of munmap is not fatal, we still print out
       // an error log entry
       // Otherwise just trace log
@@ -7579,46 +7177,28 @@ class BwTree : public BwTreeBase {
         INDEX_LOG_TRACE("Mapping table is unmapped for Bw-Tree");
       }
 
-      // NOTE: Only unmap memory here because we need to access the mapping leaf delta
-      // table in the above routine. If it was unmapped in ~BwTree() then this
-      // function will invoke illegal memory access
-      int munmap_leaf_ret = munmap(tree_p->mapping_leaf_delta_table, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+
+      int munmap_ret_1 = munmap(tree_p->success_count, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+
       // Although failure of munmap is not fatal, we still print out
       // an error log entry
       // Otherwise just trace log
-      if (munmap_leaf_ret != 0) {
-        INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret);
+      if (munmap_ret_1 != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret_1);
       } else {
-        INDEX_LOG_TRACE("Mapping leaf delta table is unmapped for Bw-Tree");
+        INDEX_LOG_TRACE("success_count is unmapped for Bw-Tree");
       }
 
-      // NOTE: Only unmap memory here because we need to access the leaf_consolidation_flag
-      // in the above routine. If it was unmapped in ~BwTree() then this
-      // function will invoke illegal memory access
-      int munflag_ret = munmap(tree_p->leaf_consolidation_flag, sizeof(bool) * MAPPING_TABLE_SIZE);
+      int munmap_ret_2 = munmap(tree_p->success_base, sizeof(BaseNode *) * MAPPING_TABLE_SIZE);
+
       // Although failure of munmap is not fatal, we still print out
       // an error log entry
       // Otherwise just trace log
-      if (munflag_ret != 0) {
-        INDEX_LOG_ERROR("munmap() returns with %d", munflag_ret);
+      if (munmap_ret_2 != 0) {
+        INDEX_LOG_ERROR("munmap() returns with %d", munmap_ret_2);
       } else {
-        INDEX_LOG_TRACE("leaf_consolidation_flag is unmapped for Bw-Tree");
+        INDEX_LOG_TRACE("success_base is unmapped for Bw-Tree");
       }
-
-
-      // NOTE: Only unmap memory here because we need to access the leaf_base_depth
-      // in the above routine. If it was unmapped in ~BwTree() then this
-      // function will invoke illegal memory access
-      int munbase_depth_ret = munmap(tree_p->leaf_base_depth, sizeof(uint64_t) * MAPPING_TABLE_SIZE);
-      // Although failure of munmap is not fatal, we still print out
-      // an error log entry
-      // Otherwise just trace log
-      if (munbase_depth_ret != 0) {
-        INDEX_LOG_ERROR("munmap() returns with %d", munbase_depth_ret);
-      } else {
-        INDEX_LOG_TRACE("leaf_base_depth is unmapped for Bw-Tree");
-      }
-
     }
 
     /*
