@@ -4839,7 +4839,7 @@ class BwTree : public BwTreeBase {
     // This does not abort
     TryConsolidateNode(context_p);
 
-    AdjustNodeSize(context_p,node_id);
+    AdjustNodeSize(context_p);
   }
 
   /*
@@ -5770,7 +5770,7 @@ class BwTree : public BwTreeBase {
    *
    * TODO: In the future we might want to change this
    */
-  NO_ASAN void AdjustNodeSize(Context *context_p,NodeID node_id) {
+  NO_ASAN void AdjustNodeSize(Context *context_p) {
     NodeSnapshot *snapshot_p = GetLatestNodeSnapshot(context_p);
     const BaseNode *node_p = snapshot_p->node_p;
 
