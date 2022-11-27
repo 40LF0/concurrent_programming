@@ -5812,7 +5812,7 @@ class BwTree : public BwTreeBase {
                   bool expected_bool = true;
                   node_flag[node_id].compare_exchange_strong(expected_bool, false);
 
-                  if(op_su*2 < op_c){
+                  if(op_su < op_c*0.9){
                       should_split = true;
                   }
 
