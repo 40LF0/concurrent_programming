@@ -5807,7 +5807,7 @@ class BwTree : public BwTreeBase {
           if(expected < ((insert_op_c + delete_op_c) /10000)){
               uint64_t op_su = success_count[node_id].load();
               uint64_t op_c = op_count[node_id].load();
-              bool result = op_base[node_id].compare_exchange_strong(expected, ((insert_op_c + elete_op_c) /10000));
+              bool result = op_base[node_id].compare_exchange_strong(expected, ((insert_op_c + delete_op_c) /10000));
               if(result){
                   bool expected_bool = true;
                   node_flag[node_id].compare_exchange_strong(expected_bool, false);
