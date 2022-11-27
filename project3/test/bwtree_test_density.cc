@@ -379,7 +379,7 @@ class BwtreeTest_density_with_thead_num : public ::testing::Test {
 
 };
 
-TEST_F(BwtreeTest_density_with_thead_num,20 ) {
+TEST_F(BwtreeTest_density_with_thead_num, -1 ) {
     template_test(20);
 }
 
