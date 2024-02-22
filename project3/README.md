@@ -23,19 +23,19 @@ Bw-tree는 여러 주요 특성을 통해 높은 성능과 동시성을 달성�
 
 ## New Version Design
 #### Concept
-The new design is akin to adding new roads to alleviate traffic congestion. By splitting a congested leaf node, we can create new paths to the same key range, improving overall response times. This design assumes that users can predict future workloads' congestion levels and choose to activate the splitting option for better performance.
+새로운 디자인은 교통 혼잡을 완화하기 위해 새로운 도로를 추가하는 것과 비슷하다. 혼잡한 리프 노드를 분할함으로써 동일한 키 범위에 대한 새로운 경로를 생성하여 전체 응답 시간을 향상시킬 수 있다. 이 디자인은, 사용자가 향후 작업 부하의 정체 수준을 예측하고 더 나은 성능을 위해 분할 옵션을 활성화하도록 선택할 수 있다고 가정한다.
 
-#### Implementation
-A boolean member, congestion_control, has been added to the class tree. Users can activate the new policy by setting tree->congestion_control to true.
+#### Usage
+불리언 멤버인 congestion_control가 트리 클래스에 추가되었다. 사용자는 tree->congestion_control을 true로 설정하여 새 정책을 활성화할 수 있다.
 
 #### Design Rational and Corretness
-The new splitting policy requires criteria for identifying congestion levels. We have introduced new tables (success_count, op_count, op_base, and node_flag) alongside the existing mapping_table. These tables count operation attempts and successes for each leaf node, providing data to assess congestion levels. The decision to split or not is based on a success ratio threshold of 90%. Additionally, we use node_flag as an indicator to prevent merging of certain nodes.
+새로운 분할 정책에는 혼잡 수준을 식별하기 위한 기준이 필요하다. 기존 mapping_table과 함께 새 테이블(success_count, op_count, op_base 및 node_flag)을 도입하였다. 이 테이블은 각 리프 노드에 대한 작업 시도 및 성공 횟수를 계산하여 정체 수준을 평가하기 위한 데이터를 제공한다. 분할 여부는 성공률 임계값 90%를 기준으로 결정된다. 또한 특정 노드의 병합을 방지하기 위해 node_flag를 표시를 사용한다.
 
 ### custom test cases
-I developed specific test cases in 'bwtree_test_density'.
-- BwtreeTest_db_init: Measures time to create a bw-tree structure with 1M keys.
-- BwtreeTest_density_with_exist_db: Measures modification time within a given key range.
-- BwtreeTest_density_with_exist_db_with_split_logic: Similar to the above but includes the split logic.
+'bwtree_test_density':
+- BwtreeTest_db_init: 1M 키로 bw-tree 구조를 생성하는 데 걸리는 시간을 측정한다.
+- BwtreeTest_density_with_exist_db: 지정된 키 범위 내에 대하여 기존 로직의 시간 성능을 측정한다.
+- BwtreeTest_density_with_exist_db_with_split_logic: 지정된 키 범위 내에 대하여 새로운 로직의 시간 성능을 측정한다.
 
 ## Performance analysis
 [Table2]는 이전 버전과 새 버전 간의 성능 차이를 보여준다. 특히 이전에 가장 낮은 성능을 보였던 연속된 16개 키에 대한 워크로드에서, 새 버전은 약 33%의 성능 향상을 달성하였다.
