@@ -38,6 +38,6 @@ I developed specific test cases in 'bwtree_test_density'.
 - BwtreeTest_density_with_exist_db_with_split_logic: Similar to the above but includes the split logic.
 
 ## Performance analysis
-[Table2]는 이전 버전과 새 버전 간의 성능 차이를 보여준다. 특히 이전에 가장 낮은 성능을 보였던 연속된 16개 키에 대한 처리에서, 새 버전은 약 33%의 성능 향상을 달성하였다.
+[Table2]는 이전 버전과 새 버전 간의 성능 차이를 보여준다. 특히 이전에 가장 낮은 성능을 보였던 연속된 16개 키에 대한 워크로드에서, 새 버전은 약 33%의 성능 향상을 달성하였다.
 ![image](https://user-images.githubusercontent.com/96645965/216049921-7d82db04-03f3-40b3-8ca7-34f1c4d63e6c.png)
 [Table2]   
