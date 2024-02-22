@@ -1,4 +1,12 @@
-Recognizing the limitations of the strategy, I opted to implement "splitting leaf nodes". This caters to scenarios where users anticipate a significant amount of conflict due to high workloads, especially when internal structural changes might exceed the project's deadline. While I acknowledge that splitting leaf nodes is not a fundamental solution, its implementation and performance comparison offer valuable insights.
+## BackGround
+#### Bw+tree
+Bw-tree는 B-tree와 Write-Ahead의 약자로, 고성능 동시성과 낮은 지연 시간이 요구되는 데이터베이스 및 파일 시스템용으로 설계된 데이터 구조이다. B-tree의 변형으로, 비휘발성 메모리를 사용하는 시스템이나 효율적인 락-프리(lock-free) 작업이 필요한 시나리오에 최적화되어 있다.
+
+Bw-tree는 여러 주요 특성을 통해 높은 성능과 동시성을 달성한다:
+
+래치-프리(Latch-free) 설계: 전통적인 잠금 대신, 원자적 연산을 사용하여 동시성을 관리하여, 멀티 스레드 환경에서의 오버헤드와 잠재적인 병목 현상을 줄인다.
+델타 노드 (delta-node): 변경 사항을 기록하는 데 사용되며, 이는 기본 구조의 변경 없이도 업데이트를 효율적으로 수행할 수 있게 한다.
+이러한 특성 덕분에 Bw-tree는 인 메모리 데이터베이스와 같이 높은 동시성과 낮은 지연 시간을 필요로 하는 작업에 적합하다.
 
 ## Problem Definition
 #### Problem situation
